@@ -1,0 +1,63 @@
+@startuml swipe-food database model
+
+' Class definitions'
+
+class Vendor {
+    - name: string
+    - language: string
+    - url: string
+    - date_added: string
+}
+
+class   Recipe {
+    - name: string
+    - description: string
+    - image_url: string 
+    - vendor_id: string
+    - vendor_url: string
+    - date_added: timestamp
+    - date_changed: timestamp
+}
+
+class   Category {
+    - name: string
+    - vendor: Vendor
+}
+
+class User {
+    - name: string
+    - first_name: string
+    - password_hash: string
+    - email: string
+    - language: string
+    - date_created: timestamp
+    - date_last_login: timestamp
+    ___
+    +reset_password()
+}
+
+class LikedCategory {
+    - views: int
+    - matches: int
+}
+
+class Match {
+    - timestamp: timestamp
+    - seen_by_user: bool
+    - active: bool
+    ___
+    +unmatch()
+}
+
+
+
+' Relationships'
+
+Vendor "1..*" --> "0..*" Category 
+Category "1" --> "0..*" Recipe
+User "0..*" - "0..*" Category 
+(User, Category) .. LikedCategory
+Recipe "1" --> "0..*" Match
+User "1" --> "0..*" Match
+
+@enduml

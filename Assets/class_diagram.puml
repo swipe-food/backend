@@ -1,0 +1,25 @@
+@startuml swipe-food class diagram
+
+' Class definitions'
+
+' every vendor has it's own request wrapper that enables 
+'the easy fetching of new recipes
+class VendorWrapper {
+    +fetch()
+}
+
+class ChefkochWrapper {
+    - {static} base_url: string
+    - {static} categories_url: string
+    - {static} recipes_url: string
+    ___
+    +fetch_recipes(): []Recipe
+    +fetch_categories(): []Category
+}
+
+
+' Relationships'
+
+VendorWrapper <|-- ChefkochWrapper
+
+@enduml
