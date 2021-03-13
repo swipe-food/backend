@@ -1,0 +1,112 @@
+@startuml domain_model
+
+' general definitions
+
+!define PACKAGE_COLOR DDDDDD
+
+'Packages and Class definitions'
+
+package "Common Aggregate" #PACKAGE_COLOR {
+    class Entity {
+    - id: UUID
+    - version: int
+    - date_created: timestamp
+    }
+    note left of Entity: Every class inherits \nfrom the Entity class.
+
+    class Language {
+        - name: string
+        - acronym: string
+    }
+
+}
+
+package "Vendor Aggregate" #PACKAGE_COLOR {
+    class Vendor << aggregate root >> {
+    - name: string
+    - url: string
+    - description: string
+    - is_active: boolean
+    - date_last_crawled: datetime 
+    }
+}
+
+package "Category Aggregate" #PACKAGE_COLOR {
+    class Category << aggregate root >> {
+    - name: string
+    }
+}
+
+package "Recipe Aggregate" #PACKAGE_COLOR {
+    class Recipe << aggregate root >> {
+        - name: string
+        - description: string
+        - prep_time: timedelta
+        - cook_time: timedelta
+        - total_time: timedelta
+        - vendor_url: string
+    }
+
+    class Image {
+        - url: string
+    }
+
+    class AggregateRating << value object >> {
+        - ratingCount: int
+        - ratingValue: float
+    }
+
+    class Ingredient {
+        - text: string
+    }
+
+    class RecipeLanguage << value object>> {
+        - name: string
+    }
+
+}
+
+together {
+package "User Aggregate" #PACKAGE_COLOR {
+    class User << aggregate root >> {
+    - name: string
+    - first_name: string
+    - is_confirmed: boolean
+    - date_last_login: timestamp
+    }
+
+    class LikedCategory {
+    - views: int
+    - matches: int
+    }
+
+    class EMail << value object >> {
+        - parts: string
+    }
+}
+
+package "Match Aggregate" #PACKAGE_COLOR {
+    class Match << aggregate root >>{
+    - timestamp: timestamp
+    - is_seen_by_user: bool
+    - is_active: bool
+    }
+}
+}
+
+Entity -[hidden]> Language
+'Relationships'
+Vendor "1" -r-> "0..*" Category
+Vendor -l-> "1..*" Language 
+Category "1" --> "0..*" Recipe
+User "0..*" - "0..*" Category
+User "1"-d-* "1" EMail 
+(User, Category) . LikedCategory
+User "1" --> "0..*" Match
+User --> "0..*" Language
+Recipe "1" --> "0..*" Match
+Recipe "1" --* "1..*" Image
+Recipe "1" --* "0..*" Ingredient
+Recipe -r-* "1" RecipeLanguage
+Recipe "1" -d-* "0..1" AggregateRating
+@enduml
