@@ -5,30 +5,28 @@
 !define PACKAGE_COLOR DDDDDD
 
 'Packages and Class definitions'
-
+together {
 package "Common Aggregate" #PACKAGE_COLOR {
-    class Entity {
+    abstract class Entity {
     - id: UUID
     - version: int
+    - discarded: boolean
     - date_created: timestamp
     }
-    note left of Entity: Every class inherits \nfrom the Entity class.
+    note left of Entity: Every entity inherits \nfrom this class.
 
     class Language {
         - name: string
         - acronym: string
     }
 
-}
-
-package "Vendor Aggregate" #PACKAGE_COLOR {
-    class Vendor << aggregate root >> {
-    - name: string
-    - url: string
-    - description: string
-    - is_active: boolean
-    - date_last_crawled: datetime 
+    class URL << value object >> {
+        parts: List[string]
     }
+
+    Entity -[hidden]> Language
+    Entity -[hidden]> URL
+
 }
 
 package "Category Aggregate" #PACKAGE_COLOR {
@@ -37,14 +35,31 @@ package "Category Aggregate" #PACKAGE_COLOR {
     }
 }
 
+package "Vendor Aggregate" #PACKAGE_COLOR {
+    class Vendor << aggregate root >> {
+    - name: string
+    - description: string
+    - url: string
+    - is_active: boolean
+    - date_last_crawled: datetime
+    - recipe_pattern: string
+    }
+}
+
+}
+
+
+
+
 package "Recipe Aggregate" #PACKAGE_COLOR {
     class Recipe << aggregate root >> {
         - name: string
         - description: string
+        - vendor_id: string
         - prep_time: timedelta
         - cook_time: timedelta
         - total_time: timedelta
-        - vendor_url: string
+        - url: string
     }
 
     class Image {
@@ -52,21 +67,20 @@ package "Recipe Aggregate" #PACKAGE_COLOR {
     }
 
     class AggregateRating << value object >> {
-        - ratingCount: int
-        - ratingValue: float
+        - rating_count: int
+        - rating_value: float
     }
 
     class Ingredient {
         - text: string
     }
 
-    class RecipeLanguage << value object>> {
+    class RecipeURL << value object>> {
         - name: string
     }
 
 }
 
-together {
 package "User Aggregate" #PACKAGE_COLOR {
     class User << aggregate root >> {
     - name: string
@@ -75,7 +89,7 @@ package "User Aggregate" #PACKAGE_COLOR {
     - date_last_login: timestamp
     }
 
-    class LikedCategory {
+    class CategoryLike {
     - views: int
     - matches: int
     }
@@ -83,6 +97,8 @@ package "User Aggregate" #PACKAGE_COLOR {
     class EMail << value object >> {
         - parts: string
     }
+
+    User -[hidden]> CategoryLike
 }
 
 package "Match Aggregate" #PACKAGE_COLOR {
@@ -92,21 +108,23 @@ package "Match Aggregate" #PACKAGE_COLOR {
     - is_active: bool
     }
 }
-}
 
-Entity -[hidden]> Language
+
 'Relationships'
 Vendor "1" -r-> "0..*" Category
-Vendor -l-> "1..*" Language 
+Vendor -l-> "1..*" Language
 Category "1" --> "0..*" Recipe
 User "0..*" - "0..*" Category
-User "1"-d-* "1" EMail 
-(User, Category) . LikedCategory
+(User, Category) . CategoryLike
+User -d-* "1" EMail
 User "1" --> "0..*" Match
 User --> "0..*" Language
 Recipe "1" --> "0..*" Match
 Recipe "1" --* "1..*" Image
 Recipe "1" --* "0..*" Ingredient
-Recipe -r-* "1" RecipeLanguage
+Recipe -r--* "1" RecipeURL
+RecipeURL --|> URL
 Recipe "1" -d-* "0..1" AggregateRating
+Recipe -u-> "1" Vendor
+
 @enduml

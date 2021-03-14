@@ -3,7 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux,react,python
 
 
-./.idea/*
+.idea/*
 
 ### Linux ###
 *~

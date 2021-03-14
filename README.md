@@ -1,5 +1,9 @@
 # SwipeFood
 
-## Class Diagram
+## Domain Model
 
-![UML Class Diagram](./Assets/domain_model.png)
+![UML Domain Model](./Assets/domain_model.png)
+
+**TODO:**
+
+- Category Vendor only 1 --> 0..* relationship
