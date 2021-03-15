@@ -1,10 +1,16 @@
+aiohttp==3.7.4.post0
 apipkg==1.5
+async-timeout==3.0.1
 attrs==20.3.0
 beautifulsoup4==4.9.3
 bs4==0.0.1
+chardet==4.0.0
 coverage==5.5
 execnet==1.8.0
+idna==3.1
 iniconfig==1.1.1
+lxml==4.6.2
+multidict==5.1.0
 packaging==20.9
 pep8==1.7.1
 pluggy==0.13.1
@@ -17,3 +23,5 @@ pytest-cov==2.11.1
 pytest-pep8==1.0.6
 soupsieve==2.2
 toml==0.10.2
+typing-extensions==3.7.4.3
+yarl==1.6.3

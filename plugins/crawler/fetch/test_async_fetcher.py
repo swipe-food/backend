@@ -1,4 +1,9 @@
+import asyncio
+from unittest.mock import patch
+
+import aiohttp
 import pytest
+from aiohttp import ClientTimeout, InvalidURL
 from bs4 import BeautifulSoup
 
 from plugins.crawler.fetch.async_fetcher import AsyncFetcher, FetchResult
@@ -11,8 +16,12 @@ class TestAsyncFetcher:
     def fetcher():
         return AsyncFetcher()
 
-    def test_fetch_parallel(self, fetcher):
-        # TODO: patch
+    @patch('plugins.crawler.fetch.async_fetcher.AsyncFetcher.fetch')
+    def test_fetch_parallel(self, mock_fetch, fetcher):
+        async def fetch(_, url: str):
+            return FetchResult(url=url, status=200, html=BeautifulSoup())
+
+        mock_fetch.side_effect = fetch
 
         test_urls = ['dummy_url'] * 10
         results = fetcher.fetch_parallel(test_urls)
@@ -24,18 +33,23 @@ class TestAsyncFetcher:
             assert result.url == 'dummy_url'
             assert isinstance(result.html, BeautifulSoup)
 
-    def test_fetch_success(self, fetcher):
+    @pytest.mark.asyncio
+    async def test_fetch_success(self, fetcher):
         url = 'https://www.python.org/'
-        result = fetcher.fetch(url)
+
+        async with aiohttp.ClientSession(loop=asyncio.get_event_loop(), timeout=ClientTimeout(10)) as session:
+            result = await fetcher.fetch(session, url)
+
         assert isinstance(result, FetchResult)
         assert result.status == 200
         assert result.url == url
         assert isinstance(result.html, BeautifulSoup)
 
-    def test_fetch_fail(self, fetcher):
+    @pytest.mark.asyncio
+    async def test_fetch_fail(self, fetcher):
         url = 'invalid_url'
-        result = fetcher.fetch(url)
-        assert isinstance(result, FetchResult)
-        assert result.status == 400
-        assert result.url == url
-        assert result.html is None
+
+        with pytest.raises(InvalidURL):
+            async with aiohttp.ClientSession(loop=asyncio.get_event_loop(), timeout=ClientTimeout(10)) as session:
+                await fetcher.fetch(session, url)
+
