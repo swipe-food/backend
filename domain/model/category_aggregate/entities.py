@@ -1,11 +1,12 @@
 import uuid
+from typing import Type
 
 from domain.model.common_aggregate import Entity
 
 
 class Category(Entity):
 
-    def __init__(self, category_id: uuid.UUID, category_version: int, name: str, vendor):
+    def __init__(self, category_id: uuid.UUID, category_version: int, name: str, vendor: Type[Entity]):
         super().__init__(category_id, category_version)
         self._name = name
         self._vendor = vendor
@@ -84,4 +85,3 @@ class Category(Entity):
         for recipe in self._recipes:
             recipe.delete()
         super().delete()
-

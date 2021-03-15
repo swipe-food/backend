@@ -1,120 +1,12 @@
 from __future__ import annotations
-
 from datetime import datetime
+
 import uuid
 from typing import List
 
-from domain.model import category_aggregate, match_aggregate
+from domain.model import match_aggregate, category_aggregate
 from domain.model.common_aggregate import Entity, Language
-
-
-class EMail:
-
-    @classmethod
-    def from_text(cls, address: str):
-        if not '@' in address:
-            raise ValueError("EMail address must contain '@'")
-        local_part, _, domain_part = address.partition('@')
-        return cls(local_part, domain_part)
-
-    def __init__(self, local_part: str, domain_part: str):
-        self._parts = (local_part, domain_part)
-
-    def __str__(self) -> str:
-        return '@'.join(self._parts)
-
-    def __repr__(self) -> str:
-        return 'EMail(local_part={!r}, domain_part={!r})'.format(*self._parts)
-
-    def __eq__(self, o: object) -> bool:
-        if not isinstance(o, EMail):
-            return NotImplemented  # TODO check if this approach is good
-        return self._parts == o._parts
-
-    def __ne__(self, o: object) -> bool:
-        return not (self == o)
-
-    @property
-    def local(self):
-        return self._parts[0]
-
-    @property
-    def domain(self):
-        return self._parts[1]
-
-    def replace(self, local_part: str = None, domain_part: str = None):
-        return EMail(local_part=local_part or self._parts[0],
-                     domain_part=domain_part or self._parts[1])
-
-
-class CategoryLike(Entity):
-    """A user can like a category.
-
-    Attributes:
-        views: Total amount of viewed recipes for the category
-        matches: Total amount of matches between the user and the viewed recipes for the category
-    """
-
-    def __init__(self, liked_category_id: uuid.UUID, liked_category_version: int, user: User,
-                 category: category_aggregate.Category, views: int, matches: int):
-        super().__init__(liked_category_id, liked_category_version)
-        self._user = user
-        self._category = category
-        self._views = views
-        self._matches = matches
-
-        self._user.add_liked_category(self)
-        self._category.add_like(self)
-
-    def __str__(self) -> str:
-        return f"LikedCategory for User '{self._user.email}' and Category {self._category.name}"
-
-    def __repr__(self) -> str:
-        return "{c}({s}, views={views!r}, matches={matches!r}, {user}, {category})".format(
-            c=self.__class__.__name__,
-            s=super().__repr__(),
-            views=self._views,
-            matches=self._matches,
-            user=self._user.__repr__(),
-            category=self._category.__repr__(),
-        )
-
-    @property
-    def user(self) -> User:
-        self._check_not_discarded()
-        return self._user
-
-    @property
-    def category(self) -> category_aggregate.Category:
-        self._check_not_discarded()
-        return self._category
-
-    @property
-    def views(self) -> int:
-        self._check_not_discarded()
-        return self._views
-
-    @views.setter
-    def views(self, value: int):
-        self._check_not_discarded()
-        self._views = value
-        self._increment_version()
-
-    @property
-    def matches(self) -> int:
-        self._check_not_discarded()
-        return self._matches
-
-    @matches.setter
-    def matches(self, value: int):
-        self._check_not_discarded()
-        self._matches = value
-        self._increment_version()
-
-    def delete(self):
-        self._category.remove_like(self)
-        self._user.remove_liked_category(self)
-        super().delete()
+from domain.model.user_aggregate.value_objects import EMail
 
 
 class User(Entity):
@@ -247,4 +139,74 @@ class User(Entity):
             liked_category.delete()
         for match in self._matches:
             match.delete()
+        super().delete()
+
+
+class CategoryLike(Entity):
+    """A user can like a category.
+
+    Attributes:
+        views: Total amount of viewed recipes for the category
+        matches: Total amount of matches between the user and the viewed recipes for the category
+    """
+
+    def __init__(self, liked_category_id: uuid.UUID, liked_category_version: int, user: User,
+                 category: category_aggregate.Category, views: int, matches: int):
+        super().__init__(liked_category_id, liked_category_version)
+        self._user = user
+        self._category = category
+        self._views = views
+        self._matches = matches
+
+        self._user.add_liked_category(self)
+        self._category.add_like(self)
+
+    def __str__(self) -> str:
+        return f"LikedCategory for User '{self._user.email}' and Category {self._category.name}"
+
+    def __repr__(self) -> str:
+        return "{c}({s}, views={views!r}, matches={matches!r}, {user}, {category})".format(
+            c=self.__class__.__name__,
+            s=super().__repr__(),
+            views=self._views,
+            matches=self._matches,
+            user=self._user.__repr__(),
+            category=self._category.__repr__(),
+        )
+
+    @property
+    def user(self) -> User:
+        self._check_not_discarded()
+        return self._user
+
+    @property
+    def category(self) -> category_aggregate.Category:
+        self._check_not_discarded()
+        return self._category
+
+    @property
+    def views(self) -> int:
+        self._check_not_discarded()
+        return self._views
+
+    @views.setter
+    def views(self, value: int):
+        self._check_not_discarded()
+        self._views = value
+        self._increment_version()
+
+    @property
+    def matches(self) -> int:
+        self._check_not_discarded()
+        return self._matches
+
+    @matches.setter
+    def matches(self, value: int):
+        self._check_not_discarded()
+        self._matches = value
+        self._increment_version()
+
+    def delete(self):
+        self._category.remove_like(self)
+        self._user.remove_liked_category(self)
         super().delete()

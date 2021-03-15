@@ -1,14 +1,14 @@
 import uuid
 from datetime import datetime
+from typing import Type
 
 from domain.model.common_aggregate import Entity
 
 
 class Match(Entity):
 
-    def __init__(self, match_id: uuid.UUID, match_version: int, user, recipe, timestamp: datetime,
-                 is_seen_by_user: bool,
-                 is_active: bool):
+    def __init__(self, match_id: uuid.UUID, match_version: int, user: Type[Entity], recipe: Type[Entity],
+                 timestamp: datetime, is_seen_by_user: bool, is_active: bool):
         super().__init__(match_id, match_version)
         self._user = user
         self._recipe = recipe

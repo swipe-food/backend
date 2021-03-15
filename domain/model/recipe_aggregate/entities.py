@@ -2,26 +2,11 @@ import uuid
 from datetime import timedelta
 from typing import List
 
-from domain.model import match_aggregate, category_aggregate, vendor_aggregate
-from domain.model.common_aggregate import Entity, URL, Language
-
-
-class RecipeURL(URL):
-
-    @classmethod
-    def from_text_with_pattern(cls, url: str, vendor_pattern: str):
-        # TODO validate with pattern of vendor
-        scheme, domain, resource, parameters = url, url, url, url
-        return cls(scheme, domain, resource, parameters)
-
-    def __init__(self, scheme: str, domain: str, resource: str, parameters: str):
-        super().__init__(scheme, domain, resource, parameters)
-
-    def replace(self, scheme: str = None, domain: str = None, resource: str = None, parameters: str = None):
-        return RecipeURL(scheme=scheme or self._parts[0],
-                         domain=domain or self._parts[1],
-                         resource=resource or self._parts[2],
-                         parameters=parameters or self._parts[3])
+from domain.model.category_aggregate.entities import Category
+from domain.model.common_aggregate import Entity, Language
+from domain.model.match_aggregate.entities import Match
+from domain.model.recipe_aggregate.value_objects import RecipeURL, AggregateRating
+from domain.model.vendor_aggregate.entities import Vendor
 
 
 class ImageURL(Entity):
@@ -64,18 +49,12 @@ class Ingredient(Entity):
         return self._text
 
 
-class AggregateRating:
-    # TODO check how to best implement this
-    def __init__(self, rating_count: int, rating_value: float):
-        pass
-
-
 class Recipe(Entity):
 
     def __init__(self, recipe_id: uuid.UUID, recipe_version: int, name: str, description: str, vendor_id: str,
                  prep_time: timedelta, cook_time: timedelta, total_time: timedelta, url: RecipeURL,
                  images: List[ImageURL], ingredients: List[Ingredient], aggregate_rating: AggregateRating,
-                 category: category_aggregate.Category, vendor: vendor_aggregate.Vendor, language: Language):
+                 category: Category, vendor: Vendor, language: Language):
         super().__init__(recipe_id, recipe_version)
         self._name = name
         self._description = description
@@ -90,7 +69,7 @@ class Recipe(Entity):
         self._category = category
         self._vendor = vendor
         self._language = language
-        self._matches: List[match_aggregate.Match] = []
+        self._matches: List[Match] = []
 
     def __str__(self) -> str:
         return f"Recipe '{self._name}' from '{self._url.__str__()}'"
@@ -188,12 +167,12 @@ class Recipe(Entity):
         return self._aggregate_rating
 
     @property
-    def category(self) -> category_aggregate.Category:
+    def category(self) -> Category:
         self._check_not_discarded()
         return self._category
 
     @property
-    def vendor(self) -> vendor_aggregate.Vendor:
+    def vendor(self) -> Vendor:
         self._check_not_discarded()
         return self._vendor
 
@@ -203,16 +182,16 @@ class Recipe(Entity):
         return self._language
 
     @property
-    def matches(self) -> List[match_aggregate.Match]:
+    def matches(self) -> List[Match]:
         self._check_not_discarded()
         return self._matches
 
-    def add_match(self, match: match_aggregate.Match):
+    def add_match(self, match: Match):
         self._check_not_discarded()
         self._matches.append(match)
         self._increment_version()
 
-    def remove_match(self, match: match_aggregate.Match):
+    def remove_match(self, match: Match):
         self._check_not_discarded()
         self._matches.remove(match)  # TODO error handling: raises ValueError
         self._increment_version()

@@ -1,10 +1,8 @@
-from __future__ import annotations
-
-from datetime import datetime
 import uuid
+from datetime import datetime
 from typing import List
 
-from domain.model import category_aggregate
+from domain.model.category_aggregate.entities import Category
 from domain.model.common_aggregate import Entity, Language, URL
 
 
@@ -44,12 +42,10 @@ class Vendor(Entity):
         self._check_not_discarded()
         return self._description
 
-
     @property
     def url(self) -> URL:
         self._check_not_discarded()
         return self._url
-
 
     @property
     def is_active(self) -> bool:
@@ -100,16 +96,16 @@ class Vendor(Entity):
         self._increment_version()
 
     @property
-    def categories(self) -> List[category_aggregate.Category]:
+    def categories(self) -> List[Category]:
         self._check_not_discarded()
         return self._categories
 
-    def add_category(self, category: category_aggregate.Category):
+    def add_category(self, category: Category):
         self._check_not_discarded()
         self._categories.append(category)
         self._increment_version()
 
-    def remove_category(self, category: category_aggregate.Category):
+    def remove_category(self, category: Category):
         self._check_not_discarded()
         self._categories.remove(category)  # TODO error handling: raises ValueError
         self._increment_version()
