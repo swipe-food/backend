@@ -4,8 +4,10 @@ from datetime import datetime
 import uuid
 from typing import List
 
-from domain.model import match_aggregate, category_aggregate
+from domain.model.match_aggregate.entities import Match
+from domain.model.category_aggregate.entities import Category
 from domain.model.common_aggregate import Entity, Language
+from domain.model.recipe_aggregate.entities import Recipe
 from domain.model.user_aggregate.value_objects import EMail
 
 
@@ -21,7 +23,8 @@ class User(Entity):
         self._email = email
         self._languages = languages
         self._liked_categories: List[CategoryLike] = []
-        self._matches: List[match_aggregate.Match] = []
+        self._matches: List[Match] = []
+        self._seen_recipes: List[Recipe] = []
 
     def __str__(self) -> str:
         return f"User with Name '{self._name}' and EMail '{self._email.__str__()}'"
@@ -120,18 +123,33 @@ class User(Entity):
         self._increment_version()
 
     @property
-    def matches(self) -> List[match_aggregate.Match]:
+    def matches(self) -> List[Match]:
         self._check_not_discarded()
         return self._matches
 
-    def add_match(self, match: match_aggregate.Match):
+    def add_match(self, match: Match):
         self._check_not_discarded()
         self._matches.append(match)
         self._increment_version()
 
-    def remove_match(self, match: match_aggregate.Match):
+    def remove_match(self, match: Match):
         self._check_not_discarded()
         self._matches.remove(match)  # TODO error handling: raises ValueError
+        self._increment_version()
+
+    @property
+    def seen_recipes(self) -> List[Recipe]:
+        self._check_not_discarded()
+        return self._seen_recipes
+
+    def add_seen_recipe(self, recipe: Recipe):
+        self._check_not_discarded()
+        self._seen_recipes.append(recipe)
+        self._increment_version()
+
+    def remove_seen_recipe(self, recipe: Recipe):
+        self._check_not_discarded()
+        self._seen_recipes.remove(recipe)  # TODO error handling: raises ValueError
         self._increment_version()
 
     def delete(self):
@@ -151,7 +169,7 @@ class CategoryLike(Entity):
     """
 
     def __init__(self, liked_category_id: uuid.UUID, liked_category_version: int, user: User,
-                 category: category_aggregate.Category, views: int, matches: int):
+                 category: Category, views: int, matches: int):
         super().__init__(liked_category_id, liked_category_version)
         self._user = user
         self._category = category
@@ -180,7 +198,7 @@ class CategoryLike(Entity):
         return self._user
 
     @property
-    def category(self) -> category_aggregate.Category:
+    def category(self) -> Category:
         self._check_not_discarded()
         return self._category
 

@@ -1,5 +1,5 @@
 import uuid
-from typing import Type
+from typing import Type, List
 
 from domain.model.common_aggregate import Entity
 
@@ -11,7 +11,7 @@ class Category(Entity):
         self._name = name
         self._vendor = vendor
         self._likes = []
-        self._recipes = []
+        self._recipes: List[Type[Entity]] = []
 
         self._vendor.add_category(self)
 
