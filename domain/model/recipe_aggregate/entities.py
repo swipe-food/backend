@@ -11,13 +11,12 @@ from domain.model.vendor_aggregate.entities import Vendor
 
 class ImageURL(Entity):
 
-    def __init__(self, image_url_id: uuid.UUID, image_url_version: int, scheme: str, domain: str, resource: str,
-                 parameters: str):
+    def __init__(self, image_url_id: uuid.UUID, image_url_version: int, scheme: str, netloc: str, path: str, query: str):
         super().__init__(entity_id=image_url_id, entity_version=image_url_version)
-        self._parts = (scheme, domain, resource, parameters)
+        self._parts = (scheme, netloc, path, query)
 
     def __str__(self) -> str:
-        return f'{self._parts[0]}//{self._parts[1]}{self._parts[2]}{self._parts[3]}'
+        return f'{self._parts[0]}://{self._parts[1]}{self._parts[2]}{self._parts[3]}'
 
     def __repr__(self) -> str:
         return "{c}({s}, url={url!r})".format(
@@ -28,7 +27,6 @@ class ImageURL(Entity):
 
 
 class Ingredient(Entity):
-    # TODO check if it is possible to implement this as a value object
 
     def __init__(self, ingredient_id: uuid.UUID, ingredient_version: int, text: str):
         super().__init__(ingredient_id, ingredient_version)

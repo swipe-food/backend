@@ -1,10 +1,15 @@
+import re
+
+
 class EMail:
+    VALIDATION_REGEX = "[^@]+@[^@]+\.[^@]+"
 
     @classmethod
-    def from_text(cls, address: str):
-        if '@' not in address:
-            raise ValueError("EMail address must contain '@'")
-        local_part, _, domain_part = address.partition('@')
+    def from_text(cls, email_address: str):
+        pattern = re.compile(cls.VALIDATION_REGEX)
+        if not pattern.match(email_address):
+            raise ValueError(f"Invalid {cls.__class__.__name__} '{email_address}'")
+        local_part, _, domain_part = email_address.partition('@')
         return cls(local_part, domain_part)
 
     def __init__(self, local_part: str, domain_part: str):
@@ -18,7 +23,7 @@ class EMail:
 
     def __eq__(self, o: object) -> bool:
         if not isinstance(o, EMail):
-            return NotImplemented  # TODO check if this approach is good
+            return NotImplemented
         return self._parts == o._parts
 
     def __ne__(self, o: object) -> bool:

@@ -2,21 +2,20 @@ from datetime import timedelta
 from typing import List
 
 from domain.model.category_aggregate.entities import Category
-from domain.model.common_aggregate import create_entity_id, Language
+from domain.model.common_aggregate import create_entity_id, Language, URL
 from domain.model.recipe_aggregate.entities import Recipe, ImageURL, Ingredient
 from domain.model.recipe_aggregate.value_objects import RecipeURL, AggregateRating
 from domain.model.vendor_aggregate.entities import Vendor
 
 
 def create_image_url(version: int, url: str) -> ImageURL:
-    # TODO validate
-    scheme, domain, resource, parameters = url, url, url, url
+    parts = URL.from_text(url).parts
     return ImageURL(image_url_id=create_entity_id(),
                     image_url_version=version,
-                    scheme=scheme,
-                    domain=domain,
-                    resource=resource,
-                    parameters=parameters)
+                    scheme=parts[0],
+                    netloc=parts[1],
+                    path=parts[2],
+                    query=parts[3])
 
 
 def create_ingredient(version: int, text: str) -> Ingredient:
