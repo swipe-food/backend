@@ -84,22 +84,10 @@ class CategoryLike(Entity):
         self._check_not_discarded()
         return self._user
 
-    @user.setter
-    def user(self, value: User):
-        self._check_not_discarded()
-        self._user = value
-        self._increment_version()
-
     @property
     def category(self) -> category_aggregate.Category:
         self._check_not_discarded()
         return self._category
-
-    @category.setter
-    def category(self, value: category_aggregate.Category):
-        self._check_not_discarded()
-        self._category = value
-        self._increment_version()
 
     @property
     def views(self) -> int:
@@ -214,12 +202,6 @@ class User(Entity):
         self._check_not_discarded()
         return self._languages
 
-    @languages.setter
-    def languages(self, value: List[Language]):
-        self._check_not_discarded()
-        self._languages = value
-        self._increment_version()
-
     def add_language(self, language: Language):
         self._check_not_discarded()
         self._languages.append(language)
@@ -231,15 +213,9 @@ class User(Entity):
         self._increment_version()
 
     @property
-    def liked_categories(self) -> List[Language]:
+    def liked_categories(self) -> List[CategoryLike]:
         self._check_not_discarded()
         return self._liked_categories
-
-    @liked_categories.setter
-    def liked_categories(self, value: List[CategoryLike]):
-        self._check_not_discarded()
-        self._liked_categories = value
-        self._increment_version()
 
     def add_liked_category(self, liked_category: CategoryLike):
         self._check_not_discarded()
@@ -255,12 +231,6 @@ class User(Entity):
     def matches(self) -> List[match_aggregate.Match]:
         self._check_not_discarded()
         return self._matches
-
-    @matches.setter
-    def matches(self, value: List[match_aggregate.Match]):
-        self._check_not_discarded()
-        self._matches = value
-        self._increment_version()
 
     def add_match(self, match: match_aggregate.Match):
         self._check_not_discarded()

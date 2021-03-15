@@ -85,25 +85,11 @@ class Language(Entity):
         self._check_not_discarded()
         return self._name
 
-    @name.setter
-    def name(self, value: str):
-        self._check_not_discarded()
-        self._name = value
-        self._increment_version()
-
     @property
     def code(self) -> str:
         """The language code according to ISO 639-1"""
         self._check_not_discarded()
         return self._code
-
-    @code.setter
-    def code(self, value: str):
-        self._check_not_discarded()
-        if len(value) != 2:
-            raise ValueError('Language Acronym must have a length of 2')
-        self._code = value
-        self._increment_version()
 
 
 class URL:

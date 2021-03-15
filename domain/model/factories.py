@@ -8,6 +8,8 @@ from domain.model.common_aggregate import create_entity_id, Language
 
 
 def create_language(version: int, name: str, code: str):
+    if len(code) != 2:
+        raise ValueError('Language Acronym must have a length of 2')
     return Language(language_id=create_entity_id(),
                     language_version=version,
                     name=name,

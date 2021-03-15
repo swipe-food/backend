@@ -48,15 +48,9 @@ class Category(Entity):
         self._increment_version()
 
     @property
-    def likes(self) -> str:
+    def likes(self):
         self._check_not_discarded()
         return self._likes
-
-    @likes.setter
-    def likes(self, value):
-        self._check_not_discarded()
-        self._likes = value
-        self._increment_version()
 
     def add_like(self, category_like):
         self._check_not_discarded()
@@ -72,12 +66,6 @@ class Category(Entity):
     def recipes(self):
         self._check_not_discarded()
         return self._recipes
-
-    @recipes.setter
-    def recipes(self, value):
-        self._check_not_discarded()
-        self._recipes = value
-        self._increment_version()
 
     def add_recipe(self, recipe):
         self._check_not_discarded()

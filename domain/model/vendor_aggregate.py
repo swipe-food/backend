@@ -39,33 +39,17 @@ class Vendor(Entity):
         self._check_not_discarded()
         return self._name
 
-    @name.setter
-    def name(self, value: str):
-        self._check_not_discarded()
-        self._name = value
-        self._increment_version()
-
     @property
     def description(self) -> str:
         self._check_not_discarded()
         return self._description
 
-    @description.setter
-    def description(self, value: str):
-        self._check_not_discarded()
-        self._description = value
-        self._increment_version()
 
     @property
     def url(self) -> URL:
         self._check_not_discarded()
         return self._url
 
-    @url.setter
-    def url(self, value: URL):
-        self._check_not_discarded()
-        self._url = value
-        self._increment_version()
 
     @property
     def is_active(self) -> bool:
@@ -94,12 +78,6 @@ class Vendor(Entity):
         self._check_not_discarded()
         return self._languages
 
-    @languages.setter
-    def languages(self, value: List[Language]):
-        self._check_not_discarded()
-        self._languages = value
-        self._increment_version()
-
     def add_language(self, language: Language):
         self._check_not_discarded()
         self._languages.append(language)
@@ -125,12 +103,6 @@ class Vendor(Entity):
     def categories(self) -> List[category_aggregate.Category]:
         self._check_not_discarded()
         return self._categories
-
-    @categories.setter
-    def categories(self, value: List[category_aggregate.Category]):
-        self._check_not_discarded()
-        self._categories = value
-        self._increment_version()
 
     def add_category(self, category: category_aggregate.Category):
         self._check_not_discarded()

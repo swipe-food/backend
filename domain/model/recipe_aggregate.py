@@ -63,12 +63,6 @@ class Ingredient(Entity):
         self._check_not_discarded()
         return self._text
 
-    @text.setter
-    def text(self, value: str):
-        self._check_not_discarded()
-        self._text = value
-        self._increment_version()
-
 
 class AggregateRating:
     # TODO check how to best implement this
@@ -116,22 +110,10 @@ class Recipe(Entity):
         self._check_not_discarded()
         return self._name
 
-    @name.setter
-    def name(self, value: str):
-        self._check_not_discarded()
-        self._name = value
-        self._increment_version()
-
     @property
     def description(self) -> str:
         self._check_not_discarded()
         return self._description
-
-    @description.setter
-    def description(self, value: str):
-        self._check_not_discarded()
-        self._description = value
-        self._increment_version()
 
     @property
     def vendor_id(self) -> str:
@@ -149,33 +131,15 @@ class Recipe(Entity):
         self._check_not_discarded()
         return self._prep_time
 
-    @prep_time.setter
-    def prep_time(self, value: timedelta):
-        self._check_not_discarded()
-        self._prep_time = value
-        self._increment_version()
-
     @property
     def cook_time(self) -> timedelta:
         self._check_not_discarded()
         return self._cook_time
 
-    @cook_time.setter
-    def cook_time(self, value: timedelta):
-        self._check_not_discarded()
-        self._cook_time = value
-        self._increment_version()
-
     @property
     def total_time(self) -> timedelta:
         self._check_not_discarded()
         return self._total_time
-
-    @total_time.setter
-    def total_time(self, value: timedelta):
-        self._check_not_discarded()
-        self._total_time = value
-        self._increment_version()
 
     @property
     def url(self) -> RecipeURL:
@@ -193,10 +157,14 @@ class Recipe(Entity):
         self._check_not_discarded()
         return self._images
 
-    @images.setter
-    def images(self, value: List[ImageURL]):
+    def add_image(self, image_url: ImageURL):
         self._check_not_discarded()
-        self._images = value
+        self._images.append(image_url)
+        self._increment_version()
+
+    def remove_image(self, image_url: ImageURL):
+        self._check_not_discarded()
+        self._images.remove(image_url)  # TODO error handling: raises ValueError
         self._increment_version()
 
     @property
@@ -204,10 +172,14 @@ class Recipe(Entity):
         self._check_not_discarded()
         return self._ingredients
 
-    @ingredients.setter
-    def ingredients(self, value: List[Ingredient]):
+    def add_ingredient(self, ingredient: Ingredient):
         self._check_not_discarded()
-        self._ingredients = value
+        self._ingredients.append(ingredient)
+        self._increment_version()
+
+    def remove_ingredient(self, ingredient: Ingredient):
+        self._check_not_discarded()
+        self._ingredients.remove(ingredient)  # TODO error handling: raises ValueError
         self._increment_version()
 
     @property
@@ -215,55 +187,25 @@ class Recipe(Entity):
         self._check_not_discarded()
         return self._aggregate_rating
 
-    @aggregate_rating.setter
-    def aggregate_rating(self, value: AggregateRating):
-        self._check_not_discarded()
-        self._aggregate_rating = value
-        self._increment_version()
-
     @property
     def category(self) -> category_aggregate.Category:
         self._check_not_discarded()
         return self._category
-
-    @category.setter
-    def category(self, value: category_aggregate.Category):
-        self._check_not_discarded()
-        self._category = value
-        self._increment_version()
 
     @property
     def vendor(self) -> vendor_aggregate.Vendor:
         self._check_not_discarded()
         return self._vendor
 
-    @vendor.setter
-    def vendor(self, value: vendor_aggregate.Vendor):
-        self._check_not_discarded()
-        self._vendor = value
-        self._increment_version()
-
     @property
     def language(self) -> Language:
         self._check_not_discarded()
         return self._language
 
-    @language.setter
-    def language(self, value: Language):
-        self._check_not_discarded()
-        self._language = value
-        self._increment_version()
-
     @property
     def matches(self) -> List[match_aggregate.Match]:
         self._check_not_discarded()
         return self._matches
-
-    @matches.setter
-    def matches(self, value: List[match_aggregate.Match]):
-        self._check_not_discarded()
-        self._matches = value
-        self._increment_version()
 
     def add_match(self, match: match_aggregate.Match):
         self._check_not_discarded()

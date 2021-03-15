@@ -33,22 +33,10 @@ class Match(Entity):
         self._check_not_discarded()
         return self._user
 
-    @user.setter
-    def user(self, value):
-        self._check_not_discarded()
-        self._user = value
-        self._increment_version()
-
     @property
     def recipe(self):
         self._check_not_discarded()
         return self._recipe
-
-    @recipe.setter
-    def recipe(self, value):
-        self._check_not_discarded()
-        self._recipe = value
-        self._increment_version()
 
     @property
     def timestamp(self) -> datetime:
