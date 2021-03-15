@@ -52,4 +52,3 @@ class TestAsyncFetcher:
         with pytest.raises(InvalidURL):
             async with aiohttp.ClientSession(loop=asyncio.get_event_loop(), timeout=ClientTimeout(10)) as session:
                 await fetcher.fetch(session, url)
-
