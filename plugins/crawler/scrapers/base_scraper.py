@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from bs4 import BeautifulSoup
 
-from domain.model.category_aggregate import Category
-from domain.model.recipe_aggregate import Recipe
+from plugins.crawler.scrapers.data import ParsedRecipe, ParsedCategory
 
 
 class AbstractBaseScraper(ABC):
@@ -12,11 +12,11 @@ class AbstractBaseScraper(ABC):
         self._soup = soup
 
     @abstractmethod
-    def get_recipe(self) -> Recipe:
+    def parse_recipe(self) -> ParsedRecipe:
         raise NotImplementedError
 
     @abstractmethod
-    def get_categories(self) -> Category:
+    def parse_categories(self) -> List[ParsedCategory]:
         raise NotImplementedError
 
     @property

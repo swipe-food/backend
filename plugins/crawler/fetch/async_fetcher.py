@@ -15,6 +15,7 @@ class FetchResult:
 
 
 class AsyncFetcher:
+    user_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0'
 
     @classmethod
     def fetch_parallel(cls, urls: List[str]) -> List[FetchResult]:
@@ -30,7 +31,7 @@ class AsyncFetcher:
 
     @classmethod
     async def _fetch_parallel_job(cls, urls):
-        async with aiohttp.ClientSession(timeout=ClientTimeout(10)) as session:
+        async with aiohttp.ClientSession(timeout=ClientTimeout(10), headers={'user-agent': cls.user_agent}) as session:
             return await asyncio.gather(
                 *[cls.fetch(session, url) for url in urls], return_exceptions=True
             )
