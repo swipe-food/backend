@@ -30,3 +30,5 @@ toml==0.10.2
 typing-extensions==3.7.4.3
 tzlocal==2.1
 yarl==1.6.3
+colorama==0.4.4
+structlog==21.1.0
