@@ -45,12 +45,12 @@ class ParsedRecipe(ParsedData):
             return string.replace('\n', '').replace('\r', '').replace('\t', '')
 
         return self.name == other.name \
-               and self.description == other.description \
-               and self.image_url == other.image_url \
-               and self.category == other.category \
-               and self.ingredients == other.ingredients \
-               and strip_string(self.instructions) == strip_string(other.instructions) \
-               and self.date_published == other.date_published \
-               and self.author == other.author \
-               and self.rating_count == other.rating_count \
-               and self.rating_value == other.rating_value
+            and self.description == other.description \
+            and self.image_url == other.image_url \
+            and self.category == other.category \
+            and self.ingredients == other.ingredients \
+            and strip_string(self.instructions) == strip_string(other.instructions) \
+            and self.date_published == other.date_published \
+            and self.author == other.author \
+            and self.rating_count == other.rating_count \
+            and self.rating_value == other.rating_value

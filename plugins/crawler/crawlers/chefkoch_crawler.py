@@ -7,8 +7,8 @@ from more_itertools import one
 
 from plugins.crawler.crawlers.base_crawler import AbstractBaseCrawler
 from plugins.crawler.fetch import AsyncFetcher
-from plugins.crawler.scrapers.chefkoch_scraper import ChefkochScraper
-from plugins.crawler.scrapers.data_classes import ParsedCategory, ParsedRecipeOverviewItem, ParsedRecipe
+from plugins.crawler.scrapers import ChefkochScraper
+from plugins.crawler.scrapers import ParsedCategory, ParsedRecipeOverviewItem, ParsedRecipe
 
 
 class ChefkochCrawler(AbstractBaseCrawler):
