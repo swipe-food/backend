@@ -24,7 +24,7 @@ class ChefkochCrawler(AbstractBaseCrawler):
     @classmethod
     def crawl_new_recipes(cls) -> List[ParsedRecipe]:
         recipe_overviews = cls._get_recipe_overview_items()
-        new_recipes = filter(lambda item: (datetime.now() - item.date_published).days == 0, recipe_overviews)
+        new_recipes = cls._filter_new_recipes(recipe_overviews)
         new_recipe_urls = [recipe.url for recipe in new_recipes]
         return cls._crawl_and_parse(new_recipe_urls, scrape_callback=lambda page: ChefkochScraper.parse_recipe(soup=page.html))
 

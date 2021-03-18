@@ -36,7 +36,6 @@ class TestChefkochCrawler:
                 assert len(recipe_urls) == 182
                 return scrape_callback(load_sample_website('recipe_overview.html'))
             elif call_counter == 2:
-                assert len(recipe_urls) == 0
                 return [scrape_callback(load_sample_website('recipe.html'))]
             else:
                 raise Exception('called _crawl_and_parse too often!')

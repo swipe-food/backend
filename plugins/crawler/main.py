@@ -1,4 +1,5 @@
 from adapters.scheduler import BlockingSchedulerAdapter
+from plugins.crawler import ChefkochCrawler
 from plugins.crawler.crawlers import AbstractBaseCrawler
 
 
@@ -9,4 +10,5 @@ def crawl_all_sources_loop():
 
 
 if __name__ == '__main__':
+    ChefkochCrawler.crawl_new_recipes()
     crawl_all_sources_loop()
