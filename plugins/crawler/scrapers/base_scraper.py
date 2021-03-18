@@ -3,22 +3,21 @@ from typing import List
 
 from bs4 import BeautifulSoup
 
-from plugins.crawler.scrapers.data import ParsedRecipe, ParsedCategory
+from plugins.crawler.scrapers.data_classes import ParsedRecipe, ParsedCategory, ParsedRecipeOverviewItem
 
 
 class AbstractBaseScraper(ABC):
 
-    def __init__(self, soup: BeautifulSoup):
-        self._soup = soup
-
+    @classmethod
     @abstractmethod
-    def parse_recipe(self) -> ParsedRecipe:
+    def parse_recipe(cls, soup: BeautifulSoup) -> ParsedRecipe:
         raise NotImplementedError
 
-    @abstractmethod
-    def parse_categories(self) -> List[ParsedCategory]:
+    @classmethod
+    def parse_recipe_overview(cls, soup: BeautifulSoup) -> List[ParsedRecipeOverviewItem]:
         raise NotImplementedError
 
-    @property
-    def soup(self):
-        return self._soup
+    @classmethod
+    @abstractmethod
+    def parse_categories(cls, soup: BeautifulSoup) -> List[ParsedCategory]:
+        raise NotImplementedError

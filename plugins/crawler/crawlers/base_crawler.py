@@ -3,7 +3,7 @@ from typing import List, Callable
 
 from plugins.crawler.config import FETCH_BATCH_SIZE
 from plugins.crawler.fetch import URLQueue, AsyncFetcher, FetchResult
-from plugins.crawler.scrapers.data import ParsedCategory, ParsedRecipe, ParsedData
+from plugins.crawler.scrapers.data_classes import ParsedCategory, ParsedRecipe, ParsedData
 
 
 class AbstractBaseCrawler(ABC):
@@ -11,12 +11,12 @@ class AbstractBaseCrawler(ABC):
     @classmethod
     @abstractmethod
     def crawl_categories(cls) -> List[ParsedCategory]:
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     @abstractmethod
     def crawl_new_recipes(cls) -> List[ParsedRecipe]:
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def _crawl_and_parse(cls, recipe_urls: List[str], scrape_callback: Callable[[FetchResult], ParsedData or List[ParsedData]]):

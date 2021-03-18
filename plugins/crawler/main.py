@@ -1,4 +1,4 @@
-from plugins.crawler.chefkoch_crawler import ChefkochCrawler
+from plugins.crawler.crawlers.chefkoch_crawler import ChefkochCrawler
 
 if __name__ == '__main__':
     res = ChefkochCrawler.crawl_new_recipes()
