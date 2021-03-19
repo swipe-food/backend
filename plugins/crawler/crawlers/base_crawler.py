@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List, Callable
 
-from plugins.crawler.config import FETCH_BATCH_SIZE
 from plugins.crawler.fetch import URLQueue, AsyncFetcher, FetchResult
 from plugins.crawler.scrapers.data_classes import ParsedCategory, ParsedRecipe, ParsedData, ParsedRecipeOverviewItem
 
 
 class AbstractBaseCrawler(ABC):
+    fetch_batch_size: int
 
     @classmethod
     @abstractmethod
@@ -24,7 +24,7 @@ class AbstractBaseCrawler(ABC):
         parsed_recipes = list()
 
         while not (queue := URLQueue(recipe_urls)).is_empty():
-            url_batch = [next(queue) for _ in range(FETCH_BATCH_SIZE) if not queue.is_empty()]
+            url_batch = [next(queue) for _ in range(cls.fetch_batch_size) if not queue.is_empty()]
 
             for page in AsyncFetcher.fetch_parallel(url_batch):
                 parsed_data = scrape_callback(page)

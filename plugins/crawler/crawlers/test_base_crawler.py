@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 from pytest import fixture
 
-from plugins.crawler.config import FETCH_BATCH_SIZE
 from plugins.crawler.crawlers.base_crawler import AbstractBaseCrawler
 from plugins.crawler.scrapers import ParsedRecipe, ParsedCategory
 
 
 class TestBaseCrawler:
+    FETCH_BATCH_SIZE = 20
 
     @staticmethod
     @fixture
@@ -29,7 +29,7 @@ class TestBaseCrawler:
         urls = [f'test_url_{i}' for i in range(100)]
 
         def test_and_mock_fetch(url_batch):
-            assert len(url_batch) == FETCH_BATCH_SIZE
+            assert len(url_batch) == self.FETCH_BATCH_SIZE
             for url in url_batch:
                 assert url == urls.pop(0)
             return [f'{url}_fetched' for url in url_batch]
@@ -48,7 +48,7 @@ class TestBaseCrawler:
         urls = [f'test_url_{i}' for i in range(100)]
 
         def test_and_mock_fetch(url_batch):
-            assert len(url_batch) == FETCH_BATCH_SIZE
+            assert len(url_batch) == self.FETCH_BATCH_SIZE
             for url in url_batch:
                 assert url == urls.pop(0)
             return [[f'{url}_fetched'] for url in url_batch]
