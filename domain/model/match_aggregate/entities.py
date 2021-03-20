@@ -1,20 +1,76 @@
-import uuid
 from datetime import datetime
-from typing import Type
 
 from domain.model.entity import Entity
+from domain.model.recipe_aggregate import Recipe
+from domain.model.user_aggregate import User
 
 
 class Match(Entity):
 
-    def __init__(self, match_id: uuid.UUID, match_version: int, user: Type[Entity], recipe: Type[Entity],
-                 timestamp: datetime, is_seen_by_user: bool, is_active: bool):
-        super().__init__(match_id, match_version)
+    def __init__(self, user: User, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool):
+        super().__init__()
+
+        if not isinstance(user, User):
+            raise ValueError('user must be an User instance')
+
+        if not isinstance(recipe, Recipe):
+            raise ValueError('recipe must be a Recipe instance')
+
+        if not isinstance(timestamp, datetime):
+            raise ValueError('timestamp must be a datetime')
+
         self._user = user
         self._recipe = recipe
         self._timestamp = timestamp
-        self._is_seen_by_user = is_seen_by_user
-        self._is_active = is_active
+
+        self.is_seen_by_user = is_seen_by_user
+        self.is_active = is_active
+
+    @property
+    def user(self) -> User:
+        self._check_not_discarded()
+        return self._user
+
+    @property
+    def recipe(self) -> Recipe:
+        self._check_not_discarded()
+        return self._recipe
+
+    @property
+    def timestamp(self) -> datetime:
+        self._check_not_discarded()
+        return self._timestamp
+
+    @property
+    def is_seen_by_user(self) -> bool:
+        self._check_not_discarded()
+        return self._is_seen_by_user
+
+    @is_seen_by_user.setter
+    def is_seen_by_user(self, value: bool):
+        self._check_not_discarded()
+        if not isinstance(value, bool):
+            raise ValueError('is_seen_by_user must be a bool')
+        self._is_seen_by_user = value
+        self._increment_version()
+
+    @property
+    def is_active(self) -> bool:
+        self._check_not_discarded()
+        return self._is_active
+
+    @is_active.setter
+    def is_active(self, value: bool):
+        self._check_not_discarded()
+        if not isinstance(value, bool):
+            raise ValueError('is_active must be a bool')
+        self._is_active = value
+        self._increment_version()
+
+    def delete(self):
+        self._user.remove_match(self)
+        self._recipe.remove_match(self)
+        super().delete()
 
     def __str__(self) -> str:
         return f"Match between '{self._user.email.__str__()}' and '{self._recipe.name}'"
@@ -27,51 +83,3 @@ class Match(Entity):
             user=self._user.__repr__(),
             recipe=self._recipe.__repr__()
         )
-
-    @property
-    def user(self):
-        self._check_not_discarded()
-        return self._user
-
-    @property
-    def recipe(self):
-        self._check_not_discarded()
-        return self._recipe
-
-    @property
-    def timestamp(self) -> datetime:
-        self._check_not_discarded()
-        return self._timestamp
-
-    @timestamp.setter
-    def timestamp(self, value: datetime):
-        self._check_not_discarded()
-        self._timestamp = value
-        self._increment_version()
-
-    @property
-    def is_seen_by_user(self):
-        self._check_not_discarded()
-        return self._is_seen_by_user
-
-    @is_seen_by_user.setter
-    def is_seen_by_user(self, value):
-        self._check_not_discarded()
-        self._is_seen_by_user = value
-        self._increment_version()
-
-    @property
-    def is_active(self):
-        self._check_not_discarded()
-        return self._is_active
-
-    @is_active.setter
-    def is_active(self, value):
-        self._check_not_discarded()
-        self._is_active = value
-        self._increment_version()
-
-    def delete(self):
-        self._user.remove_match(self)
-        self._recipe.remove_match(self)
-        super().delete()

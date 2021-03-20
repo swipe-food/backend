@@ -1,37 +1,42 @@
-import uuid
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
-from domain.model.category_aggregate.entities import Category
+from domain.model.category_aggregate import Category
 from domain.model.common_aggregate import Language, URL
 from domain.model.entity import Entity
 
 
 class Vendor(Entity):
 
-    def __init__(self, vendor_id: uuid.UUID, vendor_version: int, name: str, description: str, url: URL,
-                 is_active: bool, date_last_crawled: datetime, languages: List[Language], recipe_pattern: str):
-        super().__init__(vendor_id, vendor_version)
+    def __init__(self, name: str, description: str, url: URL, is_active: bool, date_last_crawled: datetime,
+                 languages: List[Language], recipe_pattern: str):
+        super().__init__()
+
+        if not isinstance(name, str):
+            raise ValueError('vendor name must be a string')
+
+        if not isinstance(description, str):
+            raise ValueError('description must be a string')
+
+        if not isinstance(url, URL):
+            raise ValueError('url must be an URL instance')
+
+        if not isinstance(languages, list):
+            raise ValueError('languages must be a list of Language instances')
+
         self._name = name
         self._description = description
         self._url = url
-        self._is_active = is_active
-        self._date_last_crawled = date_last_crawled
-        self._languages = languages
-        self._recipe_pattern = recipe_pattern
-        self._categories: List[category_aggregate.Category] = []
 
-    def __str__(self) -> str:
-        return f"Vendor '{self._name}' with URL '{self._url}'"
+        self.is_active = is_active
+        self.date_last_crawled = date_last_crawled
+        self.recipe_pattern = recipe_pattern
 
-    def __repr__(self) -> str:
-        return "{c}({s}, name={name!r}, is_active={is_active!r}, count_categories={count_categories!r})".format(
-            c=self.__class__.__name__,
-            s=super().__repr__(),
-            name=self._name,
-            is_active=self._is_active,
-            count_categories=len(self._categories)
-        )
+        self._languages: List[Language] = []
+        self._categories: List[Category] = []
+
+        for language in languages:
+            self.add_language(language)
 
     @property
     def name(self) -> str:
@@ -56,6 +61,8 @@ class Vendor(Entity):
     @is_active.setter
     def is_active(self, value: bool):
         self._check_not_discarded()
+        if not isinstance(value, bool):
+            raise ValueError('is_active must be a bool')
         self._is_active = value
         self._increment_version()
 
@@ -67,22 +74,28 @@ class Vendor(Entity):
     @date_last_crawled.setter
     def date_last_crawled(self, value: datetime):
         self._check_not_discarded()
+        if not isinstance(value, datetime):
+            raise ValueError('date_last_crawled must be a datetime')
         self._date_last_crawled = value
         self._increment_version()
 
     @property
-    def languages(self) -> List[Language]:
+    def languages(self) -> Tuple[Language]:
         self._check_not_discarded()
-        return self._languages
+        return tuple(self._languages)
 
     def add_language(self, language: Language):
         self._check_not_discarded()
+        if not isinstance(language, Language):
+            raise ValueError('language must be a Language instance')
         self._languages.append(language)
         self._increment_version()
 
     def remove_language(self, language: Language):
         self._check_not_discarded()
-        self._languages.remove(language)  # TODO error handling: raises ValueError
+        if not isinstance(language, Language):
+            raise ValueError('language must be a Language instance')
+        self._languages.remove(language)
         self._increment_version()
 
     @property
@@ -93,25 +106,43 @@ class Vendor(Entity):
     @recipe_pattern.setter
     def recipe_pattern(self, value: str):
         self._check_not_discarded()
+        if not isinstance(value, str):
+            raise ValueError('recipe_pattern must be a string')
         self._recipe_pattern = value
         self._increment_version()
 
     @property
-    def categories(self) -> List[Category]:
+    def categories(self) -> Tuple[Category]:
         self._check_not_discarded()
-        return self._categories
+        return tuple(self._categories)
 
     def add_category(self, category: Category):
         self._check_not_discarded()
+        if not isinstance(category, Category):
+            raise ValueError('category must be a Category instance')
         self._categories.append(category)
         self._increment_version()
 
     def remove_category(self, category: Category):
         self._check_not_discarded()
-        self._categories.remove(category)  # TODO error handling: raises ValueError
+        if not isinstance(category, Category):
+            raise ValueError('category must be a Category instance')
+        self._categories.remove(category)
         self._increment_version()
 
     def delete(self):
         for category in self._categories:
             category.delete()
         super().delete()
+
+    def __str__(self) -> str:
+        return f"Vendor '{self._name}' with URL '{self._url}'"
+
+    def __repr__(self) -> str:
+        return "{c}({s}, name={name!r}, is_active={is_active!r}, count_categories={count_categories!r})".format(
+            c=self.__class__.__name__,
+            s=super().__repr__(),
+            name=self._name,
+            is_active=self._is_active,
+            count_categories=len(self._categories)
+        )

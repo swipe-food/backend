@@ -1,8 +1,16 @@
+from __future__ import annotations
+
 import inspect
 from abc import ABC
 
 
 class Immutable(ABC):
+    def replace(self, *args, **kwargs) -> Immutable:
+        return self.__class__.__init__(
+            *args,
+            **{attribute: value if value is None else getattr(self, attribute) for attribute, value in kwargs.items()}
+        )
+
     def __setattr__(self, name, value):
         caller = inspect.stack()[1][3]
         if caller == '__init__':
