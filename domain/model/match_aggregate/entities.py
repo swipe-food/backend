@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Type
 
-from domain.model.common_aggregate import Entity
+from domain.model.entity import Entity
 
 
 class Match(Entity):

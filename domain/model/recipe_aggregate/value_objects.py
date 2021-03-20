@@ -9,7 +9,7 @@ class RecipeURL(URL):
     def from_text_with_pattern(cls, url: str, vendor_pattern: str):
         scheme, netloc, path, query = cls._parse(url)
 
-        if scheme not in cls.VALID_SCHEMES or netloc == '':
+        if scheme not in cls.VALID_PROTOCOLS or netloc == '':
             raise ValueError(f'Invalid {cls.__class__.__name__} {url}')
 
         regex = re.compile(vendor_pattern)

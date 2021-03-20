@@ -1,7 +1,7 @@
 import uuid
 from typing import Type, List
 
-from domain.model.common_aggregate import Entity
+from domain.model.entity import Entity
 
 
 class Category(Entity):

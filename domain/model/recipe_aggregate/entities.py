@@ -3,7 +3,8 @@ from datetime import timedelta
 from typing import List
 
 from domain.model.category_aggregate.entities import Category
-from domain.model.common_aggregate import Entity, Language
+from domain.model.common_aggregate import Language
+from domain.model.entity import Entity
 from domain.model.match_aggregate.entities import Match
 from domain.model.recipe_aggregate.value_objects import RecipeURL, AggregateRating
 from domain.model.vendor_aggregate.entities import Vendor

@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import List
 
 from domain.model.category_aggregate.entities import Category
-from domain.model.common_aggregate import Entity, Language, URL
+from domain.model.common_aggregate import Language, URL
+from domain.model.entity import Entity
 
 
 class Vendor(Entity):
