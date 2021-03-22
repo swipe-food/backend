@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 
 from common.domain.value_objects import Ingredient, AggregateRating, URL
+from common.exceptions import InvalidValueError
 from crawler_context.domain.model.recipe_aggregate.recipe import Recipe
 from crawler_context.domain.model.recipe_aggregate.value_objects import RecipeCategory, Author
 
@@ -10,34 +11,34 @@ def create_recipe(name: str, description: str, image_url: str, category: str,
                   ingredients: List[str], instructions: str, date_published: datetime,
                   author: str, rating_count: int, rating_value: float) -> Recipe:
     if not isinstance(name, str):
-        raise ValueError('recipe name must be a string')
+        raise InvalidValueError(Recipe, 'name must be a string')
 
     if not isinstance(description, str):
-        raise ValueError('recipe description must be a string')
+        raise InvalidValueError(Recipe, 'description must be a string')
 
     if not isinstance(image_url, str):
-        raise ValueError('recipe image url must be a string')
+        raise InvalidValueError(Recipe, 'image url must be a string')
 
     if not isinstance(category, str):
-        raise ValueError('recipe category must be a string')
+        raise InvalidValueError(Recipe, 'category must be a string')
 
     if not isinstance(ingredients, list):
-        raise ValueError('recipe ingredients must be a list of strings or Ingredient instances')
+        raise InvalidValueError(Recipe, 'ingredients must be a list of strings or Ingredient instances')
 
     if not isinstance(instructions, str):
-        raise ValueError('recipe instructions must be a string')
+        raise InvalidValueError(Recipe, 'instructions must be a string')
 
     if not isinstance(date_published, datetime):
-        raise ValueError('date_published must be a datetime')
+        raise InvalidValueError(Recipe, 'date_published must be a datetime')
 
     if not isinstance(author, str):
-        raise ValueError('recipe author must be a string')
+        raise InvalidValueError(Recipe, 'author must be a string')
 
     if not isinstance(rating_count, int):
-        raise ValueError('recipe rating_count must be a int')
+        raise InvalidValueError(Recipe, 'rating_count must be a int')
 
     if not isinstance(rating_value, float):
-        raise ValueError('recipe rating_value must be a float')
+        raise InvalidValueError(Recipe, 'rating_value must be a float')
 
     image_url_object = URL(url=image_url)
     category_object = RecipeCategory(name=category)

@@ -5,11 +5,22 @@ from typing import List, Tuple
 
 from common.domain.model_base import Entity
 from common.domain.value_objects import URL
+from common.exceptions import InvalidValueError
 from crawler_context.domain.model.category_aggregate import Category
 
 
 def create_vendor(name: str, base_url: str, date_last_crawled: datetime, categories: List[Category], categories_link: str) -> Vendor:
+    if not isinstance(name, str):
+        raise InvalidValueError(Vendor, 'name must be a string')
+
+    if not isinstance(base_url, str):
+        raise InvalidValueError(Vendor, 'base_url must be a string')
+
+    if not isinstance(categories, list):
+        raise InvalidValueError(Vendor, 'categories must be a list of Category instances')
+
     base_url_object = URL(url=base_url)
+
     return Vendor(
         name=name,
         base_url=base_url_object,
@@ -55,7 +66,7 @@ class Vendor(Entity):
     def date_last_crawled(self, value: datetime):
         self._check_not_discarded()
         if not isinstance(value, datetime):
-            raise ValueError('date_last_crawled must be a datetime')
+            raise InvalidValueError(self, 'date_last_crawled must be a datetime')
         self._date_last_crawled = value
         self._increment_version()
 
@@ -68,7 +79,7 @@ class Vendor(Entity):
     def categories_link(self, link: str):
         self._check_not_discarded()
         if not isinstance(link, str):
-            raise ValueError('categories_link must be a string')
+            raise InvalidValueError(self, 'categories_link must be a string')
         self._categories_link = link
         self._increment_version()
 
@@ -80,14 +91,14 @@ class Vendor(Entity):
     def add_category(self, category: Category):
         self._check_not_discarded()
         if not isinstance(category, Category):
-            raise ValueError('category must be a Category instance')
+            raise InvalidValueError(self, 'category must be a Category instance')
         self._categories.append(category)
         self._increment_version()
 
     def remove_category(self, category: Category):
         self._check_not_discarded()
         if not isinstance(category, Category):
-            raise ValueError('category must be a Category instance')
+            raise InvalidValueError(self, 'category must be a Category instance')
         self._categories.remove(category)
         self._increment_version()
 

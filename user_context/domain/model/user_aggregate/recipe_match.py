@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from common.domain.model_base import Entity
+from common.exceptions import InvalidValueError
 from user_context.domain.model.recipe_aggregate import Recipe
 
 
@@ -10,13 +11,13 @@ class Match(Entity):
         super().__init__()
 
         if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
-            raise ValueError('user must be an User instance')
+            raise InvalidValueError(self, 'user must be an User instance')
 
         if not isinstance(recipe, Recipe):
-            raise ValueError('recipe must be a Recipe instance')
+            raise InvalidValueError(self, 'recipe must be a Recipe instance')
 
         if not isinstance(timestamp, datetime):
-            raise ValueError('timestamp must be a datetime')
+            raise InvalidValueError(self, 'timestamp must be a datetime')
 
         self._user = user
         self._recipe = recipe
@@ -50,7 +51,7 @@ class Match(Entity):
     def is_seen_by_user(self, value: bool):
         self._check_not_discarded()
         if not isinstance(value, bool):
-            raise ValueError('is_seen_by_user must be a bool')
+            raise InvalidValueError(self, 'is_seen_by_user must be a bool')
         self._is_seen_by_user = value
         self._increment_version()
 
@@ -63,7 +64,7 @@ class Match(Entity):
     def is_active(self, value: bool):
         self._check_not_discarded()
         if not isinstance(value, bool):
-            raise ValueError('is_active must be a bool')
+            raise InvalidValueError(self, 'is_active must be a bool')
         self._is_active = value
         self._increment_version()
 

@@ -2,10 +2,18 @@ from __future__ import annotations
 
 from common.domain.model_base import Entity
 from common.domain.value_objects import URL
+from common.exceptions import InvalidValueError
 
 
 def create_category(name: str, url: str) -> Category:
+    if not isinstance(name, str):
+        raise InvalidValueError(Category, 'name must be a string')
+
+    if not isinstance(url, str):
+        raise InvalidValueError(Category, 'url must be a string')
+
     url_object = URL(url=url)
+
     return Category(name=name, url=url_object)
 
 
@@ -26,7 +34,7 @@ class Category(Entity):
     def name(self, category_name: str):
         self._check_not_discarded()
         if not isinstance(category_name, str):
-            raise ValueError('category name must be a string')
+            raise InvalidValueError(self, 'name must be a string')
         self._name = category_name
         self._increment_version()
 
@@ -39,6 +47,6 @@ class Category(Entity):
     def url(self, category_url: URL):
         self._check_not_discarded()
         if not isinstance(category_url, URL):
-            raise ValueError('category url must be a URL instance')
+            raise InvalidValueError(self, 'url must be a URL instance')
         self._url = category_url
         self._increment_version()

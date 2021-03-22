@@ -2,9 +2,10 @@ from datetime import datetime
 from typing import List
 
 from common.domain.value_objects import Language
+from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.recipe_aggregate import Recipe
-from user_context.domain.model.user_aggregate import EMail
+from user_context.domain.model.user_aggregate.value_objects import EMail
 from user_context.domain.model.user_aggregate.user import User
 
 
@@ -12,16 +13,16 @@ def create_user(name: str, first_name: str, email: str, is_confirmed: bool, date
                 liked_categories: List[Category], matches: List[Recipe], seen_recipes: List[Recipe],
                 languages: List[Language]) -> User:
     if not isinstance(liked_categories, list):
-        raise ValueError('liked_categories must be a list of Category instances')
+        raise InvalidValueError(User, 'liked_categories must be a list of Category instances')
 
     if not isinstance(matches, list):
-        raise ValueError('matches must be a list of Recipe instances')
+        raise InvalidValueError(User, 'matches must be a list of Recipe instances')
 
     if not isinstance(seen_recipes, list):
-        raise ValueError('seen_recipes must be a list of Recipe instances')
+        raise InvalidValueError(User, 'seen_recipes must be a list of Recipe instances')
 
     if not isinstance(languages, list):
-        raise ValueError('languages must be a list of Language instances')
+        raise InvalidValueError(User, 'languages must be a list of Language instances')
 
     user_email_object = EMail(email)
 

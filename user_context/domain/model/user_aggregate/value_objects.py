@@ -1,6 +1,7 @@
 import re
 
 from common.domain.model_base import Immutable
+from common.exceptions import InvalidValueError
 
 
 class EMail(Immutable):
@@ -17,11 +18,11 @@ class EMail(Immutable):
     @classmethod
     def validate(cls, email_address: str):
         if not isinstance(email_address, str):
-            raise ValueError('email address must be a string')
+            raise InvalidValueError(cls, 'email address must be a string')
 
         pattern = re.compile(cls.VALIDATION_REGEX)
         if not pattern.match(email_address):
-            raise ValueError(f"Invalid {cls.__name__} '{email_address}'")
+            raise InvalidValueError(cls, f'invalid email {email_address}')
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, EMail):

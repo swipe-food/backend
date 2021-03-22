@@ -1,4 +1,5 @@
 from common.domain.model_base import Entity
+from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 
 
@@ -14,16 +15,16 @@ class CategoryLike(Entity):
         super().__init__()
 
         if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
-            raise ValueError('user must be a User instance')
+            raise InvalidValueError(self, 'user must be a User instance')
 
         if not isinstance(category, Category):
-            raise ValueError('category must be a Category instance')
+            raise InvalidValueError(self, 'category must be a Category instance')
 
         if not isinstance(views, int):
-            raise ValueError('views must be an int')
+            raise InvalidValueError(self, 'views must be an int')
 
         if not isinstance(matches, int):
-            raise ValueError('matches must be an int')
+            raise InvalidValueError(self, 'matches must be an int')
 
         self._user = user
         self._category = category

@@ -1,11 +1,12 @@
 from common.domain.model_base import Immutable
+from common.exceptions import InvalidValueError
 
 
 class RecipeCategory(Immutable):
 
     def __init__(self, name: str):
         if not isinstance(name, str):
-            raise ValueError('recipe category name must be a string')
+            raise InvalidValueError(self, 'category name must be a string')
 
         self._name = name
 
@@ -25,7 +26,7 @@ class RecipeCategory(Immutable):
 class Author(Immutable):
     def __init__(self, name: str):
         if not isinstance(name, str):
-            raise ValueError('author name must be a string')
+            raise InvalidValueError(self, 'name must be a string')
 
         self._name = name
 

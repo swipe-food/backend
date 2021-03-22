@@ -5,9 +5,13 @@ from typing import List, Tuple
 
 from common.domain.model_base import Entity, Immutable
 from common.domain.value_objects import URL
+from common.exceptions import InvalidValueError
 
 
 def create_category_recipe_overviews(overview_items: List[Tuple[str, str, datetime]]) -> CategoryRecipeOverviews:
+    if not isinstance(overview_items, list):
+        raise InvalidValueError(CategoryRecipeOverviews, 'overview_items data must be a list of tuples')
+
     return CategoryRecipeOverviews(overview_items)
 
 
@@ -29,7 +33,7 @@ class CategoryRecipeOverviews(Entity):
     def add_item(self, item_data: Tuple[str, str, datetime]):
         self._check_not_discarded()
         if not isinstance(item_data, tuple):
-            raise ValueError('item data name must be a tuple')
+            raise InvalidValueError(self, 'item data must be a tuple')
         name, url, date_published = item_data
         overview_item = RecipeOverviewItem(name=name, url=URL(url=url), date_published=date_published)
         self._overview_items.append(overview_item)
@@ -43,13 +47,13 @@ class RecipeOverviewItem(Immutable):
 
     def __init__(self, name: str, url: URL, date_published: datetime):
         if not isinstance(name, str):
-            raise ValueError('name must be a string')
+            raise InvalidValueError(self, 'name must be a string')
 
         if not isinstance(url, URL):
-            raise ValueError('name must be a URL instance')
+            raise InvalidValueError(self, 'url must be a URL instance')
 
         if not isinstance(date_published, datetime):
-            raise ValueError('name must be a datetime')
+            raise InvalidValueError(self, 'date_published must be a datetime')
 
         self._name = name
         self._url = url

@@ -7,10 +7,12 @@ from more_itertools import one
 
 from common.domain.model_base import Entity
 from common.domain.value_objects import Language
+from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.recipe_aggregate import Recipe
-from user_context.domain.model.user_aggregate import EMail, CategoryLike
+from user_context.domain.model.user_aggregate.category_like import CategoryLike
 from user_context.domain.model.user_aggregate.recipe_match import Match
+from user_context.domain.model.user_aggregate.value_objects import EMail
 
 
 class User(Entity):
@@ -52,7 +54,7 @@ class User(Entity):
     def name(self, value: str):
         self._check_not_discarded()
         if not isinstance(value, str):
-            raise ValueError('name must be a string')
+            raise InvalidValueError(self, 'name must be a string')
         self._name = value
         self._increment_version()
 
@@ -65,7 +67,7 @@ class User(Entity):
     def first_name(self, value: str):
         self._check_not_discarded()
         if not isinstance(value, str):
-            raise ValueError('first name must be a string')
+            raise InvalidValueError(self, 'first name must be a string')
         self._first_name = value
         self._increment_version()
 
@@ -78,7 +80,7 @@ class User(Entity):
     def is_confirmed(self, value: bool):
         self._check_not_discarded()
         if not isinstance(value, bool):
-            raise ValueError('is_confirmed must be a bool')
+            raise InvalidValueError(self, 'is_confirmed must be a bool')
         self._is_confirmed = value
         self._increment_version()
 
@@ -91,7 +93,7 @@ class User(Entity):
     def date_last_login(self, value: datetime):
         self._check_not_discarded()
         if not isinstance(value, datetime):
-            raise ValueError('last login date must be a datetime')
+            raise InvalidValueError(self, 'last login date must be a datetime')
         self._date_last_login = value
         self._increment_version()
 
@@ -104,7 +106,7 @@ class User(Entity):
     def email(self, value: EMail):
         self._check_not_discarded()
         if not isinstance(value, EMail):
-            raise ValueError('email must be a EMail instance')
+            raise InvalidValueError(self, 'email must be a EMail instance')
         self._email = value
         self._increment_version()
 
@@ -116,14 +118,14 @@ class User(Entity):
     def add_language(self, language: Language):
         self._check_not_discarded()
         if not isinstance(language, Language):
-            raise ValueError('language must be a Language instance')
+            raise InvalidValueError(self, 'language must be a Language instance')
         self._languages.append(language)
         self._increment_version()
 
     def remove_language(self, language: Language):
         self._check_not_discarded()
         if not isinstance(language, Language):
-            raise ValueError('language must be a Language instance')
+            raise InvalidValueError(self, 'language must be a Language instance')
         self._languages.remove(language)
         self._increment_version()
 
@@ -135,7 +137,7 @@ class User(Entity):
     def add_category_like(self, category: Category, views: int = 0, matches: int = 0):
         self._check_not_discarded()
         if not isinstance(category, Category):
-            raise ValueError('liked_category must be a CategoryLike instance')
+            raise InvalidValueError(self, 'liked_category must be a CategoryLike instance')
         category_like = CategoryLike(user=self, category=category, views=views, matches=matches)
         self._liked_categories.append(category_like)
         self._increment_version()
@@ -143,7 +145,7 @@ class User(Entity):
     def remove_category_like(self, category: Category):
         self._check_not_discarded()
         if not isinstance(category, Category):
-            raise ValueError('category must be a Category instance')
+            raise InvalidValueError(self, 'category must be a Category instance')
         category_like_to_remove = one(
             filter(lambda liked_category: liked_category.category.id == category.id, self._liked_categories)
         )
@@ -158,7 +160,7 @@ class User(Entity):
     def add_match(self, matched_recipe: Recipe):
         self._check_not_discarded()
         if not isinstance(matched_recipe, Recipe):
-            raise ValueError('matched_recipe must be a Recipe instance')
+            raise InvalidValueError(self, 'matched_recipe must be a Recipe instance')
         match = Match(user=self, recipe=matched_recipe, timestamp=datetime.now(), is_seen_by_user=False, is_active=True)
         self._matches.append(match)
         self._increment_version()
@@ -166,7 +168,7 @@ class User(Entity):
     def remove_match(self, matched_recipe: Recipe):
         self._check_not_discarded()
         if not isinstance(matched_recipe, Recipe):
-            raise ValueError('matched_recipe must be a Recipe instance')
+            raise InvalidValueError(self, 'matched_recipe must be a Recipe instance')
         match = one(
             filter(lambda match_item: match_item.recipe.id == matched_recipe.id, self._matches)
         )
@@ -181,14 +183,14 @@ class User(Entity):
     def add_seen_recipe(self, recipe: Recipe):
         self._check_not_discarded()
         if not isinstance(recipe, Recipe):
-            raise ValueError('recipe must be a Recipe instance')
+            raise InvalidValueError(self, 'recipe must be a Recipe instance')
         self._seen_recipes.append(recipe)
         self._increment_version()
 
     def remove_seen_recipe(self, recipe: Recipe):
         self._check_not_discarded()
         if not isinstance(recipe, Recipe):
-            raise ValueError('recipe must be a Recipe instance')
+            raise InvalidValueError(self, 'recipe must be a Recipe instance')
         self._seen_recipes.remove(recipe)
         self._increment_version()
 

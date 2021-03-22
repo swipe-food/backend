@@ -5,6 +5,7 @@ from typing import List, Tuple
 
 from common.domain.model_base import Entity
 from common.domain.value_objects import URL, AggregateRating, Ingredient
+from common.exceptions import InvalidValueError
 from crawler_context.domain.model.recipe_aggregate.value_objects import RecipeCategory, Author
 
 
@@ -58,7 +59,7 @@ class Recipe(Entity):
         if isinstance(ingredient, str):
             ingredient = Ingredient(text=ingredient)
         elif not isinstance(ingredient, Ingredient):
-            raise ValueError('ingredient must be a string or an Ingredient instance')
+            raise InvalidValueError(self, 'ingredient must be a string or an Ingredient instance')
         self._ingredients.append(ingredient)
         self._increment_version()
 
@@ -67,7 +68,7 @@ class Recipe(Entity):
         if isinstance(ingredient, str):
             ingredient = Ingredient(text=ingredient)
         elif not isinstance(ingredient, Ingredient):
-            raise ValueError('ingredient must be a string or an Ingredient instance')
+            raise InvalidValueError(self, 'ingredient must be a string or an Ingredient instance')
         self._ingredients.remove(ingredient)
         self._increment_version()
 

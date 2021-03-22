@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from common.domain.model_base import Entity
+from common.exceptions import InvalidValueError
 
 
 def create_category(name: str) -> Category:
@@ -24,7 +25,7 @@ class Category(Entity):
     def name(self, value: str):
         self._check_not_discarded()
         if not isinstance(value, str):
-            raise ValueError('category name must be a string')
+            raise InvalidValueError(self, 'name must be a string')
         self._name = value
         self._increment_version()
 

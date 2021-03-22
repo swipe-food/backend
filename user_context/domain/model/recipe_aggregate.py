@@ -5,6 +5,7 @@ from typing import List, Tuple
 
 from common.domain.model_base import Entity
 from common.domain.value_objects import URL, Language, Ingredient, AggregateRating, RecipeURL
+from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.vendor_aggregate import Vendor
 
@@ -14,34 +15,34 @@ def create_recipe(name: str, description: str, vendor_id: str, recipe_url: str,
                   category: Category, vendor: Vendor, language: Language, prep_time: timedelta = None,
                   cook_time: timedelta = None, total_time: timedelta = None) -> Recipe:
     if not isinstance(name, str):
-        raise ValueError('name must be a string')
+        raise InvalidValueError(Recipe, 'name must be a string')
 
     if not isinstance(description, str):
-        raise ValueError('description must be a string')
+        raise InvalidValueError(Recipe, 'description must be a string')
 
     if not isinstance(prep_time, timedelta):
-        raise ValueError('prep_time must be a timedelta')
+        raise InvalidValueError(Recipe, 'prep_time must be a timedelta')
 
     if not isinstance(cook_time, timedelta):
-        raise ValueError('cook_time must be a timedelta')
+        raise InvalidValueError(Recipe, 'cook_time must be a timedelta')
 
     if not isinstance(total_time, timedelta):
-        raise ValueError('total_time must be a timedelta')
+        raise InvalidValueError(Recipe, 'total_time must be a timedelta')
 
     if not isinstance(category, Category):
-        raise ValueError('category must be a Category instance')
+        raise InvalidValueError(Recipe, 'category must be a Category instance')
 
     if not isinstance(vendor, Vendor):
-        raise ValueError('vendor must be a Vendor instance')
+        raise InvalidValueError(Recipe, 'vendor must be a Vendor instance')
 
     if not isinstance(language, Language):
-        raise ValueError('language must be a Language instance')
+        raise InvalidValueError(Recipe, 'language must be a Language instance')
 
     if not isinstance(image_urls, list):
-        raise ValueError('image_urls must be a list of URL instances')
+        raise InvalidValueError(Recipe, 'image_urls must be a list of strings')
 
     if not isinstance(ingredients, list):
-        raise ValueError('ingredients must be a list of Ingredient instances')
+        raise InvalidValueError(Recipe, 'ingredients must be a list of strings')
 
     recipe_url_object = RecipeURL(url=recipe_url, vendor_pattern=vendor.recipe_pattern)
     image_url_objects = [URL(url=image_url) for image_url in image_urls]
@@ -114,7 +115,7 @@ class Recipe(Entity):
     def vendor_id(self, value: str):
         self._check_not_discarded()
         if not isinstance(value, str):
-            raise ValueError('vendor_id must be a string')
+            raise InvalidValueError(self, 'vendor_id must be a string')
         self._vendor_id = value
         self._increment_version()
 
@@ -142,7 +143,7 @@ class Recipe(Entity):
     def url(self, value: RecipeURL):
         self._check_not_discarded()
         if not isinstance(value, RecipeURL):
-            raise ValueError('url must be a RecipeURL instance')
+            raise InvalidValueError(self, 'url must be a RecipeURL instance')
         self._url = value
         self._increment_version()
 
@@ -154,14 +155,14 @@ class Recipe(Entity):
     def add_image(self, image_url: URL):
         self._check_not_discarded()
         if not isinstance(image_url, RecipeURL):
-            raise ValueError('image_url must be a URL instance')
+            raise InvalidValueError(self, 'image_url must be a URL instance')
         self._images.append(image_url)
         self._increment_version()
 
     def remove_image(self, image_url: URL):
         self._check_not_discarded()
         if not isinstance(image_url, RecipeURL):
-            raise ValueError('image_url must be a URL instance')
+            raise InvalidValueError(self, 'image_url must be a URL instance')
         self._images.remove(image_url)
         self._increment_version()
 
@@ -173,14 +174,14 @@ class Recipe(Entity):
     def add_ingredient(self, ingredient: Ingredient):
         self._check_not_discarded()
         if not isinstance(ingredient, Ingredient):
-            raise ValueError('ingredient must be a Ingredient instance')
+            raise InvalidValueError(self, 'ingredient must be a Ingredient instance')
         self._ingredients.append(ingredient)
         self._increment_version()
 
     def remove_ingredient(self, ingredient: Ingredient):
         self._check_not_discarded()
         if not isinstance(ingredient, Ingredient):
-            raise ValueError('ingredient must be a Ingredient instance')
+            raise InvalidValueError(self, 'ingredient must be a Ingredient instance')
         self._ingredients.remove(ingredient)
         self._increment_version()
 
