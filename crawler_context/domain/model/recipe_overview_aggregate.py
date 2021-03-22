@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Tuple
 
-from common.domain import Entity, URL, Immutable
+from common.domain.model_base import Entity, Immutable
+from common.domain.value_objects import URL
 
 
 def create_category_recipe_overviews(overview_items: List[Tuple[str, str, datetime]]) -> CategoryRecipeOverviews:

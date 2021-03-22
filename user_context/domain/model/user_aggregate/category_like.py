@@ -1,4 +1,4 @@
-from common.domain import Entity
+from common.domain.model_base import Entity
 from user_context.domain.model.category_aggregate import Category
 
 

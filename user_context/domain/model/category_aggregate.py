@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from common.domain import Entity
+from common.domain.model_base import Entity
 
 
 def create_category(name: str) -> Category:

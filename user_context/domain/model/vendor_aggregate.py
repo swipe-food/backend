@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from common.domain import Entity, Language, URL
+from common.domain.model_base import Entity
+from common.domain.value_objects import Language, URL
 from user_context.domain.model.category_aggregate import Category
 
 

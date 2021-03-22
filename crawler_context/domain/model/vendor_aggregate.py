@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Tuple
 
-from common.domain import Entity, URL
+from common.domain.model_base import Entity
+from common.domain.value_objects import URL
 from crawler_context.domain.model.category_aggregate import Category
 
 

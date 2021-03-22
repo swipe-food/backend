@@ -5,7 +5,8 @@ from typing import List, Tuple
 
 from more_itertools import one
 
-from common.domain import Entity, Language
+from common.domain.model_base import Entity
+from common.domain.value_objects import Language
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.recipe_aggregate import Recipe
 from user_context.domain.model.user_aggregate import EMail, CategoryLike

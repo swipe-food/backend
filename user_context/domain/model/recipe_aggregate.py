@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import List, Tuple
 
-from common.domain import Entity, URL, Language, Ingredient, AggregateRating, RecipeURL
+from common.domain.model_base import Entity
+from common.domain.value_objects import URL, Language, Ingredient, AggregateRating, RecipeURL
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.vendor_aggregate import Vendor
 

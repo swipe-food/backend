@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from common.domain import Ingredient, AggregateRating, URL
+from common.domain.value_objects import Ingredient, AggregateRating, URL
 from crawler_context.domain.model.recipe_aggregate.recipe import Recipe
 from crawler_context.domain.model.recipe_aggregate.value_objects import RecipeCategory, Author
 

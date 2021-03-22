@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from common.domain import Language
+from common.domain.value_objects import Language
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.recipe_aggregate import Recipe
 from user_context.domain.model.user_aggregate import EMail
