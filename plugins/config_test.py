@@ -1,45 +1,44 @@
 import pytest
-from dotenv import dotenv_values
 
 from plugins.config import ConfigComponent, ConfigParser, MissingConfigError, InvalidConfigError
 
 
 def get_fake_config(missing_value: bool = False, invalid_value: bool = False) -> dict:
     config = {
-        'INT_VALUE': '42',
-        'A_BOOLEAN_VALUE': 'True',
-        'A_C_STRING_VALUE': 'Test',
-        'B_FLOAT_VALUE': '4.5'
+        'A_INT_VALUE': '42',
+        'A_B_BOOLEAN_VALUE': 'True',
+        'A_C_D_STRING_VALUE': 'Test',
+        'A_C_FLOAT_VALUE': '4.5'
     }
 
     if missing_value:
-        config.pop('A_BOOLEAN_VALUE')
+        config.pop('A_B_BOOLEAN_VALUE')
     if invalid_value:
-        config['INT_VALUE'] = 'Invalid Int Value'
+        config['A_INT_VALUE'] = 'Invalid Int Value'
     return config
+
+
+class TestComponentD(ConfigComponent):
+    PREFIX = 'D_'
+    string_value: str
 
 
 class TestComponentC(ConfigComponent):
     PREFIX = 'C_'
-    string_value: str
-
-
-class TestComponentA(ConfigComponent):
-    PREFIX = 'A_'
-    boolean_value: bool
-    component_c: TestComponentC
+    float_value: float
+    component_d: TestComponentD
 
 
 class TestComponentB(ConfigComponent):
     PREFIX = 'B_'
-    float_value: float
+    boolean_value: bool
 
 
-class TestConfig(ConfigComponent):
-    PREFIX = ''
+class TestConfigA(ConfigComponent):
+    PREFIX = 'A_'
     int_value: int
-    component_a: TestComponentA
     component_b: TestComponentB
+    component_c: TestComponentC
 
     def __init__(self, config: dict):
         ConfigParser.parse(config, self)
@@ -48,19 +47,19 @@ class TestConfig(ConfigComponent):
 class TestConfigParser:
 
     def test_config_success(self):
-        test_config = TestConfig(get_fake_config())
+        test_config = TestConfigA(get_fake_config())
 
         assert test_config.int_value == 42
-        assert test_config.component_a.boolean_value is True
-        assert test_config.component_a.component_c.string_value == 'Test'
-        assert test_config.component_b.float_value == 4.5
+        assert test_config.component_b.boolean_value is True
+        assert test_config.component_c.float_value == 4.5
+        assert test_config.component_c.component_d.string_value == 'Test'
 
     def test_config_invalid(self):
 
         with pytest.raises(InvalidConfigError):
-            TestConfig(get_fake_config(invalid_value=True))
+            TestConfigA(get_fake_config(invalid_value=True))
 
     def test_config_missing(self):
 
         with pytest.raises(MissingConfigError):
-            TestConfig(get_fake_config(missing_value=True))
+            TestConfigA(get_fake_config(missing_value=True))

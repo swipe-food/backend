@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from pathlib import Path
-from typing import Type, get_type_hints, Any
+from typing import get_type_hints, Any
 
 from dotenv import dotenv_values
 
@@ -12,12 +12,12 @@ PROJECT_ROOT_DIR = Path(__file__).parent.parent
 class ConfigParser:
 
     @classmethod
-    def parse(cls, config: dict, obj: ConfigComponent) -> ConfigComponent:
+    def _parse_component(cls, config: dict, obj: ConfigComponent) -> ConfigComponent:
         for field in obj.__annotations__:
             field_type = get_type_hints(obj.__class__)[field]
 
             if issubclass(field_type, ConfigComponent):
-                value = cls._parse_class(config, field_type)
+                value = cls.parse(config, field_type())
             else:
                 value = cls._parse_value(config, field.upper(), field_type)
             obj.__setattr__(field, value)
@@ -34,13 +34,28 @@ class ConfigParser:
             raise InvalidConfigError(f"Config field '{field}' has an invalid value '{value}' for type {field_type}")
 
     @classmethod
-    def _parse_class(cls, config: dict, field_type: Type[ConfigComponent]) -> ConfigComponent:
+    def parse(cls, config: dict, field_type: ConfigComponent) -> ConfigComponent:
         filtered_config = {k.split(field_type.PREFIX)[1]: v for (k, v) in config.items() if field_type.PREFIX in k}
-        return cls.parse(config=filtered_config, obj=field_type())
+        return cls._parse_component(config=filtered_config, obj=field_type)
 
 
 class ConfigComponent(ABC):
     PREFIX = 'PREFIX_'
+
+    @classmethod
+    def load_and_parse(cls, env_file_path: str) -> ConfigComponent:
+        config = dotenv_values(env_file_path)
+
+        return ConfigParser.parse(config, cls())
+
+    def __str__(self):
+        repr_str = f'{self.__class__.__name__}('
+        for annotation in self.__annotations__:
+            repr_str += f'{annotation}={self.__getattribute__(annotation)}, '
+        return f'{repr_str[:-2]})'
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class CrawlerConfig(ConfigComponent):
@@ -48,24 +63,46 @@ class CrawlerConfig(ConfigComponent):
     fetch_batch_size: int
 
 
+class DatabaseConfig(ConfigComponent):
+    PREFIX = 'DATABASE_'
+    dialect: str
+    driver: str
+    host: str
+    port: int
+    name: str
+    user: str
+    password: str
+    max_idle_connections: int
+    max_open_connections: int
+
+    def get_dsn(self, sanitize: bool = False):
+        return '{dialect}{driver}://{user}:{password}@{host}{port}/{name}'.format(
+            dialect=self.dialect,
+            driver=f'+{self.driver}' if self.driver is not None else '',
+            user=self.user,
+            password=self.password if not sanitize else '*' * 3,
+            host=self.host,
+            port=f':{self.port}' if self.port is not None else '',
+            name=self.name
+        )
+
+    def __getattribute__(self, name):
+        """override __getattribute__ in order to sanitize the password for logging"""
+        if name == 'password':
+            return '*' * 3
+        return object.__getattribute__(self, name)
+
+
 class Config(ConfigComponent):
-    PREFIX = ''
+    PREFIX = 'SF_'
     environment: str
     log_file_name: str
     crawler: CrawlerConfig
-
-    def __init__(self, env_file_path: str):
-        self.env_file_path = env_file_path
-        self._load_and_parse()
-
-    def _load_and_parse(self):
-        self.config = dotenv_values(self.env_file_path)
-
-        ConfigParser.parse(self.config, self)
+    database: DatabaseConfig
 
 
 def create_new_config(env_file_path: str = f'{PROJECT_ROOT_DIR}/.env') -> Config:
-    return Config(env_file_path)
+    return Config.load_and_parse(env_file_path)
 
 
 class MissingConfigError(Exception):
