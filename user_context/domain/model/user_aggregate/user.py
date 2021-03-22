@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import List, Tuple
+from uuid import UUID
 
 from more_itertools import one
 
@@ -17,10 +18,10 @@ from user_context.domain.model.user_aggregate.value_objects import EMail
 
 class User(Entity):
 
-    def __init__(self, name: str, first_name: str, is_confirmed: bool, date_last_login: datetime,
+    def __init__(self, user_id: UUID, name: str, first_name: str, is_confirmed: bool, date_last_login: datetime,
                  email: EMail, liked_categories: List[Category], matches: List[Recipe],
                  seen_recipes: List[Recipe], languages: List[Language]):
-        super().__init__()
+        super().__init__(user_id)
 
         self.name = name
         self.first_name = first_name

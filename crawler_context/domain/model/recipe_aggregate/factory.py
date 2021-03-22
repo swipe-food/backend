@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import List
+from uuid import UUID
 
-from common.domain.value_objects import Ingredient, AggregateRating, URL
+from common.domain.value_objects import AggregateRating, URL
 from common.exceptions import InvalidValueError
 from crawler_context.domain.model.recipe_aggregate.recipe import Recipe
-from crawler_context.domain.model.recipe_aggregate.value_objects import RecipeCategory, Author
+from crawler_context.domain.model.recipe_aggregate.value_objects import RecipeCategory, Author, Ingredient
 
 
-def create_recipe(name: str, description: str, image_url: str, category: str,
+def create_recipe(recipe_id: UUID, name: str, description: str, image_url: str, category: str,
                   ingredients: List[str], instructions: str, date_published: datetime,
                   author: str, rating_count: int, rating_value: float) -> Recipe:
     if not isinstance(name, str):
@@ -47,6 +48,7 @@ def create_recipe(name: str, description: str, image_url: str, category: str,
     aggregate_rating_object = AggregateRating(rating_count=rating_count, rating_value=rating_value)
 
     return Recipe(
+        recipe_id=recipe_id,
         name=name,
         description=description,
         image_url=image_url_object,

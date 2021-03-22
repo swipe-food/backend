@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from common.domain.model_base import Entity
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
@@ -11,8 +13,8 @@ class CategoryLike(Entity):
         matches: Total amount of matches between the user and the viewed recipes for the category
     """
 
-    def __init__(self, user, category: Category, views: int, matches: int):
-        super().__init__()
+    def __init__(self, category_like_id: UUID, user, category: Category, views: int, matches: int):
+        super().__init__(category_like_id)
 
         if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
             raise InvalidValueError(self, 'user must be a User instance')

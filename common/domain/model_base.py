@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import inspect
-import uuid
 from abc import ABC
 from datetime import datetime
 from typing import Any, Callable
+from uuid import UUID
 
 from common.exceptions import DiscardEntityError
 
@@ -19,8 +19,8 @@ class Entity(ABC):
 
     """
 
-    def __init__(self):
-        self._id = uuid.uuid4()
+    def __init__(self, entity_id: UUID):
+        self._id = entity_id
         self._version = 1
         self._discarded = False
         self._date_created = datetime.now()

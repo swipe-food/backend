@@ -61,21 +61,6 @@ class Language(Immutable):
         return f"Language '{self._name}' with code '{self._code}'"
 
 
-class Ingredient(Immutable):
-
-    def __init__(self, text: str):
-        if not isinstance(text, str):
-            raise ValueError('ingredient text must be a sting')
-        self._text = text
-
-    @property
-    def text(self) -> str:
-        return self._text
-
-    def __str__(self) -> str:
-        return f'{self._text}'
-
-
 class AggregateRating(Immutable):
 
     def __init__(self, rating_count: int, rating_value: float):

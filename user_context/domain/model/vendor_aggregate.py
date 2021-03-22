@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import List, Tuple
+from uuid import UUID
 
 from common.domain.model_base import Entity
 from common.domain.value_objects import Language, URL
@@ -8,7 +9,7 @@ from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 
 
-def create_vendor(name: str, description: str, url: str, is_active: bool, recipe_pattern: str,
+def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_active: bool, recipe_pattern: str,
                   languages: List[Language], categories: List[Category]) -> Vendor:
     if not isinstance(name, str):
         raise InvalidValueError(Vendor, 'name must be a string')
@@ -25,6 +26,7 @@ def create_vendor(name: str, description: str, url: str, is_active: bool, recipe
     vendor_url_object = URL(url=url)
 
     return Vendor(
+        vendor_id=vendor_id,
         name=name,
         description=description,
         url=vendor_url_object,
@@ -37,9 +39,9 @@ def create_vendor(name: str, description: str, url: str, is_active: bool, recipe
 
 class Vendor(Entity):
 
-    def __init__(self, name: str, description: str, url: URL, is_active: bool, recipe_pattern: str,
+    def __init__(self, vendor_id: UUID, name: str, description: str, url: URL, is_active: bool, recipe_pattern: str,
                  languages: List[Language], categories: List[Category]):
-        super().__init__()
+        super().__init__(vendor_id)
 
         self._name = name
         self._description = description

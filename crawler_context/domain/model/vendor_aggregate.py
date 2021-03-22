@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import List, Tuple
+from uuid import UUID
 
 from common.domain.model_base import Entity
 from common.domain.value_objects import URL
@@ -9,7 +10,8 @@ from common.exceptions import InvalidValueError
 from crawler_context.domain.model.category_aggregate import Category
 
 
-def create_vendor(name: str, base_url: str, date_last_crawled: datetime, categories: List[Category], categories_link: str) -> Vendor:
+def create_vendor(vendor_id: UUID, name: str, base_url: str, date_last_crawled: datetime,
+                  categories: List[Category], categories_link: str) -> Vendor:
     if not isinstance(name, str):
         raise InvalidValueError(Vendor, 'name must be a string')
 
@@ -22,6 +24,7 @@ def create_vendor(name: str, base_url: str, date_last_crawled: datetime, categor
     base_url_object = URL(url=base_url)
 
     return Vendor(
+        vendor_id=vendor_id,
         name=name,
         base_url=base_url_object,
         date_last_crawled=date_last_crawled,
@@ -32,9 +35,9 @@ def create_vendor(name: str, base_url: str, date_last_crawled: datetime, categor
 
 class Vendor(Entity):
 
-    def __init__(self, name: str, base_url: URL, date_last_crawled: datetime,
+    def __init__(self, vendor_id: UUID, name: str, base_url: URL, date_last_crawled: datetime,
                  categories: List[Category], categories_link: str):
-        super().__init__()
+        super().__init__(vendor_id)
 
         self._name = name
         self._base_url = base_url

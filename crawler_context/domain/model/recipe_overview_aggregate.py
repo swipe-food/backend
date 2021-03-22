@@ -2,23 +2,24 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import List, Tuple
+from uuid import UUID
 
 from common.domain.model_base import Entity, Immutable
 from common.domain.value_objects import URL
 from common.exceptions import InvalidValueError
 
 
-def create_category_recipe_overviews(overview_items: List[Tuple[str, str, datetime]]) -> CategoryRecipeOverviews:
+def create_category_recipe_overviews(overview_id: UUID, overview_items: List[Tuple[str, str, datetime]]) -> CategoryRecipeOverviews:
     if not isinstance(overview_items, list):
         raise InvalidValueError(CategoryRecipeOverviews, 'overview_items data must be a list of tuples')
 
-    return CategoryRecipeOverviews(overview_items)
+    return CategoryRecipeOverviews(overview_id=overview_id, overview_items=overview_items)
 
 
 class CategoryRecipeOverviews(Entity):
 
-    def __init__(self, overview_items: List[Tuple[str, str, datetime]]):
-        super().__init__()
+    def __init__(self, overview_id: UUID, overview_items: List[Tuple[str, str, datetime]]):
+        super().__init__(overview_id)
 
         self._overview_items: List[RecipeOverviewItem] = []
 

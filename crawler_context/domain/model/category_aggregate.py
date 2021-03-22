@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from uuid import UUID
+
 from common.domain.model_base import Entity
 from common.domain.value_objects import URL
 from common.exceptions import InvalidValueError
 
 
-def create_category(name: str, url: str) -> Category:
+def create_category(category_id: UUID, name: str, url: str) -> Category:
     if not isinstance(name, str):
         raise InvalidValueError(Category, 'name must be a string')
 
@@ -14,13 +16,13 @@ def create_category(name: str, url: str) -> Category:
 
     url_object = URL(url=url)
 
-    return Category(name=name, url=url_object)
+    return Category(category_id=category_id, name=name, url=url_object)
 
 
 class Category(Entity):
 
-    def __init__(self, name: str, url: URL):
-        super().__init__()
+    def __init__(self, category_id: UUID, name: str, url: URL):
+        super().__init__(category_id)
 
         self.name = name
         self.url = url

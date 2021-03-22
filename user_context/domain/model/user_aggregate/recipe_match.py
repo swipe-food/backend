@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from common.domain.model_base import Entity
 from common.exceptions import InvalidValueError
@@ -7,8 +8,8 @@ from user_context.domain.model.recipe_aggregate import Recipe
 
 class Match(Entity):
 
-    def __init__(self, user, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool):
-        super().__init__()
+    def __init__(self, match_id: UUID, user, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool):
+        super().__init__(match_id)
 
         if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
             raise InvalidValueError(self, 'user must be an User instance')

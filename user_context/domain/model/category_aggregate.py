@@ -1,17 +1,19 @@
 from __future__ import annotations
 
+from uuid import UUID
+
 from common.domain.model_base import Entity
 from common.exceptions import InvalidValueError
 
 
-def create_category(name: str) -> Category:
-    return Category(name=name)
+def create_category(category_id: UUID, name: str) -> Category:
+    return Category(category_id=category_id, name=name)
 
 
 class Category(Entity):
 
-    def __init__(self, name: str):
-        super().__init__()
+    def __init__(self, category_id: UUID, name: str):
+        super().__init__(category_id)
 
         self.name = name
         self._likes = 0

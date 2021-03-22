@@ -2,18 +2,19 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import List, Tuple
+from uuid import UUID
 
 from common.domain.model_base import Entity
-from common.domain.value_objects import URL, AggregateRating, Ingredient
+from common.domain.value_objects import URL, AggregateRating
 from common.exceptions import InvalidValueError
-from crawler_context.domain.model.recipe_aggregate.value_objects import RecipeCategory, Author
+from crawler_context.domain.model.recipe_aggregate.value_objects import RecipeCategory, Author, Ingredient
 
 
 class Recipe(Entity):
 
-    def __init__(self, name: str, description: str, image_url: URL, category: RecipeCategory, ingredients: List[Ingredient],
+    def __init__(self, recipe_id: UUID, name: str, description: str, image_url: URL, category: RecipeCategory, ingredients: List[Ingredient],
                  instructions: str, date_published: datetime, author: Author, aggregate_rating: AggregateRating):
-        super().__init__()
+        super().__init__(recipe_id)
 
         self._name = name
         self._description = description

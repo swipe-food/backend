@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from uuid import UUID
 
 from common.domain.value_objects import Language
 from common.exceptions import InvalidValueError
@@ -9,7 +10,7 @@ from user_context.domain.model.user_aggregate.value_objects import EMail
 from user_context.domain.model.user_aggregate.user import User
 
 
-def create_user(name: str, first_name: str, email: str, is_confirmed: bool, date_last_login: datetime,
+def create_user(user_id: UUID, name: str, first_name: str, email: str, is_confirmed: bool, date_last_login: datetime,
                 liked_categories: List[Category], matches: List[Recipe], seen_recipes: List[Recipe],
                 languages: List[Language]) -> User:
     if not isinstance(liked_categories, list):
@@ -27,6 +28,7 @@ def create_user(name: str, first_name: str, email: str, is_confirmed: bool, date
     user_email_object = EMail(email)
 
     return User(
+        user_id=user_id,
         name=name,
         first_name=first_name,
         email=user_email_object,
