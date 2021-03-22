@@ -1,5 +1,5 @@
 from common.domain import Entity
-from domain.model.category_aggregate import Category
+from user_context.domain.model.category_aggregate import Category
 
 
 class CategoryLike(Entity):

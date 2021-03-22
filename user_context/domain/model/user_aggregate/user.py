@@ -5,13 +5,11 @@ from typing import List, Tuple
 
 from more_itertools import one
 
-from common.domain import Entity
-from domain.model.category_aggregate import Category
-from domain.model.common_value_objects import Language
-from domain.model.recipe_aggregate import Recipe
-from domain.model.user_aggregate.category_like import CategoryLike
-from domain.model.user_aggregate.recipe_match import Match
-from domain.model.user_aggregate.value_objects import EMail
+from common.domain import Entity, Language
+from user_context.domain.model.category_aggregate import Category
+from user_context.domain.model.recipe_aggregate import Recipe
+from user_context.domain.model.user_aggregate import EMail, CategoryLike
+from user_context.domain.model.user_aggregate.recipe_match import Match
 
 
 class User(Entity):

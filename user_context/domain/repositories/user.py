@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from common.domain import AbstractBaseRepository
-from domain.model.user_aggregate import User
+from user_context.domain import User
 
 
 class AbstractUserRepository(AbstractBaseRepository):

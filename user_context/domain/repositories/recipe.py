@@ -2,8 +2,8 @@ from abc import abstractmethod
 from typing import List
 
 from common.domain import AbstractBaseRepository
-from domain.model.recipe_aggregate import Recipe
-from domain.model.user_aggregate import User
+from user_context.domain import Recipe
+from user_context.domain import User
 
 
 class AbstractRecipeRepository(AbstractBaseRepository):

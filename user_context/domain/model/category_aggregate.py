@@ -43,9 +43,6 @@ class Category(Entity):
         self._likes -= 1
         self._increment_version()
 
-    def delete(self):
-        super().delete()
-
     def __str__(self) -> str:
         return f"Category '{self._name}'"
 

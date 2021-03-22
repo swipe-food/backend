@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from common.domain import Entity
-from domain.model.recipe_aggregate import Recipe
+from user_context.domain.model.recipe_aggregate import Recipe
 
 
 class Match(Entity):

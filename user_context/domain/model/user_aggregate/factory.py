@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import List
 
-from domain.model.category_aggregate import Category
-from domain.model.common_value_objects import Language
-from domain.model.recipe_aggregate import Recipe
-from domain.model.user_aggregate.user import User
-from domain.model.user_aggregate.value_objects import EMail
+from common.domain import Language
+from user_context.domain.model.category_aggregate import Category
+from user_context.domain.model.recipe_aggregate import Recipe
+from user_context.domain.model.user_aggregate import EMail
+from user_context.domain.model.user_aggregate.user import User
 
 
 def create_user(name: str, first_name: str, email: str, is_confirmed: bool, date_last_login: datetime,
@@ -23,10 +23,12 @@ def create_user(name: str, first_name: str, email: str, is_confirmed: bool, date
     if not isinstance(languages, list):
         raise ValueError('languages must be a list of Language instances')
 
+    user_email_object = EMail(email)
+
     return User(
         name=name,
         first_name=first_name,
-        email=EMail(email),
+        email=user_email_object,
         is_confirmed=is_confirmed,
         date_last_login=date_last_login,
         liked_categories=liked_categories,

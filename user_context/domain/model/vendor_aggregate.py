@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import List, Tuple
 
-from common.domain import Entity
-from domain.model.category_aggregate import Category
-from domain.model.common_value_objects import URL, Language
+from common.domain import Entity, Language, URL
+from user_context.domain.model.category_aggregate import Category
 
 
-def create_vendor(name: str, description: str, url: str, is_active: bool, date_last_crawled: datetime,
-                  languages: List[Language], categories: List[Category], recipe_pattern: str) -> Vendor:
+def create_vendor(name: str, description: str, url: str, is_active: bool,
+                  languages: List[Language], categories: List[Category]) -> Vendor:
     if not isinstance(name, str):
         raise ValueError('vendor name must be a string')
 
@@ -29,17 +27,15 @@ def create_vendor(name: str, description: str, url: str, is_active: bool, date_l
         description=description,
         url=vendor_url_object,
         is_active=is_active,
-        date_last_crawled=date_last_crawled,
         languages=languages,
         categories=categories,
-        recipe_pattern=recipe_pattern,
     )
 
 
 class Vendor(Entity):
 
-    def __init__(self, name: str, description: str, url: URL, is_active: bool, date_last_crawled: datetime,
-                 languages: List[Language], categories: List[Category], recipe_pattern: str):
+    def __init__(self, name: str, description: str, url: URL, is_active: bool,
+                 languages: List[Language], categories: List[Category]):
         super().__init__()
 
         self._name = name
@@ -47,8 +43,6 @@ class Vendor(Entity):
         self._url = url
 
         self.is_active = is_active
-        self.date_last_crawled = date_last_crawled
-        self.recipe_pattern = recipe_pattern
 
         self._languages: List[Language] = []
         self._categories: List[Category] = []
@@ -88,19 +82,6 @@ class Vendor(Entity):
         self._increment_version()
 
     @property
-    def date_last_crawled(self) -> datetime:
-        self._check_not_discarded()
-        return self._date_last_crawled
-
-    @date_last_crawled.setter
-    def date_last_crawled(self, value: datetime):
-        self._check_not_discarded()
-        if not isinstance(value, datetime):
-            raise ValueError('date_last_crawled must be a datetime')
-        self._date_last_crawled = value
-        self._increment_version()
-
-    @property
     def languages(self) -> Tuple[Language]:
         self._check_not_discarded()
         return tuple(self._languages)
@@ -117,19 +98,6 @@ class Vendor(Entity):
         if not isinstance(language, Language):
             raise ValueError('language must be a Language instance')
         self._languages.remove(language)
-        self._increment_version()
-
-    @property
-    def recipe_pattern(self) -> str:
-        self._check_not_discarded()
-        return self._recipe_pattern
-
-    @recipe_pattern.setter
-    def recipe_pattern(self, value: str):
-        self._check_not_discarded()
-        if not isinstance(value, str):
-            raise ValueError('recipe_pattern must be a string')
-        self._recipe_pattern = value
         self._increment_version()
 
     @property

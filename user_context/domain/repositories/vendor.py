@@ -2,9 +2,9 @@ from abc import abstractmethod
 from typing import List
 
 from common.domain import AbstractBaseRepository
-from domain.model.category_aggregate import Category
-from domain.model.recipe_aggregate import Recipe
-from domain.model.vendor_aggregate import Vendor
+from user_context.domain.model.category_aggregate import Category
+from user_context.domain import Recipe
+from user_context.domain import Vendor
 
 
 class AbstractVendorRepository(AbstractBaseRepository):
