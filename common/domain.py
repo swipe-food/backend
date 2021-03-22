@@ -2,17 +2,11 @@ from __future__ import annotations
 
 import inspect
 import uuid
-from abc import ABC
+from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Callable
+from typing import Any, Callable, List
 
-from domain.exceptions import DiscardEntityError
-
-
-class AbstractBaseRepository(ABC):
-
-    def __init__(self, db_connection):
-        self._db_connection = db_connection
+from common.exceptions import DiscardEntityError
 
 
 class Entity(ABC):
@@ -90,3 +84,25 @@ class Immutable(ABC):
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self})'
+
+
+class AbstractBaseRepository(ABC):
+
+    def __init__(self, db_connection):
+        self._db_connection = db_connection
+
+    @abstractmethod
+    def get_by_id(self, entity_id: uuid.UUID) -> Entity:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_all(self) -> List[Entity]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(self, entity: Entity):
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, entity: Entity):
+        raise NotImplementedError
