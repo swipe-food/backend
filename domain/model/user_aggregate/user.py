@@ -3,18 +3,22 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Tuple
 
+from more_itertools import one
+
+from common.domain import Entity
 from domain.model.category_aggregate import Category
-from domain.model.common_aggregate import Language
-from domain.model.entity import Entity
-from domain.model.match_aggregate import Match
+from domain.model.common_value_objects import Language
 from domain.model.recipe_aggregate import Recipe
+from domain.model.user_aggregate.category_like import CategoryLike
+from domain.model.user_aggregate.recipe_match import Match
 from domain.model.user_aggregate.value_objects import EMail
 
 
 class User(Entity):
 
-    def __init__(self, name: str, first_name: str, is_confirmed: bool,
-                 date_last_login: datetime, email: EMail, languages: List[Language]):
+    def __init__(self, name: str, first_name: str, is_confirmed: bool, date_last_login: datetime,
+                 email: EMail, liked_categories: List[Category], matches: List[Recipe],
+                 seen_recipes: List[Recipe], languages: List[Language]):
         super().__init__()
 
         self.name = name
@@ -22,13 +26,20 @@ class User(Entity):
         self.is_confirmed = is_confirmed
         self.date_last_login = date_last_login
         self.email = email
-        self._languages: List[Language] = []
+
         self._liked_categories: List[CategoryLike] = []
         self._matches: List[Match] = []
         self._seen_recipes: List[Recipe] = []
+        self._languages: List[Language] = []
 
-        if not isinstance(languages, list):
-            raise ValueError('languages must be a list of Language instances')
+        for liked_category in liked_categories:
+            self.add_category_like(liked_category)
+
+        for match in matches:
+            self.add_match(match)
+
+        for seen_recipe in seen_recipes:
+            self.add_seen_recipe(seen_recipe)
 
         for language in languages:
             self.add_language(language)
@@ -122,18 +133,22 @@ class User(Entity):
         self._check_not_discarded()
         return tuple(self._liked_categories)
 
-    def add_liked_category(self, liked_category: CategoryLike):
+    def add_category_like(self, category: Category, views: int = 0, matches: int = 0):
         self._check_not_discarded()
-        if not isinstance(liked_category, CategoryLike):
+        if not isinstance(category, Category):
             raise ValueError('liked_category must be a CategoryLike instance')
-        self._liked_categories.append(liked_category)
+        category_like = CategoryLike(user=self, category=category, views=views, matches=matches)
+        self._liked_categories.append(category_like)
         self._increment_version()
 
-    def remove_liked_category(self, liked_category: CategoryLike):
+    def remove_category_like(self, category: Category):
         self._check_not_discarded()
-        if not isinstance(liked_category, CategoryLike):
-            raise ValueError('liked_category must be a CategoryLike instance')
-        self._liked_categories.remove(liked_category)
+        if not isinstance(category, Category):
+            raise ValueError('category must be a Category instance')
+        category_like_to_remove = one(
+            filter(lambda liked_category: liked_category.category.id == category.id, self._liked_categories)
+        )
+        self._liked_categories.remove(category_like_to_remove)
         self._increment_version()
 
     @property
@@ -141,17 +156,21 @@ class User(Entity):
         self._check_not_discarded()
         return tuple(self._matches)
 
-    def add_match(self, match: Match):
+    def add_match(self, matched_recipe: Recipe):
         self._check_not_discarded()
-        if not isinstance(match, Match):
-            raise ValueError('match must be a Match instance')
+        if not isinstance(matched_recipe, Recipe):
+            raise ValueError('matched_recipe must be a Recipe instance')
+        match = Match(user=self, recipe=matched_recipe, timestamp=datetime.now(), is_seen_by_user=False, is_active=True)
         self._matches.append(match)
         self._increment_version()
 
-    def remove_match(self, match: Match):
+    def remove_match(self, matched_recipe: Recipe):
         self._check_not_discarded()
-        if not isinstance(match, Match):
-            raise ValueError('match must be a Match instance')
+        if not isinstance(matched_recipe, Recipe):
+            raise ValueError('matched_recipe must be a Recipe instance')
+        match = one(
+            filter(lambda match_item: match_item.recipe.id == matched_recipe.id, self._matches)
+        )
         self._matches.remove(match)
         self._increment_version()
 
@@ -190,84 +209,4 @@ class User(Entity):
             s=super().__repr__(),
             name=self._name,
             email=self._email.__str__()
-        )
-
-
-class CategoryLike(Entity):
-    """A user can like a category.
-
-    Attributes:
-        views: Total amount of viewed recipes for the category
-        matches: Total amount of matches between the user and the viewed recipes for the category
-    """
-
-    def __init__(self, user: User, category: Category, views: int, matches: int):
-        super().__init__()
-
-        if not isinstance(user, User):
-            raise ValueError('user must be a User instance')
-
-        if not isinstance(category, Category):
-            raise ValueError('category must be a Category instance')
-
-        if not isinstance(views, int):
-            raise ValueError('views must be an int')
-
-        if not isinstance(matches, int):
-            raise ValueError('matches must be an int')
-
-        self._user = user
-        self._category = category
-        self._views = views
-        self._matches = matches
-
-        self._user.add_liked_category(self)
-        self._category.add_like(self)
-
-    @property
-    def user(self) -> User:
-        self._check_not_discarded()
-        return self._user
-
-    @property
-    def category(self) -> Category:
-        self._check_not_discarded()
-        return self._category
-
-    @property
-    def views(self) -> int:
-        self._check_not_discarded()
-        return self._views
-
-    def add_view(self):
-        self._check_not_discarded()
-        self._views += 1
-        self._increment_version()
-
-    @property
-    def matches(self) -> int:
-        self._check_not_discarded()
-        return self._matches
-
-    def add_match(self):
-        self._check_not_discarded()
-        self._matches += 1
-        self._increment_version()
-
-    def delete(self):
-        self._category.remove_like(self)
-        self._user.remove_liked_category(self)
-        super().delete()
-
-    def __str__(self) -> str:
-        return f"LikedCategory for User '{self._user.email}' and Category {self._category.name}"
-
-    def __repr__(self) -> str:
-        return "{c}({s}, views={views!r}, matches={matches!r}, {user}, {category})".format(
-            c=self.__class__.__name__,
-            s=super().__repr__(),
-            views=self._views,
-            matches=self._matches,
-            user=self._user.__repr__(),
-            category=self._category.__repr__(),
         )

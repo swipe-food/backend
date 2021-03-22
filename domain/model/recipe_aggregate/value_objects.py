@@ -1,7 +1,7 @@
 import re
 
-from domain.model.common_aggregate import URL
-from domain.model.immutable import Immutable
+from common.domain import Immutable
+from domain.model.common_value_objects import URL
 
 
 class RecipeURL(URL):

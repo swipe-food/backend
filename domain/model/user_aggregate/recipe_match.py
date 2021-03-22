@@ -1,16 +1,15 @@
 from datetime import datetime
 
-from domain.model.entity import Entity
+from common.domain import Entity
 from domain.model.recipe_aggregate import Recipe
-from domain.model.user_aggregate import User
 
 
 class Match(Entity):
 
-    def __init__(self, user: User, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool):
+    def __init__(self, user, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool):
         super().__init__()
 
-        if not isinstance(user, User):
+        if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
             raise ValueError('user must be an User instance')
 
         if not isinstance(recipe, Recipe):
@@ -27,7 +26,8 @@ class Match(Entity):
         self.is_active = is_active
 
     @property
-    def user(self) -> User:
+    def user(self):
+        # type: () -> User
         self._check_not_discarded()
         return self._user
 
@@ -69,7 +69,6 @@ class Match(Entity):
 
     def delete(self):
         self._user.remove_match(self)
-        self._recipe.remove_match(self)
         super().delete()
 
     def __str__(self) -> str:

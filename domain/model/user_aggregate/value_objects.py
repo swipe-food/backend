@@ -1,6 +1,6 @@
 import re
 
-from domain.model.immutable import Immutable
+from common.domain import Immutable
 
 
 class EMail(Immutable):

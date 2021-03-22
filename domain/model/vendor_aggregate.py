@@ -1,28 +1,46 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import List, Tuple
 
+from common.domain import Entity
 from domain.model.category_aggregate import Category
-from domain.model.common_aggregate import Language, URL
-from domain.model.entity import Entity
+from domain.model.common_value_objects import URL, Language
+
+
+def create_vendor(name: str, description: str, url: str, is_active: bool, date_last_crawled: datetime,
+                  languages: List[Language], categories: List[Category], recipe_pattern: str) -> Vendor:
+    if not isinstance(name, str):
+        raise ValueError('vendor name must be a string')
+
+    if not isinstance(description, str):
+        raise ValueError('description must be a string')
+
+    if not isinstance(languages, list):
+        raise ValueError('languages must be a list of Language instances')
+
+    if not isinstance(categories, list):
+        raise ValueError('categories must be a list of Language instances')
+
+    vendor_url_object = URL(url=url)
+
+    return Vendor(
+        name=name,
+        description=description,
+        url=vendor_url_object,
+        is_active=is_active,
+        date_last_crawled=date_last_crawled,
+        languages=languages,
+        categories=categories,
+        recipe_pattern=recipe_pattern,
+    )
 
 
 class Vendor(Entity):
 
     def __init__(self, name: str, description: str, url: URL, is_active: bool, date_last_crawled: datetime,
-                 languages: List[Language], recipe_pattern: str):
+                 languages: List[Language], categories: List[Category], recipe_pattern: str):
         super().__init__()
-
-        if not isinstance(name, str):
-            raise ValueError('vendor name must be a string')
-
-        if not isinstance(description, str):
-            raise ValueError('description must be a string')
-
-        if not isinstance(url, URL):
-            raise ValueError('url must be an URL instance')
-
-        if not isinstance(languages, list):
-            raise ValueError('languages must be a list of Language instances')
 
         self._name = name
         self._description = description
@@ -37,6 +55,9 @@ class Vendor(Entity):
 
         for language in languages:
             self.add_language(language)
+
+        for category in categories:
+            self.add_category(category)
 
     @property
     def name(self) -> str:

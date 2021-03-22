@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from domain.model.immutable import Immutable
+from common.domain import Immutable
 
 
 class URL(Immutable):
