@@ -86,12 +86,6 @@ class DatabaseConfig(ConfigComponent):
             name=self.name
         )
 
-    def __getattribute__(self, name):
-        """override __getattribute__ in order to sanitize the password for logging"""
-        if name == 'password':
-            return '*' * 3
-        return object.__getattribute__(self, name)
-
 
 class Config(ConfigComponent):
     PREFIX = 'SF_'

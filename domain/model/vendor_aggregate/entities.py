@@ -18,7 +18,7 @@ class Vendor(Entity):
         self._date_last_crawled = date_last_crawled
         self._languages = languages
         self._recipe_pattern = recipe_pattern
-        self._categories: List[category_aggregate.Category] = []
+        self._categories: List[Category] = []
 
     def __str__(self) -> str:
         return f"Vendor '{self._name}' with URL '{self._url}'"
