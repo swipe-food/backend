@@ -2,7 +2,8 @@ from datetime import timedelta
 from typing import List
 from uuid import UUID
 
-from common.domain.value_objects import Language, RecipeURL, URL, AggregateRating
+from common.domain.value_objects import Language, URL, AggregateRating
+from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.recipe_aggregate.ingredient import Ingredient

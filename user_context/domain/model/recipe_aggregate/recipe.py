@@ -3,7 +3,8 @@ from typing import List, Tuple
 from uuid import UUID
 
 from common.domain.model_base import Entity
-from common.domain.value_objects import RecipeURL, URL, AggregateRating, Language
+from common.domain.value_objects import URL, AggregateRating, Language
+from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.recipe_aggregate.ingredient import Ingredient
