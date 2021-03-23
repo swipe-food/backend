@@ -21,7 +21,7 @@ class Entity(ABC):
     def __repr__(self) -> str:
         return "discarded={d!r}, id={id!r}, version={v!r}".format(
             d=self._discarded,
-            id=self.id.__str__(),
+            id=self._id.__str__(),
             v=self._version)
 
     def _increment_version(self):
