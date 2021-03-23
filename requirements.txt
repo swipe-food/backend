@@ -11,7 +11,7 @@ coverage==5.5
 execnet==1.8.0
 idna==3.1
 iniconfig==1.1.1
-lxml==4.6.2
+lxml==4.6.3
 more-itertools==8.7.0
 multidict==5.1.0
 packaging==20.9
