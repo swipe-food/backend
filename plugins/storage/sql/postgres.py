@@ -4,14 +4,14 @@ from sqlalchemy.orm import sessionmaker, registry, relationship
 from sqlalchemy.orm.session import Session
 
 from domain.model.category_aggregate.entities import Category
-from domain.model.common_aggregate import Language
+from domain.model.common_aggregate import Language, Entity
 from domain.model.match_aggregate.entities import Match
 from domain.model.recipe_aggregate.entities import ImageURL, Ingredient, Recipe
 from domain.model.user_aggregate import User, CategoryLike
 from domain.model.vendor_aggregate.entities import Vendor
 from plugins.config import DatabaseConfig
 from plugins.log import Logger
-from plugins.storage.sql.mappings import SQLAlchemyMappings
+from plugins.storage.sql.mappings import SQLAlchemyMappings, create_sql_mappings
 
 
 class PostgresDatabase:
@@ -27,7 +27,7 @@ class PostgresDatabase:
         self._mapper_registry = None
 
         self.connect()
-        self.migrate()
+        self.init_mappings()
 
     def connect(self):
         """connects to the postgres database by setting the session and meta variable"""
@@ -47,50 +47,57 @@ class PostgresDatabase:
         self._mapper_registry = registry(metadata=self._metadata)
         self._logger.info(f'connected to database', meta=self._metadata.__str__())
 
-    def migrate(self):
-        mappings = SQLAlchemyMappings(self._metadata)
+    def init_mappings(self):
+        mappings: SQLAlchemyMappings = create_sql_mappings(self._metadata)
 
         self._mapper_registry.map_imperatively(Language, mappings.get_language_mapping())
         self._mapper_registry.map_imperatively(ImageURL, mappings.get_image_url_mapping())
         self._mapper_registry.map_imperatively(Ingredient, mappings.get_ingredient_mapping())
         self._mapper_registry.map_imperatively(Recipe, mappings.get_recipe_mapping(), properties={
-            'images': relationship(ImageURL),
-            'ingredients': relationship(Ingredient),
-            'category': relationship(Category, back_populates='recipes'),
+            'images': relationship(ImageURL, cascade="all, delete-orphan"),
+            'ingredients': relationship(Ingredient, cascade="all, delete-orphan"),
+            'category': relationship(Category),
             'vendor': relationship(Vendor),
             'language': relationship(Language),
             'matches': relationship(Match, back_populates='recipe'),
         })
 
+        vendor_languages_association_table = mappings.get_association_table('vendor_languages', 'vendor', 'language')
         self._mapper_registry.map_imperatively(Vendor, mappings.get_vendor_mapping(), properties={
-            'language': relationship(Language),
+            'language': relationship(Language, secondary=vendor_languages_association_table),
             'categories': relationship(Category, back_populates='vendor'),
         })
 
         self._mapper_registry.map_imperatively(Category, mappings.get_category_mapping(), properties={
             'vendor': relationship(Vendor, back_populates="categories"),
-            'likes': relationship(Recipe, back_populates='category'),
+            'likes': relationship(CategoryLike, back_populates='category'),
             'recipes': relationship(Recipe, back_populates='category'),
         })
+
+        user_languages_association_table = mappings.get_association_table('user_languages', 'user', 'language')
+        seen_recipes_association_table = mappings.get_association_table('user_seen_recipes', 'user', 'recipe')
         self._mapper_registry.map_imperatively(User, mappings.get_user_mapping(), properties={
-            'language': relationship(Language),
-            'likes': relationship(Match, back_populates='user'),
-            'matches': relationship(Match, back_populates='user'),
-            'seen_recipes': relationship(Recipe,
-                                         secondary=mappings.get_association_table('seen_recipes', 'user', 'recipe'))
+            'language': relationship(Language, secondary=user_languages_association_table),
+            'likes': relationship(CategoryLike, back_populates='user', cascade="all, delete-orphan"),
+            'matches': relationship(Match, back_populates='user', cascade="all, delete-orphan"),
+            'seen_recipes': relationship(Recipe, secondary=seen_recipes_association_table)
         })
 
         self._mapper_registry.map_imperatively(CategoryLike, mappings.get_category_like_mapping(), properties={
-            'user': relationship(Match, back_populates='likes'),
-            'category': relationship(Match, back_populates='matches'),
+            'user': relationship(User, back_populates='likes'),
+            'category': relationship(Category, back_populates='likes'),
         })
 
         self._mapper_registry.map_imperatively(Match, mappings.get_match_mapping(), properties={
-            'user': relationship(Match, back_populates='matches'),
-            'recipe': relationship(Match, back_populates='matches')
+            'user': relationship(User, back_populates='matches'),
+            'recipe': relationship(Recipe, back_populates='matches'),
         })
 
         self._metadata.create_all()
+
+    def create(self, item: Entity):
+        self._session.add(item)
+        self._session.commit()
 
     @property
     def session(self) -> Session:
@@ -100,8 +107,12 @@ class PostgresDatabase:
     def metadata(self) -> MetaData:
         return self._metadata
 
-    def __str__(self):
-        return ''
+    def __repr__(self):
+        return '{c}(metadata={metadata}, session={session})'.format(
+            c=self.__class__.__name__,
+            metadata=self.metadata.__repr__(),
+            session=self.session.__repr__()
+        )
 
 
 def get_postgres_database(config: DatabaseConfig) -> PostgresDatabase:

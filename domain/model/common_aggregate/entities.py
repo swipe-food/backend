@@ -2,7 +2,6 @@ import uuid
 from abc import ABC
 from datetime import datetime
 
-
 class Entity(ABC):
     """The base class of all entities.
 
@@ -22,7 +21,7 @@ class Entity(ABC):
     def __repr__(self) -> str:
         return "discarded={d!r}, id={id!r}, version={v!r}".format(
             d=self._discarded,
-            id=self._id.__str__(),
+            id=self.id.__str__(),
             v=self._version)
 
     def _increment_version(self):
@@ -71,8 +70,8 @@ class Language(Entity):
         return "{c}({s}, name={name!r}, {code!r})".format(
             c=self.__class__.__name__,
             s=super().__repr__(),
-            name=self._name,
-            code=self._code,
+            name=self.name,
+            code=self.code,
         )
 
     @property
