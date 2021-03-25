@@ -4,9 +4,10 @@ from typing import List, Tuple
 from uuid import UUID
 
 from common.domain.model_base import Entity
-from common.domain.value_objects import Language, URL
+from common.domain.value_objects import URL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
+from user_context.domain.model.language_aggregate import Language
 
 
 def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_active: bool, recipe_pattern: str,

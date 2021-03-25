@@ -1,7 +1,13 @@
+from __future__ import annotations
+
 from uuid import UUID
 
 from common.domain.model_base import Entity
 from common.exceptions import InvalidValueError
+
+
+def create_ingredient(ingredient_id: UUID, text: str) -> Ingredient:
+    return Ingredient(ingredient_id=ingredient_id, text=text)
 
 
 class Ingredient(Entity):

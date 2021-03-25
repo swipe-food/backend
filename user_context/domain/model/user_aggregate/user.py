@@ -4,22 +4,19 @@ from datetime import datetime
 from typing import List, Tuple
 from uuid import UUID
 
-from more_itertools import one
-
 from common.domain.model_base import Entity
-from common.domain.value_objects import Language
 from common.exceptions import InvalidValueError
-from user_context.domain.model.category_aggregate import Category
+from user_context.domain.model.category_like_aggregate import CategoryLike
+from user_context.domain.model.language_aggregate import Language
 from user_context.domain.model.recipe_aggregate import Recipe
-from user_context.domain.model.user_aggregate.category_like import CategoryLike
-from user_context.domain.model.user_aggregate.recipe_match import Match
+from user_context.domain.model.match_aggregate import Match
 from user_context.domain.model.user_aggregate.value_objects import EMail
 
 
 class User(Entity):
 
     def __init__(self, user_id: UUID, name: str, first_name: str, is_confirmed: bool, date_last_login: datetime,
-                 email: EMail, liked_categories: List[Category], matches: List[Recipe],
+                 email: EMail, liked_categories: List[CategoryLike], matches: List[Match],
                  seen_recipes: List[Recipe], languages: List[Language]):
         super().__init__(user_id)
 
@@ -135,22 +132,18 @@ class User(Entity):
         self._check_not_discarded()
         return tuple(self._liked_categories)
 
-    def add_category_like(self, category: Category, views: int = 0, matches: int = 0):
+    def add_category_like(self, category_like: CategoryLike):
         self._check_not_discarded()
-        if not isinstance(category, Category):
-            raise InvalidValueError(self, 'liked_category must be a CategoryLike instance')
-        category_like = CategoryLike(user=self, category=category, views=views, matches=matches)
+        if not isinstance(category_like, CategoryLike):
+            raise InvalidValueError(self, 'category_like must be a CategoryLike instance')
         self._liked_categories.append(category_like)
         self._increment_version()
 
-    def remove_category_like(self, category: Category):
+    def remove_category_like(self, category_like: CategoryLike):
         self._check_not_discarded()
-        if not isinstance(category, Category):
-            raise InvalidValueError(self, 'category must be a Category instance')
-        category_like_to_remove = one(
-            filter(lambda liked_category: liked_category.category.id == category.id, self._liked_categories)
-        )
-        self._liked_categories.remove(category_like_to_remove)
+        if not isinstance(category_like, CategoryLike):
+            raise InvalidValueError(self, 'category_like must be a CategoryLike instance')
+        self._liked_categories.remove(category_like)
         self._increment_version()
 
     @property
@@ -158,21 +151,17 @@ class User(Entity):
         self._check_not_discarded()
         return tuple(self._matches)
 
-    def add_match(self, matched_recipe: Recipe):
+    def add_match(self, match: Match):
         self._check_not_discarded()
-        if not isinstance(matched_recipe, Recipe):
-            raise InvalidValueError(self, 'matched_recipe must be a Recipe instance')
-        match = Match(user=self, recipe=matched_recipe, timestamp=datetime.now(), is_seen_by_user=False, is_active=True)
+        if not isinstance(match, Match):
+            raise InvalidValueError(self, 'match must be a Match instance')
         self._matches.append(match)
         self._increment_version()
 
-    def remove_match(self, matched_recipe: Recipe):
+    def remove_match(self, match: Match):
         self._check_not_discarded()
-        if not isinstance(matched_recipe, Recipe):
-            raise InvalidValueError(self, 'matched_recipe must be a Recipe instance')
-        match = one(
-            filter(lambda match_item: match_item.recipe.id == matched_recipe.id, self._matches)
-        )
+        if not isinstance(match, Match):
+            raise InvalidValueError(self, 'match must be a Match instance')
         self._matches.remove(match)
         self._increment_version()
 

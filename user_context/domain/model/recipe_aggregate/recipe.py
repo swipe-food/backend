@@ -3,23 +3,25 @@ from typing import List, Tuple
 from uuid import UUID
 
 from common.domain.model_base import Entity
-from common.domain.value_objects import URL, AggregateRating, Language
+from common.domain.value_objects import URL, AggregateRating, Author
+from user_context.domain.model.language_aggregate import Language
 from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.recipe_aggregate.ingredient import Ingredient
+from user_context.domain.model.ingredient_aggregate import Ingredient
 from user_context.domain.model.vendor_aggregate import Vendor
 
 
 class Recipe(Entity):
 
-    def __init__(self, recipe_id: UUID, name: str, description: str, vendor_id: str, prep_time: timedelta,
+    def __init__(self, recipe_id: UUID, name: str, description: str, author: Author, vendor_id: str, prep_time: timedelta,
                  cook_time: timedelta, total_time: timedelta, url: RecipeURL, images: List[URL], ingredients: List[Ingredient],
                  aggregate_rating: AggregateRating, category: Category, vendor: Vendor, language: Language):
         super().__init__(recipe_id)
 
         self._name = name
         self._description = description
+        self._author = author
         self._prep_time = prep_time
         self._cook_time = cook_time
         self._total_time = total_time
@@ -50,6 +52,11 @@ class Recipe(Entity):
     def description(self) -> str:
         self._check_not_discarded()
         return self._description
+
+    @property
+    def author(self):
+        self._check_not_discarded()
+        return self._author
 
     @property
     def vendor_id(self) -> str:

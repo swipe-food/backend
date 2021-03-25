@@ -16,7 +16,7 @@ class Category(Entity):
         super().__init__(category_id)
 
         self.name = name
-        self._likes = 0
+        self._likes = 0  # set by CategoryLike instances
 
     @property
     def name(self) -> str:

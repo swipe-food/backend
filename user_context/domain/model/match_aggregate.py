@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from uuid import UUID
 
@@ -6,19 +8,30 @@ from common.exceptions import InvalidValueError
 from user_context.domain.model.recipe_aggregate import Recipe
 
 
+def create_match(match_id: UUID, user, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool) -> Match:
+    if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
+        raise InvalidValueError(Match, 'user must be an User instance')
+
+    if not isinstance(recipe, Recipe):
+        raise InvalidValueError(Match, 'recipe must be a Recipe instance')
+
+    if not isinstance(timestamp, datetime):
+        raise InvalidValueError(Match, 'timestamp must be a datetime')
+
+    return Match(
+        match_id=match_id,
+        user=user,
+        recipe=recipe,
+        timestamp=timestamp,
+        is_seen_by_user=is_seen_by_user,
+        is_active=is_active,
+    )
+
+
 class Match(Entity):
 
     def __init__(self, match_id: UUID, user, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool):
         super().__init__(match_id)
-
-        if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
-            raise InvalidValueError(self, 'user must be an User instance')
-
-        if not isinstance(recipe, Recipe):
-            raise InvalidValueError(self, 'recipe must be a Recipe instance')
-
-        if not isinstance(timestamp, datetime):
-            raise InvalidValueError(self, 'timestamp must be a datetime')
 
         self._user = user
         self._recipe = recipe

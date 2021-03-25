@@ -2,17 +2,18 @@ from datetime import timedelta
 from typing import List
 from uuid import UUID
 
-from common.domain.value_objects import Language, URL, AggregateRating
-from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
+from common.domain.value_objects import URL, AggregateRating, Author
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.recipe_aggregate.ingredient import Ingredient
+from user_context.domain.model.language_aggregate import Language
+from user_context.domain.model.ingredient_aggregate import Ingredient
 from user_context.domain.model.recipe_aggregate.recipe import Recipe
+from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
 from user_context.domain.model.vendor_aggregate import Vendor
 
 
-def create_recipe(recipe_id: UUID, name: str, description: str, vendor_id: str, recipe_url: str,
-                  image_urls: List[str], ingredients: List[str], rating_count: int, rating_value: float,
+def create_recipe(recipe_id: UUID, name: str, description: str, author: str, vendor_id: str, recipe_url: str,
+                  image_urls: List[str], ingredients: List[Ingredient], rating_count: int, rating_value: float,
                   category: Category, vendor: Vendor, language: Language, prep_time: timedelta = None,
                   cook_time: timedelta = None, total_time: timedelta = None) -> Recipe:
     if not isinstance(name, str):
@@ -45,22 +46,23 @@ def create_recipe(recipe_id: UUID, name: str, description: str, vendor_id: str, 
     if not isinstance(ingredients, list):
         raise InvalidValueError(Recipe, 'ingredients must be a list of strings')
 
+    author_object = Author(name=author)
     recipe_url_object = RecipeURL(url=recipe_url, vendor_pattern=vendor.recipe_pattern)
     image_url_objects = [URL(url=image_url) for image_url in image_urls]
-    ingredient_objects = [Ingredient(text=ingredient) for ingredient in ingredients]
     aggregate_rating_object = AggregateRating(rating_count=rating_count, rating_value=rating_value)
 
     return Recipe(
         recipe_id=recipe_id,
         name=name,
         description=description,
+        author=author_object,
         vendor_id=vendor_id,
         prep_time=prep_time,
         cook_time=cook_time,
         total_time=total_time,
         url=recipe_url_object,
         images=image_url_objects,
-        ingredients=ingredient_objects,
+        ingredients=ingredients,
         category=category,
         aggregate_rating=aggregate_rating_object,
         language=language,
