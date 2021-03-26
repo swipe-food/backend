@@ -7,9 +7,6 @@ from common.exceptions import InvalidValueError
 
 
 def create_category(category_id: UUID, name: str, vendor) -> Category:
-    if not isinstance(name, str):
-        raise InvalidValueError(Category, 'name must be a string')
-
     return Category(category_id=category_id, name=name, vendor=vendor)
 
 
@@ -18,7 +15,7 @@ class Category(Entity):
     def __init__(self, category_id: UUID, name: str, vendor):
         super().__init__(category_id)
 
-        self._name = name
+        self.name = name
         self._vendor = vendor
         self._likes = 0  # set by CategoryLike instances
 

@@ -41,15 +41,12 @@ class CategoryRecipeOverviews(Entity):
         self._overview_items.append(overview_item)
         self._increment_version()
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return "{c}({s}, count items={count})".format(
             c=self.__class__.__name__,
             s=super().__repr__(),
             count=len(self._overview_items),
         )
-
-    def __repr__(self) -> str:
-        return self.__str__()
 
 
 class RecipeOverviewItem(Immutable):

@@ -7,9 +7,6 @@ from common.exceptions import InvalidValueError
 
 
 def create_ingredient(ingredient_id: UUID, text: str) -> Ingredient:
-    if not isinstance(text, str):
-        raise InvalidValueError(Ingredient, 'text must be a string')
-
     return Ingredient(ingredient_id=ingredient_id, text=text)
 
 
@@ -18,7 +15,7 @@ class Ingredient(Entity):
     def __init__(self, ingredient_id: UUID, text: str):
         super().__init__(ingredient_id)
 
-        self._text = text
+        self.text = text
 
     @property
     def text(self):

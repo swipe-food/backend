@@ -8,12 +8,6 @@ from common.exceptions import InvalidValueError
 
 
 def create_category(category_id: UUID, name: str, url: str, vendor) -> Category:
-    if not isinstance(name, str):
-        raise InvalidValueError(Category, 'name must be a string')
-
-    if not isinstance(url, str):
-        raise InvalidValueError(Category, 'url must be a string')
-
     url_object = URL(url=url)
 
     return Category(category_id=category_id, name=name, url=url_object, vendor=vendor)
@@ -24,8 +18,8 @@ class Category(Entity):
     def __init__(self, category_id: UUID, name: str, url: URL, vendor):
         super().__init__(category_id)
 
-        self._name = name
-        self._url = url
+        self.name = name
+        self.url = url
         self._vendor = vendor
 
     @property

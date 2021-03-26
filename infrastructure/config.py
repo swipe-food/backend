@@ -14,6 +14,11 @@ PROJECT_ROOT_DIR = Path(__file__).parent.parent
 class ConfigParser:
 
     @classmethod
+    def parse(cls, config: dict, field_type: ConfigComponent) -> ConfigComponent:
+        filtered_config = {k.split(field_type.PREFIX)[1]: v for (k, v) in config.items() if field_type.PREFIX in k}
+        return cls._parse_component(config=filtered_config, obj=field_type)
+    
+    @classmethod
     def _parse_component(cls, config: dict, obj: ConfigComponent) -> ConfigComponent:
         for field in obj.__annotations__:
             field_type = get_type_hints(obj.__class__)[field]
@@ -36,11 +41,6 @@ class ConfigParser:
             return field_type(value)
         except ValueError:
             raise InvalidValueError(cls, f"Config field '{field}' has an invalid value '{value}' for type {field_type}")
-
-    @classmethod
-    def parse(cls, config: dict, field_type: ConfigComponent) -> ConfigComponent:
-        filtered_config = {k.split(field_type.PREFIX)[1]: v for (k, v) in config.items() if field_type.PREFIX in k}
-        return cls._parse_component(config=filtered_config, obj=field_type)
 
 
 class ConfigComponent(ABC):

@@ -41,8 +41,8 @@ class Vendor(Entity):
 
         self._name = name
         self._base_url = base_url
-        self._date_last_crawled = date_last_crawled
-        self._categories_link = categories_link
+        self.date_last_crawled = date_last_crawled
+        self.categories_link = categories_link
 
         self._categories: List[Category] = []
 
