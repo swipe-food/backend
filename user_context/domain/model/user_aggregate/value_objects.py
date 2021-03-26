@@ -1,6 +1,6 @@
 import re
 
-from common.domain.model_base import Immutable
+from common.domain.model.base import Immutable
 from common.exceptions import InvalidValueError
 
 

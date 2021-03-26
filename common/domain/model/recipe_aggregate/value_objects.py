@@ -1,43 +1,30 @@
-from urllib.parse import urlparse
+import re
 
-from common.domain.model_base import Immutable
+from common.domain.model.base import Immutable
+from common.domain.model.value_objects import URL
 from common.exceptions import InvalidValueError
 
 
-class URL(Immutable):
-    VALID_PROTOCOLS = ['http', 'https']
+class RecipeURL(URL):
 
-    def __init__(self, url: str):
-        self.validate(url)
-        self._value = url
-
-    @property
-    def value(self) -> str:
-        return self._value
+    def __init__(self, url: str, vendor_pattern: str):
+        super().__init__(url)
+        self.validate_vendor_pattern(url, vendor_pattern)
 
     @classmethod
-    def validate(cls, url: str):
-        if not isinstance(url, str):
-            raise InvalidValueError(cls, 'url must be a string')
-
-        parsed_url = urlparse(url)
-        if parsed_url.scheme not in cls.VALID_PROTOCOLS or parsed_url.netloc == '':
-            raise InvalidValueError(cls, f'Invalid {cls.__class__.__name__} {url}')
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self._value == other._value
-
-    def __str__(self) -> str:
-        return self._value
+    def validate_vendor_pattern(cls, url: str, vendor_pattern: str):
+        cls.validate(url)
+        regex = re.compile(vendor_pattern)
+        if not regex.search(url):
+            raise InvalidValueError(cls, f"invalid url '{url}' for Vendor pattern {vendor_pattern}")
 
 
 class AggregateRating(Immutable):
 
     def __init__(self, rating_count: int, rating_value: float):
         if not isinstance(rating_count, int):
-            raise InvalidValueError(self, 'rating count must be an int')
+            raise InvalidValueError(
+                self, 'rating count must be an int')
 
         if not isinstance(rating_value, float):
             raise InvalidValueError(self, 'rating value must be a float')

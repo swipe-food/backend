@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from common.domain.model_base import Entity
+from common.domain.model.base import Entity
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 
@@ -12,7 +12,8 @@ def create_category_like(category_like_id: UUID, user, category: Category, views
         raise InvalidValueError(CategoryLike, 'user must be a User instance')
 
     if not isinstance(category, Category):
-        raise InvalidValueError(CategoryLike, 'category must be a Category instance')
+        raise InvalidValueError(
+            CategoryLike, 'category must be a Category instance')
 
     if not isinstance(views, int):
         raise InvalidValueError(CategoryLike, 'views must be an int')

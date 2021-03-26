@@ -25,5 +25,3 @@ class DiscardEntityError(EntityError):
 class MissingConfigError(FoodSwipeError):
     """Raised when a required configuration field is missing"""
     pass
-
-

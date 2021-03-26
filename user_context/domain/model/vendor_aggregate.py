@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import List, Tuple
 from uuid import UUID
 
-from common.domain.model_base import Entity
-from common.domain.value_objects import URL
+from common.domain.model.base import Entity
+from common.domain.model.value_objects import URL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.language_aggregate import Language
@@ -19,10 +19,12 @@ def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_act
         raise InvalidValueError(Vendor, 'description must be a string')
 
     if not isinstance(languages, list):
-        raise InvalidValueError(Vendor, 'languages must be a list of Language instances')
+        raise InvalidValueError(
+            Vendor, 'languages must be a list of Language instances')
 
     if not isinstance(categories, list):
-        raise InvalidValueError(Vendor, 'categories must be a list of Language instances')
+        raise InvalidValueError(
+            Vendor, 'categories must be a list of Language instances')
 
     vendor_url_object = URL(url=url)
 

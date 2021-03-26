@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from common.domain.model_base import Entity
+from common.domain.model.base import Entity
 from common.exceptions import InvalidValueError
 
+
 def create_category(category_id: UUID, name: str, vendor) -> Category:
+    if not isinstance(name, str):
+        raise InvalidValueError(Category, 'name must be a string')
+
     return Category(category_id=category_id, name=name, vendor=vendor)
 
 

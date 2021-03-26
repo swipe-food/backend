@@ -8,6 +8,7 @@ from uuid import UUID
 
 from common.exceptions import DiscardEntityError
 
+
 class Entity(ABC):
     """The base class of all entities.
 

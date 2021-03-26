@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
+from common.domain.model.ingredient_aggregate import Ingredient
 from common.domain.repositories import AbstractBaseRepository
-from user_context.domain.model.ingredient_aggregate import Ingredient
 
 
 class AbstractCategoryRepository(AbstractBaseRepository, ABC):

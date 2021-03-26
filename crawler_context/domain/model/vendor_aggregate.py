@@ -4,8 +4,8 @@ from datetime import datetime
 from typing import List, Tuple
 from uuid import UUID
 
-from common.domain.model_base import Entity
-from common.domain.value_objects import URL
+from common.domain.model.base import Entity
+from common.domain.model.value_objects import URL
 from common.exceptions import InvalidValueError
 from crawler_context.domain.model.category_aggregate import Category
 
@@ -41,9 +41,8 @@ class Vendor(Entity):
 
         self._name = name
         self._base_url = base_url
-
-        self.date_last_crawled = date_last_crawled
-        self.categories_link = categories_link
+        self._date_last_crawled = date_last_crawled
+        self._categories_link = categories_link
 
         self._categories: List[Category] = []
 

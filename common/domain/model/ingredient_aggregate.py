@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from common.domain.model_base import Entity
+from common.domain.model.base import Entity
 from common.exceptions import InvalidValueError
 
 
 def create_ingredient(ingredient_id: UUID, text: str) -> Ingredient:
+    if not isinstance(text, str):
+        raise InvalidValueError(Ingredient, 'text must be a string')
+
     return Ingredient(ingredient_id=ingredient_id, text=text)
 
 
@@ -15,7 +18,7 @@ class Ingredient(Entity):
     def __init__(self, ingredient_id: UUID, text: str):
         super().__init__(ingredient_id)
 
-        self.text = text
+        self._text = text
 
     @property
     def text(self):

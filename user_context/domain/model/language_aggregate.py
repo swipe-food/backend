@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from common.domain.model_base import Entity
+from common.domain.model.base import Entity
 from common.exceptions import InvalidValueError
 
 
@@ -14,7 +14,8 @@ def create_language(language_id: UUID, name: str, code: str) -> Language:
         raise InvalidValueError(Language, 'language code must be a string')
 
     if len(code) != 2:
-        raise InvalidValueError(Language, 'Language Acronym must have a length of 2')
+        raise InvalidValueError(
+            Language, 'Language Acronym must have a length of 2')
     return Language(language_id=language_id, name=name, code=code)
 
 

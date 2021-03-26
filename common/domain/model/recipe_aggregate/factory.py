@@ -1,35 +1,38 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import List
 from uuid import UUID
 
-from common.domain.value_objects import URL, AggregateRating, Author
+from common.domain.model.ingredient_aggregate import Ingredient
+from common.domain.model.recipe_aggregate.recipe import Recipe
+from common.domain.model.recipe_aggregate.value_objects import RecipeURL, AggregateRating, Author
+from common.domain.model.value_objects import URL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.ingredient_aggregate import Ingredient
 from user_context.domain.model.language_aggregate import Language
-from user_context.domain.model.recipe_aggregate.recipe import Recipe
-from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
 from user_context.domain.model.vendor_aggregate import Vendor
 
 
-def create_recipe(recipe_id: UUID, name: str, description: str, author: str, vendor_id: str, recipe_url: str,
-                  image_urls: List[str], ingredients: List[Ingredient], rating_count: int, rating_value: float,
-                  category: Category, vendor: Vendor, language: Language, prep_time: timedelta = None,
-                  cook_time: timedelta = None, total_time: timedelta = None) -> Recipe:
+def create_recipe(recipe_id: UUID, name: str, description: str, author: str, vendor_id: str,
+                  prep_time: timedelta, cook_time: timedelta, total_time: timedelta, date_published: datetime,
+                  recipe_url: str, category: Category, vendor: Vendor, language: Language, rating_count: int,
+                  rating_value: float, image_urls: List[str], ingredients: List[Ingredient]) -> Recipe:
     if not isinstance(name, str):
         raise InvalidValueError(Recipe, 'name must be a string')
 
     if not isinstance(description, str):
         raise InvalidValueError(Recipe, 'description must be a string')
 
-    if not isinstance(prep_time, timedelta) and prep_time is not None:
+    if not isinstance(prep_time, timedelta):
         raise InvalidValueError(Recipe, 'prep_time must be a timedelta')
 
-    if not isinstance(cook_time, timedelta) and cook_time is not None:
+    if not isinstance(cook_time, timedelta):
         raise InvalidValueError(Recipe, 'cook_time must be a timedelta')
 
-    if not isinstance(total_time, timedelta) and total_time is not None:
+    if not isinstance(total_time, timedelta):
         raise InvalidValueError(Recipe, 'total_time must be a timedelta')
+
+    if not isinstance(date_published, datetime):
+        raise InvalidValueError(Recipe, 'date_published must be a datetime')
 
     if not isinstance(category, Category):
         raise InvalidValueError(Recipe, 'category must be a Category instance')
@@ -60,11 +63,12 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
         prep_time=prep_time,
         cook_time=cook_time,
         total_time=total_time,
+        date_published=date_published,
         url=recipe_url_object,
+        category=category,
+        vendor=vendor,
+        language=language,
+        aggregate_rating=aggregate_rating_object,
         images=image_url_objects,
         ingredients=ingredients,
-        category=category,
-        aggregate_rating=aggregate_rating_object,
-        language=language,
-        vendor=vendor
     )
