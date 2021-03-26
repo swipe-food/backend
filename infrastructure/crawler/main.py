@@ -1,7 +1,7 @@
 from adapters.scheduler import BlockingSchedulerAdapter
-from plugins.config import create_new_config
-from plugins.crawler import ChefkochCrawler
-from plugins.crawler.crawlers import AbstractBaseCrawler
+from infrastructure.config import create_new_config
+from infrastructure.crawler import ChefkochCrawler
+from infrastructure.crawler.crawlers import AbstractBaseCrawler
 
 
 def crawl_all_sources_loop():

@@ -1,6 +1,7 @@
 import pytest
 
-from plugins.config import ConfigComponent, ConfigParser, MissingConfigError, InvalidConfigError
+from common.exceptions import MissingConfigError, InvalidValueError
+from infrastructure.config import ConfigComponent, ConfigParser, create_new_config
 
 
 def get_fake_config(missing_value: bool = False, invalid_value: bool = False) -> dict:
@@ -55,11 +56,16 @@ class TestConfigParser:
         assert test_config.component_c.component_d.string_value == 'Test'
 
     def test_config_invalid(self):
-
-        with pytest.raises(InvalidConfigError):
+        with pytest.raises(InvalidValueError):
             TestConfigA(get_fake_config(invalid_value=True))
 
     def test_config_missing(self):
-
         with pytest.raises(MissingConfigError):
             TestConfigA(get_fake_config(missing_value=True))
+
+
+class TestAppConfig:
+
+    def test_create_successful(self):
+        """tests if the creation of the current app config works"""
+        create_new_config()

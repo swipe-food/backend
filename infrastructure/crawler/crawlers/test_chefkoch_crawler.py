@@ -3,14 +3,14 @@ from unittest.mock import patch
 
 from more_itertools import one
 
-from plugins.crawler.crawlers.chefkoch_crawler import ChefkochCrawler
-from plugins.crawler.scrapers import ChefkochScraper
-from plugins.crawler.test_utils import parsed_recipe_sample, load_sample_website
+from infrastructure.crawler.crawlers.chefkoch_crawler import ChefkochCrawler
+from infrastructure.crawler.scrapers import ChefkochScraper
+from infrastructure.crawler.test_utils import parsed_recipe_sample, load_sample_website
 
 
 class TestChefkochCrawler:
 
-    @patch('plugins.crawler.fetch.async_fetcher.AsyncFetcher.fetch_parallel')
+    @patch('infrastructure.crawler.fetch.async_fetcher.AsyncFetcher.fetch_parallel')
     def test_crawl_categories(self, mock_fetch):
         def mock_and_test_fetch(urls: List[str]):
             assert urls == [f'{ChefkochCrawler.base_url}{ChefkochCrawler.categories_url}']
@@ -24,8 +24,8 @@ class TestChefkochCrawler:
             assert isinstance(category.name, str)
             assert isinstance(category.url, str)
 
-    @patch('plugins.crawler.crawlers.base_crawler.AbstractBaseCrawler._crawl_and_parse')
-    @patch('plugins.crawler.crawlers.chefkoch_crawler.ChefkochCrawler.crawl_categories')
+    @patch('infrastructure.crawler.crawlers.base_crawler.AbstractBaseCrawler._crawl_and_parse')
+    @patch('infrastructure.crawler.crawlers.chefkoch_crawler.ChefkochCrawler.crawl_categories')
     def test_crawl_new_recipes(self, mock_categories, mock_crawl_and_parse):
         call_counter = 0
 

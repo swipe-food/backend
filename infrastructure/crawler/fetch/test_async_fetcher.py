@@ -6,7 +6,7 @@ import pytest
 from aiohttp import ClientTimeout, InvalidURL
 from bs4 import BeautifulSoup
 
-from plugins.crawler.fetch.async_fetcher import AsyncFetcher, FetchResult
+from infrastructure.crawler.fetch.async_fetcher import AsyncFetcher, FetchResult
 
 
 class TestAsyncFetcher:
@@ -16,7 +16,7 @@ class TestAsyncFetcher:
     def fetcher():
         return AsyncFetcher()
 
-    @patch('plugins.crawler.fetch.async_fetcher.AsyncFetcher.fetch')
+    @patch('infrastructure.crawler.fetch.async_fetcher.AsyncFetcher.fetch')
     def test_fetch_parallel(self, mock_fetch, fetcher):
         async def fetch(_, url: str):
             return FetchResult(url=url, status=200, html=BeautifulSoup())

@@ -6,6 +6,8 @@ from typing import get_type_hints, Any
 
 from dotenv import dotenv_values
 
+from common.exceptions import MissingConfigError, InvalidValueError
+
 PROJECT_ROOT_DIR = Path(__file__).parent.parent
 
 
@@ -27,11 +29,13 @@ class ConfigParser:
     def _parse_value(cls, config: dict, field: str, field_type: Any) -> Any:
         value = config.get(field)
         if value is None:
-            raise MissingConfigError(f"Required Config field '{field}' cannot be None")
+            raise MissingConfigError(cls, f"Required Config field '{field}' cannot be None")
         try:
+            if issubclass(field_type, bool):
+                return value == 'True'
             return field_type(value)
         except ValueError:
-            raise InvalidConfigError(f"Config field '{field}' has an invalid value '{value}' for type {field_type}")
+            raise InvalidValueError(cls, f"Config field '{field}' has an invalid value '{value}' for type {field_type}")
 
     @classmethod
     def parse(cls, config: dict, field_type: ConfigComponent) -> ConfigComponent:
@@ -74,6 +78,7 @@ class DatabaseConfig(ConfigComponent):
     password: str
     max_idle_connections: int
     max_open_connections: int
+    logging_enabled: bool
 
     def get_dsn(self, sanitize: bool = False):
         return '{dialect}{driver}://{user}:{password}@{host}{port}/{name}'.format(
@@ -87,7 +92,7 @@ class DatabaseConfig(ConfigComponent):
         )
 
 
-class Config(ConfigComponent):
+class AppConfig(ConfigComponent):
     PREFIX = 'SF_'
     environment: str
     log_file_name: str
@@ -95,13 +100,5 @@ class Config(ConfigComponent):
     database: DatabaseConfig
 
 
-def create_new_config(env_file_path: str = f'{PROJECT_ROOT_DIR}/.env') -> Config:
-    return Config.load_and_parse(env_file_path)
-
-
-class MissingConfigError(Exception):
-    pass
-
-
-class InvalidConfigError(Exception):
-    pass
+def create_new_config(env_file_path: str = f'{PROJECT_ROOT_DIR}/.env') -> AppConfig:
+    return AppConfig.load_and_parse(env_file_path)

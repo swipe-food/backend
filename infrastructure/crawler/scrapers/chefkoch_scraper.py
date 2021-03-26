@@ -4,8 +4,8 @@ from typing import List
 
 from bs4 import BeautifulSoup
 
-from plugins.crawler.scrapers.base_scraper import AbstractBaseScraper
-from plugins.crawler.scrapers.data_classes import ParsedRecipe, ParsedCategory, ParsedRecipeOverviewItem
+from infrastructure.crawler.scrapers.base_scraper import AbstractBaseScraper
+from infrastructure.crawler.scrapers.data_classes import ParsedRecipe, ParsedCategory, ParsedRecipeOverviewItem
 
 
 class ChefkochScraper(AbstractBaseScraper):

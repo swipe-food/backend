@@ -3,7 +3,7 @@ from typing import List
 
 from bs4 import BeautifulSoup
 
-from plugins.crawler.scrapers.data_classes import ParsedRecipe, ParsedCategory, ParsedRecipeOverviewItem
+from infrastructure.crawler.scrapers.data_classes import ParsedRecipe, ParsedCategory, ParsedRecipeOverviewItem
 
 
 class AbstractBaseScraper(ABC):

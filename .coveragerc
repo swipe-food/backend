@@ -3,7 +3,6 @@ omit =
     */tests/*
     *test*
     *__init__*
-    *config.py
     *main.py
 
 [report]
@@ -13,4 +12,5 @@ exclude_lines =
     raise AssertionError
     raise NotImplementedError
     if __name__ == __main__:
-    print
+    logger
+    __str__

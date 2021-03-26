@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from plugins.crawler.scrapers import ChefkochScraper, ParsedRecipeOverviewItem
-from plugins.crawler.test_utils import parsed_recipe_sample, load_sample_website
+from infrastructure.crawler.scrapers import ChefkochScraper, ParsedRecipeOverviewItem
+from infrastructure.crawler.test_utils import parsed_recipe_sample, load_sample_website
 
 
 class TestChefkochScraper:

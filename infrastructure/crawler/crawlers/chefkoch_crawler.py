@@ -4,10 +4,10 @@ from typing import List
 
 from more_itertools import one
 
-from plugins.crawler.crawlers.base_crawler import AbstractBaseCrawler
-from plugins.crawler.fetch import AsyncFetcher
-from plugins.crawler.scrapers import ChefkochScraper
-from plugins.crawler.scrapers import ParsedCategory, ParsedRecipeOverviewItem, ParsedRecipe
+from infrastructure.crawler.crawlers.base_crawler import AbstractBaseCrawler
+from infrastructure.crawler.fetch import AsyncFetcher
+from infrastructure.crawler.scrapers import ChefkochScraper
+from infrastructure.crawler.scrapers import ParsedCategory, ParsedRecipeOverviewItem, ParsedRecipe
 
 
 class ChefkochCrawler(AbstractBaseCrawler):

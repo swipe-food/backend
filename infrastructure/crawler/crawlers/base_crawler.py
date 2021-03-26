@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List, Callable
 
-from plugins.crawler.fetch import URLQueue, AsyncFetcher, FetchResult
-from plugins.crawler.scrapers.data_classes import ParsedCategory, ParsedRecipe, ParsedData, ParsedRecipeOverviewItem
+from infrastructure.crawler.fetch import URLQueue, AsyncFetcher, FetchResult
+from infrastructure.crawler.scrapers.data_classes import ParsedCategory, ParsedRecipe, ParsedData, ParsedRecipeOverviewItem
 
 
 class AbstractBaseCrawler(ABC):

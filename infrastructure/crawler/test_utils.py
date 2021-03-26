@@ -3,7 +3,7 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
-from plugins.crawler.scrapers import ParsedRecipe
+from infrastructure.crawler.scrapers import ParsedRecipe
 
 
 def load_sample_website(filename: str):

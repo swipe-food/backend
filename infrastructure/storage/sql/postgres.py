@@ -5,9 +5,9 @@ from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
-from plugins.config import DatabaseConfig
-from plugins.log import Logger
-from plugins.storage.sql.model import Base
+from infrastructure.config import DatabaseConfig
+from infrastructure.log import Logger
+from infrastructure.storage.sql.model import Base
 
 
 class PostgresDatabase:
@@ -33,7 +33,7 @@ class PostgresDatabase:
             pool_size=self._config.max_open_connections,
             max_overflow=self._config.max_idle_connections,
             pool_pre_ping=True,
-            echo=True,
+            echo=self._config.logging_enabled,
         )
 
         DBSession = sessionmaker(bind=self._engine)
@@ -42,11 +42,10 @@ class PostgresDatabase:
         self._logger.info(f'connected to database', engine=self._engine.__str__())
 
     def create_tables(self):
-        Base.metadata.drop_all(bind=self._engine)
         Base.metadata.create_all(bind=self._engine)
         self._logger.info('created tables')
 
-    def create(self, *items):
+    def create(self, *items: Base):
         for item in items:
             self._session.add(item)
         self._session.commit()

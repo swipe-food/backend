@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from pytest import fixture
 
-from plugins.crawler.crawlers.base_crawler import AbstractBaseCrawler
-from plugins.crawler.scrapers import ParsedRecipe, ParsedCategory
+from infrastructure.crawler.crawlers.base_crawler import AbstractBaseCrawler
+from infrastructure.crawler.scrapers import ParsedRecipe, ParsedCategory
 
 
 class TestBaseCrawler:
@@ -24,12 +24,12 @@ class TestBaseCrawler:
 
         return CrawlerImplementation()
 
-    @patch('plugins.crawler.fetch.async_fetcher.AsyncFetcher.fetch_parallel')
+    @patch('infrastructure.crawler.fetch.async_fetcher.AsyncFetcher.fetch_parallel')
     def test_crawl_and_parse(self, mock_fetch, crawler_implementation):
         urls = [f'test_url_{i}' for i in range(100)]
 
         def test_and_mock_fetch(url_batch):
-            assert len(url_batch) == self.FETCH_BATCH_SIZE
+            assert len(url_batch) == 20
             for url in url_batch:
                 assert url == urls.pop(0)
             return [f'{url}_fetched' for url in url_batch]
@@ -43,12 +43,12 @@ class TestBaseCrawler:
 
         assert sorted(fetched_urls) == sorted([f'test_url_{i}_fetched_scraped' for i in range(100)])
 
-    @patch('plugins.crawler.fetch.async_fetcher.AsyncFetcher.fetch_parallel')
+    @patch('infrastructure.crawler.fetch.async_fetcher.AsyncFetcher.fetch_parallel')
     def test_crawl_and_parse_list(self, mock_fetch, crawler_implementation):
         urls = [f'test_url_{i}' for i in range(100)]
 
         def test_and_mock_fetch(url_batch):
-            assert len(url_batch) == self.FETCH_BATCH_SIZE
+            assert len(url_batch) == 20
             for url in url_batch:
                 assert url == urls.pop(0)
             return [[f'{url}_fetched'] for url in url_batch]
