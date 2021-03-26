@@ -2,19 +2,21 @@ from __future__ import annotations
 
 import uuid
 
-from sqlalchemy import Column, String, Boolean, Date, Integer, ForeignKey, TIMESTAMP, func, Text, Interval
+from sqlalchemy import Column, String, Boolean, Date, Integer, ForeignKey, TIMESTAMP, func, Text, Interval, Float
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base, relationship
 
-from common.domain.value_objects import URL
-from user_context.domain.model.category_aggregate import Category
+from common.domain.model.ingredient_aggregate import Ingredient
+from common.domain.model.value_objects import URL
+from user_context.domain.model.category_aggregate import Category as UserContextCategory
+from crawler_context.domain.model.category_aggregate import Category as CrawlerContextCategory
 from user_context.domain.model.category_like_aggregate import CategoryLike
-from user_context.domain.model.ingredient_aggregate import Ingredient
 from user_context.domain.model.language_aggregate import Language
 from user_context.domain.model.match_aggregate import Match
-from user_context.domain.model.recipe_aggregate import Recipe
+from common.domain.model.recipe_aggregate import Recipe
 from user_context.domain.model.user_aggregate import User
-from user_context.domain.model.vendor_aggregate import Vendor
+from user_context.domain.model.vendor_aggregate import Vendor as UserContextVendor
+from crawler_context.domain.model.vendor_aggregate import Vendor as CrawlerContextVendor
 
 Base = declarative_base()
 
@@ -110,16 +112,26 @@ class DBCategory(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(50), nullable=False)
+    url = Column(String(200))
     likes = Column(Integer)
     fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'))
 
     @classmethod
-    def from_entity(cls, category: Category):
+    def from_user_context_entity(cls, category: UserContextCategory):
         return cls(
             id=category.id,
             name=category.name,
-            fk_vendor=category.vendor.id,  # TODO add vendor as attribute in category Entity
             likes=category.likes,
+            fk_vendor=category.vendor.id,
+        )
+
+    @classmethod
+    def from_crawler_context_entity(cls, category: CrawlerContextCategory):
+        return cls(
+            id=category.id,
+            name=category.name,
+            url=category.url.__str__(),
+            fk_vendor=category.vendor.id,
         )
 
 
@@ -186,7 +198,10 @@ class DBRecipe(Base):
     prep_time = Column(Interval())
     cook_time = Column(Interval())
     total_time = Column(Interval())
+    date_published = Column(Date())
     url = Column(String(200))
+    rating_count = Column(Integer())
+    rating_value = Column(Float())
     fk_category = Column(UUID(as_uuid=True), ForeignKey('category.id'))
     fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'))
     fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'))
@@ -203,7 +218,10 @@ class DBRecipe(Base):
             prep_time=recipe.prep_time,
             cook_time=recipe.cook_time,
             total_time=recipe.total_time,
+            date_published=recipe.date_published,
             url=recipe.url.__str__(),
+            rating_count=recipe.aggregate_rating.rating_count if recipe.aggregate_rating is not None else None,
+            rating_value=recipe.aggregate_rating.rating_value if recipe.aggregate_rating is not None else None,
             fk_category=recipe.category.id,
             fk_language=recipe.language.id,
             fk_vendor=recipe.vendor.id,
@@ -219,7 +237,7 @@ class DBVendorLanguages(Base):
     fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'), primary_key=True, nullable=False)
 
     @classmethod
-    def from_entity(cls, vendor: Vendor, language: Language) -> DBVendorLanguages:
+    def from_entity(cls, vendor: UserContextVendor, language: Language) -> DBVendorLanguages:
         return cls(
             fk_vendor=vendor.id,
             fk_language=language.id
@@ -232,12 +250,14 @@ class DBVendor(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(Text, server_default='')
-    url = Column(String(200))
-    is_active = Column(Boolean, nullable=False, server_default='0')
+    url = Column(String(200), nullable=False)
+    is_active = Column(Boolean, server_default='0')
     recipe_pattern = Column(String(100))
+    date_last_crawled = Column(Date())
+    categories_link = Column(String(200))
 
     @classmethod
-    def from_entity(cls, vendor: Vendor):
+    def from_user_context_entity(cls, vendor: UserContextVendor):
         return cls(
             id=vendor.id,
             name=vendor.name,
@@ -245,4 +265,14 @@ class DBVendor(Base):
             url=vendor.url.__str__(),
             is_active=vendor.is_active,
             recipe_pattern=vendor.recipe_pattern,
+        )
+
+    @classmethod
+    def from_crawler_context_entity(cls, vendor: CrawlerContextVendor):
+        return cls(
+            id=vendor.id,
+            name=vendor.name,
+            url=vendor.base_url.__str__(),
+            date_last_crawled=vendor.date_last_crawled,
+            categories_link=vendor.categories_link
         )
