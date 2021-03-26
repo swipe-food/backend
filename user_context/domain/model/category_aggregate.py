@@ -2,20 +2,21 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from common.domain.model_base import Entity
+from common.domain.model.base import Entity
 from common.exceptions import InvalidValueError
 
 
-def create_category(category_id: UUID, name: str) -> Category:
-    return Category(category_id=category_id, name=name)
+def create_category(category_id: UUID, name: str, vendor) -> Category:
+    return Category(category_id=category_id, name=name, vendor=vendor)
 
 
 class Category(Entity):
 
-    def __init__(self, category_id: UUID, name: str):
+    def __init__(self, category_id: UUID, name: str, vendor):
         super().__init__(category_id)
 
         self.name = name
+        self._vendor = vendor
         self._likes = 0  # set by CategoryLike instances
 
     @property
@@ -30,6 +31,12 @@ class Category(Entity):
             raise InvalidValueError(self, 'name must be a string')
         self._name = value
         self._increment_version()
+
+    @property
+    def vendor(self):
+        # type: () -> Vendor
+        self._check_not_discarded()
+        return self._vendor
 
     @property
     def likes(self) -> int:

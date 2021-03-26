@@ -1,47 +1,43 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import List, Tuple
 from uuid import UUID
 
-from common.domain.model_base import Entity
-from common.domain.value_objects import URL, AggregateRating, Author
-from user_context.domain.model.language_aggregate import Language
-from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
+from common.domain.model.base import Entity
+from common.domain.model.ingredient_aggregate import Ingredient
+from common.domain.model.value_objects import URL, AggregateRating, Author, RecipeURL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.ingredient_aggregate import Ingredient
+from common.domain.model.language_aggregate import Language
 from user_context.domain.model.vendor_aggregate import Vendor
 
 
 class Recipe(Entity):
 
     def __init__(self, recipe_id: UUID, name: str, description: str, author: Author, vendor_id: str, prep_time: timedelta,
-                 cook_time: timedelta, total_time: timedelta, url: RecipeURL, images: List[URL], ingredients: List[Ingredient],
+                 cook_time: timedelta, total_time: timedelta, date_published: datetime, url: RecipeURL, image: URL, ingredients: List[Ingredient],
                  aggregate_rating: AggregateRating, category: Category, vendor: Vendor, language: Language):
         super().__init__(recipe_id)
 
         self._name = name
         self._description = description
         self._author = author
+        self._vendor_id = vendor_id
         self._prep_time = prep_time
         self._cook_time = cook_time
         self._total_time = total_time
+        self._date_published = date_published
+        self._url = url
         self._category = category
         self._vendor = vendor
         self._language = language
-        self._matches = 0
-
-        self.vendor_id = vendor_id
-        self.url = url
-        self.aggregate_rating = aggregate_rating
-
+        self._aggregate_rating = aggregate_rating
+        self._image = image
         self._ingredients: List[Ingredient] = []
-        self._images: List[URL] = []
 
         for ingredient in ingredients:
             self.add_ingredient(ingredient)
 
-        for image in images:
-            self.add_image(image)
+        self._matches = 0
 
     @property
     def name(self) -> str:
@@ -63,14 +59,6 @@ class Recipe(Entity):
         self._check_not_discarded()
         return self._vendor_id
 
-    @vendor_id.setter
-    def vendor_id(self, value: str):
-        self._check_not_discarded()
-        if not isinstance(value, str):
-            raise InvalidValueError(self, 'vendor_id must be a string')
-        self._vendor_id = value
-        self._increment_version()
-
     @property
     def prep_time(self) -> timedelta:
         self._check_not_discarded()
@@ -87,36 +75,19 @@ class Recipe(Entity):
         return self._total_time
 
     @property
+    def date_published(self) -> datetime:
+        self._check_not_discarded()
+        return self._date_published
+
+    @property
     def url(self) -> RecipeURL:
         self._check_not_discarded()
         return self._url
 
-    @url.setter
-    def url(self, value: RecipeURL):
-        self._check_not_discarded()
-        if not isinstance(value, RecipeURL):
-            raise InvalidValueError(self, 'url must be a RecipeURL instance')
-        self._url = value
-        self._increment_version()
-
     @property
-    def images(self) -> Tuple[URL]:
+    def image(self) -> URL:
         self._check_not_discarded()
-        return tuple(self._images)
-
-    def add_image(self, image_url: URL):
-        self._check_not_discarded()
-        if not isinstance(image_url, RecipeURL):
-            raise InvalidValueError(self, 'image_url must be a URL instance')
-        self._images.append(image_url)
-        self._increment_version()
-
-    def remove_image(self, image_url: URL):
-        self._check_not_discarded()
-        if not isinstance(image_url, RecipeURL):
-            raise InvalidValueError(self, 'image_url must be a URL instance')
-        self._images.remove(image_url)
-        self._increment_version()
+        return self._image
 
     @property
     def ingredients(self) -> Tuple[Ingredient]:
@@ -126,14 +97,16 @@ class Recipe(Entity):
     def add_ingredient(self, ingredient: Ingredient):
         self._check_not_discarded()
         if not isinstance(ingredient, Ingredient):
-            raise InvalidValueError(self, 'ingredient must be a Ingredient instance')
+            raise InvalidValueError(
+                self, 'ingredient must be a Ingredient instance')
         self._ingredients.append(ingredient)
         self._increment_version()
 
     def remove_ingredient(self, ingredient: Ingredient):
         self._check_not_discarded()
         if not isinstance(ingredient, Ingredient):
-            raise InvalidValueError(self, 'ingredient must be a Ingredient instance')
+            raise InvalidValueError(
+                self, 'ingredient must be a Ingredient instance')
         self._ingredients.remove(ingredient)
         self._increment_version()
 
@@ -141,12 +114,6 @@ class Recipe(Entity):
     def aggregate_rating(self) -> AggregateRating:
         self._check_not_discarded()
         return self._aggregate_rating
-
-    @aggregate_rating.setter
-    def aggregate_rating(self, rating: Tuple[int, float]):
-        self._check_not_discarded()
-        self._aggregate_rating = AggregateRating(*rating)
-        self._increment_version()
 
     @property
     def category(self) -> Category:

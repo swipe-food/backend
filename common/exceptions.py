@@ -20,3 +20,8 @@ class EntityError(FoodSwipeError):
 class DiscardEntityError(EntityError):
     """Raised when an attempt is made to use a discarded entity"""
     pass
+
+
+class MissingConfigError(FoodSwipeError):
+    """Raised when a required configuration field is missing"""
+    pass

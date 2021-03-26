@@ -2,7 +2,7 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import List
 
-from common.domain.model_base import Entity
+from common.domain.model.base import Entity
 
 
 class AbstractBaseRepository(ABC):

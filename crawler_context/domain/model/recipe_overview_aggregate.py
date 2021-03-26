@@ -4,8 +4,8 @@ from datetime import datetime
 from typing import List, Tuple
 from uuid import UUID
 
-from common.domain.model_base import Entity, Immutable
-from common.domain.value_objects import URL
+from common.domain.model.base import Entity, Immutable
+from common.domain.model.value_objects import URL
 from common.exceptions import InvalidValueError
 
 
@@ -36,12 +36,17 @@ class CategoryRecipeOverviews(Entity):
         if not isinstance(item_data, tuple):
             raise InvalidValueError(self, 'item data must be a tuple')
         name, url, date_published = item_data
-        overview_item = RecipeOverviewItem(name=name, url=URL(url=url), date_published=date_published)
+        overview_item = RecipeOverviewItem(
+            name=name, url=URL(url=url), date_published=date_published)
         self._overview_items.append(overview_item)
         self._increment_version()
 
-    def __str__(self) -> str:
-        return f"Category Recipe Overviews ('{len(self._overview_items)} items)'"
+    def __repr__(self) -> str:
+        return "{c}({s}, count items={count})".format(
+            c=self.__class__.__name__,
+            s=super().__repr__(),
+            count=len(self._overview_items),
+        )
 
 
 class RecipeOverviewItem(Immutable):
@@ -78,4 +83,4 @@ class RecipeOverviewItem(Immutable):
         return self._name == other._name and self._url == other._url and self._date_published == other._date_published
 
     def __str__(self) -> str:
-        return f'Recipe Overview: {self._name} from {self._date_published.strftime("%d.%m.%Y")}'
+        return f'{self.__class__.__name__}({self._name} from {self._date_published.strftime("%d.%m.%Y")}'
