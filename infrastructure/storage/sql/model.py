@@ -7,13 +7,13 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base, relationship
 
 from common.domain.model.ingredient_aggregate import Ingredient
-from common.domain.model.value_objects import URL
 from user_context.domain.model.category_aggregate import Category as UserContextCategory
 from crawler_context.domain.model.category_aggregate import Category as CrawlerContextCategory
 from user_context.domain.model.category_like_aggregate import CategoryLike
-from user_context.domain.model.language_aggregate import Language
+from common.domain.model.language_aggregate import Language
 from user_context.domain.model.match_aggregate import Match
-from common.domain.model.recipe_aggregate import Recipe
+from user_context.domain.model.recipe_aggregate import Recipe as UserContextRecipe
+from crawler_context.domain.model.recipe_aggregate import Recipe as CrawlerContextRecipe
 from user_context.domain.model.user_aggregate import User
 from user_context.domain.model.vendor_aggregate import Vendor as UserContextVendor
 from crawler_context.domain.model.vendor_aggregate import Vendor as CrawlerContextVendor
@@ -58,7 +58,7 @@ class DBUserSeenRecipes(Base):
     fk_recipe = Column(UUID(as_uuid=True), ForeignKey('recipe.id'), primary_key=True, nullable=False)
 
     @classmethod
-    def from_entity(cls, user: User, recipe: Recipe) -> DBUserSeenRecipes:
+    def from_entity(cls, user: User, recipe: UserContextRecipe) -> DBUserSeenRecipes:
         return cls(
             fk_user=user.id,
             fk_recipe=recipe.id
@@ -193,7 +193,7 @@ class DBRecipe(Base):
     ingredients = relationship('DBIngredient')
 
     @classmethod
-    def from_entity(cls, recipe: Recipe):
+    def from_entity(cls, recipe: UserContextRecipe or CrawlerContextRecipe):
         return cls(
             id=recipe.id,
             name=recipe.name,

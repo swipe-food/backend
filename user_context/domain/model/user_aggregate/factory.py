@@ -2,11 +2,11 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
+from common.domain.model.language_aggregate import Language
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_like_aggregate import CategoryLike
-from user_context.domain.model.language_aggregate import Language
 from user_context.domain.model.match_aggregate import Match
-from common.domain.model.recipe_aggregate import Recipe
+from user_context.domain.model.recipe_aggregate import Recipe
 from user_context.domain.model.user_aggregate.user import User
 from user_context.domain.model.user_aggregate.value_objects import EMail
 

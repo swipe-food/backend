@@ -3,13 +3,12 @@ from typing import List
 from uuid import UUID
 
 from common.domain.model.ingredient_aggregate import Ingredient
-from common.domain.model.recipe_aggregate.recipe import Recipe
-from common.domain.model.recipe_aggregate.value_objects import RecipeURL, AggregateRating, Author
-from common.domain.model.value_objects import URL
+from common.domain.model.language_aggregate import Language
+from common.domain.model.value_objects import URL, RecipeURL, AggregateRating, Author
 from common.exceptions import InvalidValueError
-from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.language_aggregate import Language
-from user_context.domain.model.vendor_aggregate import Vendor
+from crawler_context.domain.model.category_aggregate import Category
+from crawler_context.domain.model.recipe_aggregate.recipe import Recipe
+from crawler_context.domain.model.vendor_aggregate import Vendor
 
 
 def create_recipe(recipe_id: UUID, name: str, description: str, author: str, vendor_id: str,
@@ -21,6 +20,9 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
 
     if not isinstance(description, str):
         raise InvalidValueError(Recipe, 'description must be a string')
+
+    if not isinstance(vendor_id, str):
+        raise InvalidValueError(Recipe, 'vendor_id must be a string')
 
     if not isinstance(prep_time, timedelta):
         raise InvalidValueError(Recipe, 'prep_time must be a timedelta')
@@ -50,7 +52,7 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
         raise InvalidValueError(Recipe, 'ingredients must be a list of strings')
 
     author_object = Author(name=author)
-    recipe_url_object = RecipeURL(url=recipe_url, vendor_pattern=vendor.recipe_pattern)
+    recipe_url_object = RecipeURL(url=recipe_url, vendor_pattern='')
     image_url_object = URL(url=image_url)
     aggregate_rating_object = AggregateRating(rating_count=rating_count, rating_value=rating_value)
 

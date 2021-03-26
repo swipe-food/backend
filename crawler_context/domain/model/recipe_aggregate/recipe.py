@@ -4,12 +4,11 @@ from uuid import UUID
 
 from common.domain.model.base import Entity
 from common.domain.model.ingredient_aggregate import Ingredient
-from common.domain.model.recipe_aggregate.value_objects import AggregateRating, Author, RecipeURL
-from common.domain.model.value_objects import URL
+from common.domain.model.value_objects import URL, AggregateRating, Author, RecipeURL
 from common.exceptions import InvalidValueError
-from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.language_aggregate import Language
-from user_context.domain.model.vendor_aggregate import Vendor
+from crawler_context.domain.model.category_aggregate import Category
+from common.domain.model.language_aggregate import Language
+from crawler_context.domain.model.vendor_aggregate import Vendor
 
 
 class Recipe(Entity):
@@ -22,23 +21,22 @@ class Recipe(Entity):
         self._name = name
         self._description = description
         self._author = author
-        self.vendor_id = vendor_id
+        self._vendor_id = vendor_id
         self._prep_time = prep_time
         self._cook_time = cook_time
         self._total_time = total_time
         self._date_published = date_published
-        self.url = url
+        self._url = url
         self._category = category
         self._vendor = vendor
         self._language = language
-        self.aggregate_rating = aggregate_rating
+        self._aggregate_rating = aggregate_rating
         self._image = image
         self._ingredients: List[Ingredient] = []
 
         for ingredient in ingredients:
             self.add_ingredient(ingredient)
 
-        self._matches = 0
 
     @property
     def name(self) -> str:
@@ -59,14 +57,6 @@ class Recipe(Entity):
     def vendor_id(self) -> str:
         self._check_not_discarded()
         return self._vendor_id
-
-    @vendor_id.setter
-    def vendor_id(self, value: str):
-        self._check_not_discarded()
-        if not isinstance(value, str):
-            raise InvalidValueError(self, 'vendor_id must be a string')
-        self._vendor_id = value
-        self._increment_version()
 
     @property
     def prep_time(self) -> timedelta:
@@ -92,14 +82,6 @@ class Recipe(Entity):
     def url(self) -> RecipeURL:
         self._check_not_discarded()
         return self._url
-
-    @url.setter
-    def url(self, value: RecipeURL):
-        self._check_not_discarded()
-        if not isinstance(value, RecipeURL):
-            raise InvalidValueError(self, 'url must be a RecipeURL instance')
-        self._url = value
-        self._increment_version()
 
     @property
     def image(self) -> URL:
@@ -132,12 +114,6 @@ class Recipe(Entity):
         self._check_not_discarded()
         return self._aggregate_rating
 
-    @aggregate_rating.setter
-    def aggregate_rating(self, value: AggregateRating):
-        self._check_not_discarded()
-        self._aggregate_rating = value
-        self._increment_version()
-
     @property
     def category(self) -> Category:
         self._check_not_discarded()
@@ -152,21 +128,6 @@ class Recipe(Entity):
     def language(self) -> Language:
         self._check_not_discarded()
         return self._language
-
-    @property
-    def matches(self) -> int:
-        self._check_not_discarded()
-        return self._matches
-
-    def add_match(self):
-        self._check_not_discarded()
-        self._matches += 1
-        self._increment_version()
-
-    def remove_match(self):
-        self._check_not_discarded()
-        self._matches -= 1
-        self._increment_version()
 
     def __str__(self) -> str:
         return f"Recipe '{self._name}' from '{self._url.__str__()}'"

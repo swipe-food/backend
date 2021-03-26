@@ -7,7 +7,7 @@ from common.domain.model.base import Entity
 from common.domain.model.value_objects import URL
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.language_aggregate import Language
+from common.domain.model.language_aggregate import Language
 
 
 def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_active: bool, recipe_pattern: str,
