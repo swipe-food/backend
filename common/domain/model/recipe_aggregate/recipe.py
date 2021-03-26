@@ -15,7 +15,7 @@ from user_context.domain.model.vendor_aggregate import Vendor
 class Recipe(Entity):
 
     def __init__(self, recipe_id: UUID, name: str, description: str, author: Author, vendor_id: str, prep_time: timedelta,
-                 cook_time: timedelta, total_time: timedelta, date_published: datetime, url: RecipeURL, images: List[URL], ingredients: List[Ingredient],
+                 cook_time: timedelta, total_time: timedelta, date_published: datetime, url: RecipeURL, image: URL, ingredients: List[Ingredient],
                  aggregate_rating: AggregateRating, category: Category, vendor: Vendor, language: Language):
         super().__init__(recipe_id)
 
@@ -32,11 +32,8 @@ class Recipe(Entity):
         self._vendor = vendor
         self._language = language
         self.aggregate_rating = aggregate_rating
-        self._images: List[URL] = []
+        self._image = image
         self._ingredients: List[Ingredient] = []
-
-        for image in images:
-            self.add_image(image)
 
         for ingredient in ingredients:
             self.add_ingredient(ingredient)
@@ -105,23 +102,9 @@ class Recipe(Entity):
         self._increment_version()
 
     @property
-    def images(self) -> Tuple[URL]:
+    def image(self) -> URL:
         self._check_not_discarded()
-        return tuple(self._images)
-
-    def add_image(self, image_url: URL):
-        self._check_not_discarded()
-        if not isinstance(image_url, URL):
-            raise InvalidValueError(self, 'image_url must be a URL instance')
-        self._images.append(image_url)
-        self._increment_version()
-
-    def remove_image(self, image_url: URL):
-        self._check_not_discarded()
-        if not isinstance(image_url, URL):
-            raise InvalidValueError(self, 'image_url must be a URL instance')
-        self._images.remove(image_url)
-        self._increment_version()
+        return self._image
 
     @property
     def ingredients(self) -> Tuple[Ingredient]:

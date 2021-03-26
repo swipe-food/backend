@@ -15,7 +15,7 @@ from user_context.domain.model.vendor_aggregate import Vendor
 def create_recipe(recipe_id: UUID, name: str, description: str, author: str, vendor_id: str,
                   prep_time: timedelta, cook_time: timedelta, total_time: timedelta, date_published: datetime,
                   recipe_url: str, category: Category, vendor: Vendor, language: Language, rating_count: int,
-                  rating_value: float, image_urls: List[str], ingredients: List[Ingredient]) -> Recipe:
+                  rating_value: float, image_url: str, ingredients: List[Ingredient]) -> Recipe:
     if not isinstance(name, str):
         raise InvalidValueError(Recipe, 'name must be a string')
 
@@ -43,7 +43,7 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
     if not isinstance(language, Language):
         raise InvalidValueError(Recipe, 'language must be a Language instance')
 
-    if not isinstance(image_urls, list):
+    if not isinstance(image_url, str):
         raise InvalidValueError(Recipe, 'image_urls must be a list of strings')
 
     if not isinstance(ingredients, list):
@@ -51,7 +51,7 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
 
     author_object = Author(name=author)
     recipe_url_object = RecipeURL(url=recipe_url, vendor_pattern=vendor.recipe_pattern)
-    image_url_objects = [URL(url=image_url) for image_url in image_urls]
+    image_url_object = URL(url=image_url)
     aggregate_rating_object = AggregateRating(rating_count=rating_count, rating_value=rating_value)
 
     return Recipe(
@@ -69,6 +69,6 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
         vendor=vendor,
         language=language,
         aggregate_rating=aggregate_rating_object,
-        images=image_url_objects,
+        image=image_url_object,
         ingredients=ingredients,
     )

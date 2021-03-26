@@ -156,22 +156,6 @@ class DBMatch(Base):
         )
 
 
-class DBImageURL(Base):
-    __tablename__ = 'image_url'
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    url = Column(String(200), server_default='')
-    fk_recipe = Column(UUID(as_uuid=True), ForeignKey('recipe.id'))
-
-    @classmethod
-    def from_entity(cls, image_url: URL, recipe_id: UUID):
-        return cls(
-            id=uuid.uuid4(),  # TODO model ImageURL as simple URL
-            url=image_url.__str__(),
-            fk_recipe=recipe_id
-        )
-
-
 class DBIngredient(Base):
     __tablename__ = 'ingredient'
 
@@ -205,7 +189,7 @@ class DBRecipe(Base):
     fk_category = Column(UUID(as_uuid=True), ForeignKey('category.id'))
     fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'))
     fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'))
-    images = relationship('DBImageURL', cascade="all, delete-orphan")
+    image = Column(String(200))
     ingredients = relationship('DBIngredient')
 
     @classmethod
@@ -220,12 +204,12 @@ class DBRecipe(Base):
             total_time=recipe.total_time,
             date_published=recipe.date_published,
             url=recipe.url.__str__(),
+            image=recipe.image.__str__(),
             rating_count=recipe.aggregate_rating.rating_count if recipe.aggregate_rating is not None else None,
             rating_value=recipe.aggregate_rating.rating_value if recipe.aggregate_rating is not None else None,
             fk_category=recipe.category.id,
             fk_language=recipe.language.id,
             fk_vendor=recipe.vendor.id,
-            images=[DBImageURL.from_entity(image, recipe.id) for image in recipe.images],
             ingredients=[DBIngredient.from_entity(ingredient, recipe.id) for ingredient in recipe.ingredients],
         )
 
