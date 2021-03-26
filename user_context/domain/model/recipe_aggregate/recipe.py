@@ -106,14 +106,14 @@ class Recipe(Entity):
 
     def add_image(self, image_url: URL):
         self._check_not_discarded()
-        if not isinstance(image_url, RecipeURL):
+        if not isinstance(image_url, URL):
             raise InvalidValueError(self, 'image_url must be a URL instance')
         self._images.append(image_url)
         self._increment_version()
 
     def remove_image(self, image_url: URL):
         self._check_not_discarded()
-        if not isinstance(image_url, RecipeURL):
+        if not isinstance(image_url, URL):
             raise InvalidValueError(self, 'image_url must be a URL instance')
         self._images.remove(image_url)
         self._increment_version()
@@ -143,9 +143,9 @@ class Recipe(Entity):
         return self._aggregate_rating
 
     @aggregate_rating.setter
-    def aggregate_rating(self, rating: Tuple[int, float]):
+    def aggregate_rating(self, value: AggregateRating):
         self._check_not_discarded()
-        self._aggregate_rating = AggregateRating(*rating)
+        self._aggregate_rating = value
         self._increment_version()
 
     @property

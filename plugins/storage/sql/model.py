@@ -1,33 +1,22 @@
 from __future__ import annotations
 
 import uuid
-from typing import List, Type
 
-from sqlalchemy import Column, String, Boolean, Date, Integer, ForeignKey, TIMESTAMP, func, Text, Interval, Table
+from sqlalchemy import Column, String, Boolean, Date, Integer, ForeignKey, TIMESTAMP, func, Text, Interval
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base, relationship
 
-from domain.model.category_aggregate.entities import Category
-from domain.model.common_aggregate import Language, Entity
-from domain.model.match_aggregate.entities import Match
-from domain.model.recipe_aggregate.entities import ImageURL, Ingredient, Recipe
-from domain.model.user_aggregate import User, CategoryLike
-from domain.model.vendor_aggregate.entities import Vendor
+from common.domain.value_objects import URL
+from user_context.domain.model.category_aggregate import Category
+from user_context.domain.model.category_like_aggregate import CategoryLike
+from user_context.domain.model.ingredient_aggregate import Ingredient
+from user_context.domain.model.language_aggregate import Language
+from user_context.domain.model.match_aggregate import Match
+from user_context.domain.model.recipe_aggregate import Recipe
+from user_context.domain.model.user_aggregate import User
+from user_context.domain.model.vendor_aggregate import Vendor
 
 Base = declarative_base()
-
-
-def get_association_table(name: str, left: str, right: str) -> Table:
-    return Table(
-        name,
-        Base.metadata,
-        Column(f'fk_{left}', UUID(as_uuid=True), ForeignKey(f'{left}.id')),
-        Column(f'fk_{right}', UUID(as_uuid=True), ForeignKey(f'{right}.id'))
-    )
-
-
-def parse_list(model: Type[Base], entities: List[Entity]):
-    return [model.from_entity(entity) for entity in entities]
 
 
 class DBLanguage(Base):
@@ -46,8 +35,32 @@ class DBLanguage(Base):
         )
 
 
-user_languages_association_table = get_association_table('user_languages', 'user', 'language')
-seen_recipes_association_table = get_association_table('user_seen_recipes', 'user', 'recipe')
+class DBUserLanguages(Base):
+    __tablename__ = 'user_languages'
+
+    fk_user = Column(UUID(as_uuid=True), ForeignKey('user.id'), primary_key=True, nullable=False)
+    fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'), primary_key=True, nullable=False)
+
+    @classmethod
+    def from_entity(cls, user: User, language: Language) -> DBUserLanguages:
+        return cls(
+            fk_user=user.id,
+            fk_language=language.id
+        )
+
+
+class DBUserSeenRecipes(Base):
+    __tablename__ = 'user_seen_recipes'
+
+    fk_user = Column(UUID(as_uuid=True), ForeignKey('user.id'), primary_key=True, nullable=False)
+    fk_recipe = Column(UUID(as_uuid=True), ForeignKey('recipe.id'), primary_key=True, nullable=False)
+
+    @classmethod
+    def from_entity(cls, user: User, recipe: Recipe) -> DBUserSeenRecipes:
+        return cls(
+            fk_user=user.id,
+            fk_recipe=recipe.id
+        )
 
 
 class DBUser(Base):
@@ -59,10 +72,6 @@ class DBUser(Base):
     is_confirmed = Column(Boolean, nullable=False, server_default='0')
     date_last_login = Column(Date)
     email = Column(String(50))
-    languages = relationship('DBLanguage', secondary=user_languages_association_table)
-    liked_categories = relationship('DBCategoryLike', back_populates='user')
-    matches = relationship('DBMatch', back_populates='user')
-    seen_recipes = relationship('DBRecipe', secondary=seen_recipes_association_table)
 
     @classmethod
     def from_entity(cls, user: User):
@@ -72,11 +81,7 @@ class DBUser(Base):
             first_name=user.first_name,
             is_confirmed=user.is_confirmed,
             date_last_login=user.date_last_login,
-            email=user.email.__str__(),
-            languages=parse_list(DBLanguage, user.languages),
-            liked_categories=parse_list(DBCategoryLike, user.liked_categories),
-            matches=parse_list(DBMatch, user.matches),
-            seen_recipes=parse_list(DBRecipe, user.seen_recipes),
+            email=user.email.__str__()
         )
 
 
@@ -84,23 +89,19 @@ class DBCategoryLike(Base):
     __tablename__ = 'category_like'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    views = Column(Integer)
-    matches = Column(Integer)
     fk_user = Column(UUID(as_uuid=True), ForeignKey('user.id'))
     fk_category = Column(UUID(as_uuid=True), ForeignKey('category.id'))
-    user = relationship('DBUser', back_populates='liked_categories')
-    category = relationship('DBCategory', back_populates='likes')
+    views = Column(Integer)
+    matches = Column(Integer)
 
     @classmethod
     def from_entity(cls, category_like: CategoryLike):
         return cls(
             id=category_like.id,
-            views=category_like.views,
-            matches=category_like.matches,
             fk_user=category_like.user.id,
             fk_category=category_like.category.id,
-    #        user=DBUser.from_entity(category_like.user),
-    #        category=DBCategory.from_entity(category_like.category),
+            views=category_like.views,
+            matches=category_like.matches,
         )
 
 
@@ -109,19 +110,16 @@ class DBCategory(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(50), nullable=False)
+    likes = Column(Integer)
     fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'))
-    likes = relationship('DBCategoryLike', back_populates='category')
-    recipes = relationship('DBRecipe', back_populates='category')
 
     @classmethod
     def from_entity(cls, category: Category):
         return cls(
             id=category.id,
             name=category.name,
-            fk_vendor=category.vendor.id,
-   #         vendor=DBVendor.from_entity(category.vendor),
-            likes=parse_list(DBCategoryLike, category.likes),
-            recipes=parse_list(DBRecipe, category.recipes),
+            fk_vendor=category.vendor.id,  # TODO add vendor as attribute in category Entity
+            likes=category.likes,
         )
 
 
@@ -134,8 +132,6 @@ class DBMatch(Base):
     is_active = Column(Boolean, nullable=False, server_default='0')
     fk_user = Column(UUID(as_uuid=True), ForeignKey('user.id'))
     fk_recipe = Column(UUID(as_uuid=True), ForeignKey('recipe.id'))
-    user = relationship('DBUser', back_populates='matches')
-    recipe = relationship('DBRecipe', back_populates='matches')
 
     @classmethod
     def from_entity(cls, match: Match):
@@ -144,9 +140,7 @@ class DBMatch(Base):
             timestamp=match.timestamp,
             is_seen_by_user=match.is_seen_by_user,
             fk_user=match.user.id,
-            user=parse_list(DBUser, match.user),
             fk_recipe=match.recipe.id,
-            recipe=parse_list(DBRecipe, match.recipe)
         )
 
 
@@ -158,9 +152,9 @@ class DBImageURL(Base):
     fk_recipe = Column(UUID(as_uuid=True), ForeignKey('recipe.id'))
 
     @classmethod
-    def from_entity(cls, image_url: ImageURL, recipe_id: UUID):
+    def from_entity(cls, image_url: URL, recipe_id: UUID):
         return cls(
-            id=image_url.id,
+            id=uuid.uuid4(),  # TODO model ImageURL as simple URL
             url=image_url.__str__(),
             fk_recipe=recipe_id
         )
@@ -194,13 +188,10 @@ class DBRecipe(Base):
     total_time = Column(Interval())
     url = Column(String(200))
     fk_category = Column(UUID(as_uuid=True), ForeignKey('category.id'))
-    category = relationship('DBCategory')
     fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'))
-    language = relationship('DBLanguage')
     fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'))
     images = relationship('DBImageURL', cascade="all, delete-orphan")
-    ingredients = relationship('DBIngredient', cascade="all, delete-orphan")
-    matches = relationship('DBMatch', back_populates='recipe')
+    ingredients = relationship('DBIngredient')
 
     @classmethod
     def from_entity(cls, recipe: Recipe):
@@ -214,17 +205,25 @@ class DBRecipe(Base):
             total_time=recipe.total_time,
             url=recipe.url.__str__(),
             fk_category=recipe.category.id,
-            category=DBCategory.from_entity(recipe.category),
             fk_language=recipe.language.id,
-            language=DBLanguage.from_entity(recipe.language),
             fk_vendor=recipe.vendor.id,
-            images=parse_list(DBImageURL, recipe.images),
-            ingredients=parse_list(DBIngredient, recipe.ingredients),
-            matches=parse_list(DBMatch, recipe.matches),
+            images=[DBImageURL.from_entity(image, recipe.id) for image in recipe.images],
+            ingredients=[DBIngredient.from_entity(ingredient, recipe.id) for ingredient in recipe.ingredients],
         )
 
 
-vendor_languages_association_table = get_association_table('vendor_languages', 'vendor', 'language')
+class DBVendorLanguages(Base):
+    __tablename__ = 'vendor_languages'
+
+    fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'), primary_key=True, nullable=False)
+    fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'), primary_key=True, nullable=False)
+
+    @classmethod
+    def from_entity(cls, vendor: Vendor, language: Language) -> DBVendorLanguages:
+        return cls(
+            fk_vendor=vendor.id,
+            fk_language=language.id
+        )
 
 
 class DBVendor(Base):
@@ -235,10 +234,7 @@ class DBVendor(Base):
     description = Column(Text, server_default='')
     url = Column(String(200))
     is_active = Column(Boolean, nullable=False, server_default='0')
-    date_last_crawled = Column(Date)
     recipe_pattern = Column(String(100))
-    languages = relationship('DBLanguage', secondary=vendor_languages_association_table)
-    categories = relationship('DBCategory')
 
     @classmethod
     def from_entity(cls, vendor: Vendor):
@@ -248,8 +244,5 @@ class DBVendor(Base):
             description=vendor.description,
             url=vendor.url.__str__(),
             is_active=vendor.is_active,
-            date_last_crawled=vendor.date_last_crawled,
             recipe_pattern=vendor.recipe_pattern,
-            languages=parse_list(DBLanguage, vendor.languages),
-            categories=parse_list(DBCategory, vendor.categories),
         )

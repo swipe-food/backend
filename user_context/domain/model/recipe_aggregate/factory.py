@@ -5,8 +5,8 @@ from uuid import UUID
 from common.domain.value_objects import URL, AggregateRating, Author
 from common.exceptions import InvalidValueError
 from user_context.domain.model.category_aggregate import Category
-from user_context.domain.model.language_aggregate import Language
 from user_context.domain.model.ingredient_aggregate import Ingredient
+from user_context.domain.model.language_aggregate import Language
 from user_context.domain.model.recipe_aggregate.recipe import Recipe
 from user_context.domain.model.recipe_aggregate.value_objects import RecipeURL
 from user_context.domain.model.vendor_aggregate import Vendor
@@ -22,13 +22,13 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
     if not isinstance(description, str):
         raise InvalidValueError(Recipe, 'description must be a string')
 
-    if not isinstance(prep_time, timedelta):
+    if not isinstance(prep_time, timedelta) and prep_time is not None:
         raise InvalidValueError(Recipe, 'prep_time must be a timedelta')
 
-    if not isinstance(cook_time, timedelta):
+    if not isinstance(cook_time, timedelta) and cook_time is not None:
         raise InvalidValueError(Recipe, 'cook_time must be a timedelta')
 
-    if not isinstance(total_time, timedelta):
+    if not isinstance(total_time, timedelta) and total_time is not None:
         raise InvalidValueError(Recipe, 'total_time must be a timedelta')
 
     if not isinstance(category, Category):

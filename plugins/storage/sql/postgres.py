@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
@@ -40,11 +42,13 @@ class PostgresDatabase:
         self._logger.info(f'connected to database', engine=self._engine.__str__())
 
     def create_tables(self):
+        Base.metadata.drop_all(bind=self._engine)
         Base.metadata.create_all(bind=self._engine)
         self._logger.info('created tables')
 
-    def create(self, item: Base):
-        self._session.add(item)
+    def create(self, *items):
+        for item in items:
+            self._session.add(item)
         self._session.commit()
 
     @property
