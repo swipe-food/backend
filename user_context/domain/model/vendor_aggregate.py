@@ -5,7 +5,7 @@ from uuid import UUID
 
 from common.domain.model.base import Entity
 from common.domain.model.value_objects import URL
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 from user_context.domain.model.category_aggregate import Category
 from common.domain.model.language_aggregate import Language
 
@@ -13,17 +13,17 @@ from common.domain.model.language_aggregate import Language
 def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_active: bool, recipe_pattern: str,
                   languages: List[Language], categories: List[Category]) -> Vendor:
     if not isinstance(name, str):
-        raise InvalidValueError(Vendor, 'name must be a string')
+        raise InvalidValueException(Vendor, 'name must be a string')
 
     if not isinstance(description, str):
-        raise InvalidValueError(Vendor, 'description must be a string')
+        raise InvalidValueException(Vendor, 'description must be a string')
 
     if not isinstance(languages, list):
-        raise InvalidValueError(
+        raise InvalidValueException(
             Vendor, 'languages must be a list of Language instances')
 
     if not isinstance(categories, list):
-        raise InvalidValueError(
+        raise InvalidValueException(
             Vendor, 'categories must be a list of Language instances')
 
     vendor_url_object = URL(url=url)
@@ -86,7 +86,7 @@ class Vendor(Entity):
     def is_active(self, value: bool):
         self._check_not_discarded()
         if not isinstance(value, bool):
-            raise InvalidValueError(self, 'is_active must be a bool')
+            raise InvalidValueException(self, 'is_active must be a bool')
         self._is_active = value
         self._increment_version()
 
@@ -99,7 +99,7 @@ class Vendor(Entity):
     def recipe_pattern(self, pattern: str):
         self._check_not_discarded()
         if not isinstance(pattern, str):
-            raise InvalidValueError(self, 'recipe pattern must be a string')
+            raise InvalidValueException(self, 'recipe pattern must be a string')
         self._recipe_pattern = pattern
         self._increment_version()
 
@@ -111,14 +111,14 @@ class Vendor(Entity):
     def add_language(self, language: Language):
         self._check_not_discarded()
         if not isinstance(language, Language):
-            raise InvalidValueError(self, 'language must be a Language instance')
+            raise InvalidValueException(self, 'language must be a Language instance')
         self._languages.append(language)
         self._increment_version()
 
     def remove_language(self, language: Language):
         self._check_not_discarded()
         if not isinstance(language, Language):
-            raise InvalidValueError(self, 'language must be a Language instance')
+            raise InvalidValueException(self, 'language must be a Language instance')
         self._languages.remove(language)
         self._increment_version()
 
@@ -130,14 +130,14 @@ class Vendor(Entity):
     def add_category(self, category: Category):
         self._check_not_discarded()
         if not isinstance(category, Category):
-            raise InvalidValueError(self, 'category must be a Category instance')
+            raise InvalidValueException(self, 'category must be a Category instance')
         self._categories.append(category)
         self._increment_version()
 
     def remove_category(self, category: Category):
         self._check_not_discarded()
         if not isinstance(category, Category):
-            raise InvalidValueError(self, 'category must be a Category instance')
+            raise InvalidValueException(self, 'category must be a Category instance')
         self._categories.remove(category)
         self._increment_version()
 

@@ -3,19 +3,18 @@ from __future__ import annotations
 from uuid import UUID
 
 from common.domain.model.base import Entity
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 
 
 def create_language(language_id: UUID, name: str, code: str) -> Language:
     if not isinstance(name, str):
-        raise InvalidValueError(Language, 'language name must be a string')
+        raise InvalidValueException(Language, 'language name must be a string')
 
     if not isinstance(code, str):
-        raise InvalidValueError(Language, 'language code must be a string')
+        raise InvalidValueException(Language, 'language code must be a string')
 
     if len(code) != 2:
-        raise InvalidValueError(
-            Language, 'Language Acronym must have a length of 2')
+        raise InvalidValueException(Language, 'Language Acronym must have a length of 2')
     return Language(language_id=language_id, name=name, code=code)
 
 

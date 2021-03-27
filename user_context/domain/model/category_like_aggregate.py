@@ -3,23 +3,23 @@ from __future__ import annotations
 from uuid import UUID
 
 from common.domain.model.base import Entity
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 from user_context.domain.model.category_aggregate import Category
 
 
 def create_category_like(category_like_id: UUID, user, category: Category, views: int, matches: int) -> CategoryLike:
     if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
-        raise InvalidValueError(CategoryLike, 'user must be a User instance')
+        raise InvalidValueException(CategoryLike, 'user must be a User instance')
 
     if not isinstance(category, Category):
-        raise InvalidValueError(
+        raise InvalidValueException(
             CategoryLike, 'category must be a Category instance')
 
     if not isinstance(views, int):
-        raise InvalidValueError(CategoryLike, 'views must be an int')
+        raise InvalidValueException(CategoryLike, 'views must be an int')
 
     if not isinstance(matches, int):
-        raise InvalidValueError(CategoryLike, 'matches must be an int')
+        raise InvalidValueException(CategoryLike, 'matches must be an int')
 
     return CategoryLike(
         category_like_id=category_like_id,

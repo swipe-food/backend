@@ -6,12 +6,12 @@ from uuid import UUID
 
 from common.domain.model.base import Entity, Immutable
 from common.domain.model.value_objects import URL
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 
 
 def create_category_recipe_overviews(overview_id: UUID, overview_items: List[Tuple[str, str, datetime]]) -> CategoryRecipeOverviews:
     if not isinstance(overview_items, list):
-        raise InvalidValueError(CategoryRecipeOverviews, 'overview_items data must be a list of tuples')
+        raise InvalidValueException(CategoryRecipeOverviews, 'overview_items data must be a list of tuples')
 
     return CategoryRecipeOverviews(overview_id=overview_id, overview_items=overview_items)
 
@@ -34,7 +34,7 @@ class CategoryRecipeOverviews(Entity):
     def add_item(self, item_data: Tuple[str, str, datetime]):
         self._check_not_discarded()
         if not isinstance(item_data, tuple):
-            raise InvalidValueError(self, 'item data must be a tuple')
+            raise InvalidValueException(self, 'item data must be a tuple')
         name, url, date_published = item_data
         overview_item = RecipeOverviewItem(
             name=name, url=URL(url=url), date_published=date_published)
@@ -53,13 +53,13 @@ class RecipeOverviewItem(Immutable):
 
     def __init__(self, name: str, url: URL, date_published: datetime):
         if not isinstance(name, str):
-            raise InvalidValueError(self, 'name must be a string')
+            raise InvalidValueException(self, 'name must be a string')
 
         if not isinstance(url, URL):
-            raise InvalidValueError(self, 'url must be a URL instance')
+            raise InvalidValueException(self, 'url must be a URL instance')
 
         if not isinstance(date_published, datetime):
-            raise InvalidValueError(self, 'date_published must be a datetime')
+            raise InvalidValueException(self, 'date_published must be a datetime')
 
         self._name = name
         self._url = url

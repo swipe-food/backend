@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import UUID
 
 from common.domain.model.base import Entity
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 
 
 def create_ingredient(ingredient_id: UUID, text: str) -> Ingredient:
@@ -26,7 +26,7 @@ class Ingredient(Entity):
     def text(self, text: str):
         self._check_not_discarded()
         if not isinstance(text, str):
-            raise InvalidValueError(self, 'text must be a string')
+            raise InvalidValueException(self, 'text must be a string')
         self._text = text
         self._increment_version()
 

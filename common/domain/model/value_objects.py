@@ -2,7 +2,7 @@ import re
 from urllib.parse import urlparse
 
 from common.domain.model.base import Immutable
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 
 
 class URL(Immutable):
@@ -19,12 +19,11 @@ class URL(Immutable):
     @classmethod
     def validate(cls, url: str):
         if not isinstance(url, str):
-            raise InvalidValueError(cls, 'url must be a string')
+            raise InvalidValueException(cls, 'url must be a string')
 
         parsed_url = urlparse(url)
         if parsed_url.scheme not in cls.VALID_PROTOCOLS or parsed_url.netloc == '':
-            raise InvalidValueError(
-                cls, f'Invalid {cls.__class__.__name__} {url}')
+            raise InvalidValueException(cls, f'Invalid {cls.__class__.__name__} {url}')
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
@@ -46,24 +45,24 @@ class RecipeURL(URL):
         cls.validate(url)
         regex = re.compile(vendor_pattern)
         if not regex.search(url):
-            raise InvalidValueError(cls, f"invalid url '{url}' for Vendor pattern {vendor_pattern}")
+            raise InvalidValueException(cls, f"invalid url '{url}' for Vendor pattern {vendor_pattern}")
 
 
 class AggregateRating(Immutable):
 
     def __init__(self, rating_count: int, rating_value: float):
         if not isinstance(rating_count, int):
-            raise InvalidValueError(
+            raise InvalidValueException(
                 self, 'rating count must be an int')
 
         if not isinstance(rating_value, float):
-            raise InvalidValueError(self, 'rating value must be a float')
+            raise InvalidValueException(self, 'rating value must be a float')
 
         if rating_value < 0:
-            raise InvalidValueError(self, 'rating count cannot be less than 0')
+            raise InvalidValueException(self, 'rating count cannot be less than 0')
 
         if not 0 <= rating_value <= 5:
-            raise InvalidValueError(self, 'rating value has to be between 0 and 5')
+            raise InvalidValueException(self, 'rating value has to be between 0 and 5')
 
         self._rating_count = rating_count
         self._rating_value = rating_value
@@ -88,7 +87,7 @@ class AggregateRating(Immutable):
 class Author(Immutable):
     def __init__(self, name: str):
         if not isinstance(name, str):
-            raise InvalidValueError(self, 'name must be a string')
+            raise InvalidValueException(self, 'name must be a string')
 
         self._name = name
 

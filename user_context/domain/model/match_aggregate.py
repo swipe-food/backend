@@ -4,19 +4,19 @@ from datetime import datetime
 from uuid import UUID
 
 from common.domain.model.base import Entity
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 from user_context.domain.model.recipe_aggregate import Recipe
 
 
 def create_match(match_id: UUID, user, recipe: Recipe, timestamp: datetime, is_seen_by_user: bool, is_active: bool) -> Match:
     if not user.__class__.__name__ == 'User':  # can't import User because of circular imports
-        raise InvalidValueError(Match, 'user must be an User instance')
+        raise InvalidValueException(Match, 'user must be an User instance')
 
     if not isinstance(recipe, Recipe):
-        raise InvalidValueError(Match, 'recipe must be a Recipe instance')
+        raise InvalidValueException(Match, 'recipe must be a Recipe instance')
 
     if not isinstance(timestamp, datetime):
-        raise InvalidValueError(Match, 'timestamp must be a datetime')
+        raise InvalidValueException(Match, 'timestamp must be a datetime')
 
     return Match(
         match_id=match_id,
@@ -65,7 +65,7 @@ class Match(Entity):
     def is_seen_by_user(self, value: bool):
         self._check_not_discarded()
         if not isinstance(value, bool):
-            raise InvalidValueError(self, 'is_seen_by_user must be a bool')
+            raise InvalidValueException(self, 'is_seen_by_user must be a bool')
         self._is_seen_by_user = value
         self._increment_version()
 
@@ -78,7 +78,7 @@ class Match(Entity):
     def is_active(self, value: bool):
         self._check_not_discarded()
         if not isinstance(value, bool):
-            raise InvalidValueError(self, 'is_active must be a bool')
+            raise InvalidValueException(self, 'is_active must be a bool')
         self._is_active = value
         self._increment_version()
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import UUID
 
 from common.domain.model.base import Entity
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 
 
 def create_category(category_id: UUID, name: str, vendor) -> Category:
@@ -28,7 +28,7 @@ class Category(Entity):
     def name(self, value: str):
         self._check_not_discarded()
         if not isinstance(value, str):
-            raise InvalidValueError(self, 'name must be a string')
+            raise InvalidValueException(self, 'name must be a string')
         self._name = value
         self._increment_version()
 

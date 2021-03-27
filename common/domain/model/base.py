@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any, Callable
 from uuid import UUID
 
-from common.exceptions import DiscardEntityError
+from common.exceptions import DiscardEntityException
 
 
 class Entity(ABC):
@@ -46,7 +46,7 @@ class Entity(ABC):
 
     def _check_not_discarded(self):
         if self._discarded:
-            raise DiscardEntityError(f"Attempt to use {repr(self)}")
+            raise DiscardEntityException(f"Attempt to use {repr(self)}")
 
     def _increment_version(self):
         self._version += 1

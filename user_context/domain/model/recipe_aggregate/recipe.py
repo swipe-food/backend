@@ -5,7 +5,7 @@ from uuid import UUID
 from common.domain.model.base import Entity
 from common.domain.model.ingredient_aggregate import Ingredient
 from common.domain.model.value_objects import URL, AggregateRating, Author, RecipeURL
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 from user_context.domain.model.category_aggregate import Category
 from common.domain.model.language_aggregate import Language
 from user_context.domain.model.vendor_aggregate import Vendor
@@ -97,7 +97,7 @@ class Recipe(Entity):
     def add_ingredient(self, ingredient: Ingredient):
         self._check_not_discarded()
         if not isinstance(ingredient, Ingredient):
-            raise InvalidValueError(
+            raise InvalidValueException(
                 self, 'ingredient must be a Ingredient instance')
         self._ingredients.append(ingredient)
         self._increment_version()
@@ -105,7 +105,7 @@ class Recipe(Entity):
     def remove_ingredient(self, ingredient: Ingredient):
         self._check_not_discarded()
         if not isinstance(ingredient, Ingredient):
-            raise InvalidValueError(
+            raise InvalidValueException(
                 self, 'ingredient must be a Ingredient instance')
         self._ingredients.remove(ingredient)
         self._increment_version()

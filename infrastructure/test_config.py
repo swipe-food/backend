@@ -1,6 +1,6 @@
 import pytest
 
-from common.exceptions import MissingConfigError, InvalidValueError
+from common.exceptions import MissingConfigException, InvalidValueException
 from infrastructure.config import ConfigComponent, ConfigParser, create_new_config
 
 
@@ -56,11 +56,11 @@ class TestConfigParser:
         assert test_config.component_c.component_d.string_value == 'Test'
 
     def test_config_invalid(self):
-        with pytest.raises(InvalidValueError):
+        with pytest.raises(InvalidValueException):
             TestConfigA(get_fake_config(invalid_value=True))
 
     def test_config_missing(self):
-        with pytest.raises(MissingConfigError):
+        with pytest.raises(MissingConfigException):
             TestConfigA(get_fake_config(missing_value=True))
 
 

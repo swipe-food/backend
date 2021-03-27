@@ -6,7 +6,7 @@ from typing import get_type_hints, Any
 
 from dotenv import dotenv_values
 
-from common.exceptions import MissingConfigError, InvalidValueError
+from common.exceptions import MissingConfigException, InvalidValueException
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent
 
@@ -34,13 +34,13 @@ class ConfigParser:
     def _parse_value(cls, config: dict, field: str, field_type: Any) -> Any:
         value = config.get(field)
         if value is None:
-            raise MissingConfigError(cls, f"Required Config field '{field}' cannot be None")
+            raise MissingConfigException(cls, f"Required Config field '{field}' cannot be None")
         try:
             if issubclass(field_type, bool):
                 return value == 'True'
             return field_type(value)
         except ValueError:
-            raise InvalidValueError(cls, f"Config field '{field}' has an invalid value '{value}' for type {field_type}")
+            raise InvalidValueException(cls, f"Config field '{field}' has an invalid value '{value}' for type {field_type}")
 
 
 class ConfigComponent(ABC):

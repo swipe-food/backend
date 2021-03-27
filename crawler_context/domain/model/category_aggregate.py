@@ -4,7 +4,7 @@ from uuid import UUID
 
 from common.domain.model.base import Entity
 from common.domain.model.value_objects import URL
-from common.exceptions import InvalidValueError
+from common.exceptions import InvalidValueException
 
 
 def create_category(category_id: UUID, name: str, url: str, vendor) -> Category:
@@ -31,7 +31,7 @@ class Category(Entity):
     def name(self, category_name: str):
         self._check_not_discarded()
         if not isinstance(category_name, str):
-            raise InvalidValueError(self, 'name must be a string')
+            raise InvalidValueException(self, 'name must be a string')
         self._name = category_name
         self._increment_version()
 
@@ -44,7 +44,7 @@ class Category(Entity):
     def url(self, category_url: URL):
         self._check_not_discarded()
         if not isinstance(category_url, URL):
-            raise InvalidValueError(self, 'url must be a URL instance')
+            raise InvalidValueException(self, 'url must be a URL instance')
         self._url = category_url
         self._increment_version()
 
