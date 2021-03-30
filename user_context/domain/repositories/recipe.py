@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from typing import List
 
 from common.domain.repositories import AbstractBaseRepository
-from common.domain.model.recipe_aggregate import Recipe
+from user_context.domain.model.recipe_aggregate import Recipe
 from user_context.domain.model.user_aggregate import User
 
 
