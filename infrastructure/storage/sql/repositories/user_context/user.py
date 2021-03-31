@@ -1,11 +1,18 @@
 from typing import List
 from uuid import UUID
 
+from common.exceptions import InvalidValueException
 from infrastructure.log import Logger
 from infrastructure.storage.sql.model import DBUser, DBUserLanguages, DBUserSeenRecipes
 from infrastructure.storage.sql.postgres import PostgresDatabase
 from user_context.domain.model.user_aggregate import User
 from user_context.domain.repositories.user import AbstractUserRepository
+
+
+def create_user_repository(database: PostgresDatabase):
+    if not isinstance(database, PostgresDatabase):
+        raise InvalidValueException(UserRepository, 'database must be a PostgresDatabase')
+    return UserRepository(database=database)
 
 
 class UserRepository(AbstractUserRepository):
@@ -32,14 +39,14 @@ class UserRepository(AbstractUserRepository):
     def get_by_email(self, email: str) -> User:
         db_user: DBUser = self._db.session.query(DBUser).filter(DBUser.email == email).one()
         user = db_user.to_entity()
-        self._load_relationship_for_user(db_user, user)
+        self.load_relationship_for_user(db_user, user)
         self._logger.debug("get user by email", user_id=user.id.__str__())
         return user
 
     def get_by_id(self, entity_id: UUID) -> User:
         db_user: DBUser = self._db.session.query(DBUser).filter(DBUser.id == entity_id).one()
         user = db_user.to_entity()
-        self._load_relationship_for_user(db_user, user)
+        self.load_relationship_for_user(db_user, user)
         self._logger.debug("get user by id", user_id=user.id.__str__())
         return user
 
@@ -48,7 +55,7 @@ class UserRepository(AbstractUserRepository):
         users: List[User] = []
         for db_user in db_users:
             user = db_user.to_entity()
-            self._load_relationship_for_user(db_user, user)
+            self.load_relationship_for_user(db_user, user)
             users.append(user)
         self._logger.debug("get all users", limit=limit, count=len(users))
         return users
@@ -68,7 +75,7 @@ class UserRepository(AbstractUserRepository):
         self._logger.debug("deleted user", user_id=user.id.__str__())
 
     @staticmethod
-    def _load_relationship_for_user(db_user: DBUser, user: User):
+    def load_relationship_for_user(db_user: DBUser, user: User):
         for liked_category in db_user.liked_categories:
             user.add_category_like(liked_category.to_entity())
         for match in db_user.matches:

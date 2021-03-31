@@ -15,3 +15,7 @@ class AbstractRecipeRepository(AbstractQueryBaseRepository, ABC):
     @abstractmethod
     def get_matched_users(self, recipe: Recipe) -> List[User]:
         raise NotImplementedError
+
+    @abstractmethod
+    def get_unseen_recipes_for_user(self, user: User, limit: int = 20) -> List[Recipe]:
+        raise NotImplementedError
