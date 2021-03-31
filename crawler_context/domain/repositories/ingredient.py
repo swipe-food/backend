@@ -1,11 +1,7 @@
-from abc import abstractmethod, ABC
+from abc import ABC
 
-from common.domain.model.ingredient_aggregate import Ingredient
-from common.domain.repositories import AbstractBaseRepository
+from common.domain.repositories import AbstractCommandBaseRepository
 
 
-class AbstractIngredientRepository(AbstractBaseRepository, ABC):
-
-    @abstractmethod
-    def get_by_name(self, ingredient_name: str) -> Ingredient:
-        raise NotImplementedError
+class AbstractIngredientRepository(AbstractCommandBaseRepository, ABC):
+    pass

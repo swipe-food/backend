@@ -1,11 +1,7 @@
-from abc import abstractmethod, ABC
+from abc import ABC
 
-from common.domain.repositories import AbstractBaseRepository
-from crawler_context.domain.model.recipe_aggregate import Recipe
+from common.domain.repositories import AbstractCommandBaseRepository
 
 
-class AbstractRecipeRepository(AbstractBaseRepository, ABC):
-
-    @abstractmethod
-    def get_by_name(self, recipe_name: str) -> Recipe:
-        raise NotImplementedError
+class AbstractRecipeRepository(AbstractCommandBaseRepository, ABC):
+    pass
