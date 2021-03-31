@@ -25,3 +25,8 @@ class DiscardEntityException(EntityException):
 class MissingConfigException(FoodSwipeException):
     """Raised when a required configuration field is missing"""
     pass
+
+
+class MissingArgumentException(FoodSwipeException):
+    """Raised when a required parameter is None"""
+    pass

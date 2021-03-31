@@ -7,19 +7,16 @@ from common.domain.model.base import Entity
 
 class AbstractBaseRepository(ABC):
 
-    def __init__(self, db_connection):
-        self._db_connection = db_connection
-
-    @abstractmethod
-    def add(self, entity: Entity):
-        raise NotImplementedError
-
     @abstractmethod
     def get_by_id(self, entity_id: uuid.UUID) -> Entity:
         raise NotImplementedError
 
     @abstractmethod
-    def get_all(self) -> List[Entity]:
+    def get_all(self, limit: int = None) -> List[Entity]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def add(self, entity: Entity):
         raise NotImplementedError
 
     @abstractmethod

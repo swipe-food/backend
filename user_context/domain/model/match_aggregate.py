@@ -40,6 +40,9 @@ class Match(Entity):
         self.is_seen_by_user = is_seen_by_user
         self.is_active = is_active
 
+        self._user.add_match(self)
+        self._recipe.add_match()
+
     @property
     def user(self):
         # type: () -> User

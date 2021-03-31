@@ -13,7 +13,7 @@ from user_context.domain.model.vendor_aggregate import Vendor
 
 def create_recipe(recipe_id: UUID, name: str, description: str, author: str, vendor_id: str,
                   prep_time: timedelta, cook_time: timedelta, total_time: timedelta, date_published: datetime,
-                  recipe_url: str, category: Category, vendor: Vendor, language: Language, rating_count: int,
+                  url: str, category: Category, vendor: Vendor, language: Language, rating_count: int,
                   rating_value: float, image_url: str, ingredients: List[Ingredient]) -> Recipe:
     if not isinstance(name, str):
         raise InvalidValueException(Recipe, 'name must be a string')
@@ -52,7 +52,7 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
         raise InvalidValueException(Recipe, 'ingredients must be a list of strings')
 
     author_object = Author(name=author)
-    recipe_url_object = RecipeURL(url=recipe_url, vendor_pattern=vendor.recipe_pattern)
+    recipe_url_object = RecipeURL(url=url, vendor_pattern=vendor.recipe_pattern) if vendor is not None else None
     image_url_object = URL(url=image_url)
     aggregate_rating_object = AggregateRating(rating_count=rating_count, rating_value=rating_value)
 
