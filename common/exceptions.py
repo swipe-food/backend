@@ -30,3 +30,28 @@ class MissingConfigException(FoodSwipeException):
 class MissingArgumentException(FoodSwipeException):
     """Raised when a required parameter is None"""
     pass
+
+
+class RepositoryException(FoodSwipeException):
+    """Raised when a error in the repository occurs"""
+    pass
+
+
+class StorageException(FoodSwipeException):
+    """Raised when a error in the storage modules occurs"""
+
+
+class StorageAddException(StorageException):
+    """Raised when a add request failed"""
+
+
+class StorageNoResultFoundException(StorageException):
+    """Raised when no result was found"""
+
+
+class StorageUpdateException(StorageException):
+    """Raised when a update request failed"""
+
+
+class StorageDeleteException(StorageException):
+    """Raised when a delete request failed"""
