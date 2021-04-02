@@ -5,10 +5,10 @@ from domain.model.category_aggregate import Category
 from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
 from domain.model.vendor_aggregate import Vendor
-from domain.repositories.base import AbstractQueryBaseRepository, AbstractCommandBaseRepository
+from domain.repositories.base import AbstractBaseRepository
 
 
-class AbstractCategoryRepository(AbstractQueryBaseRepository, AbstractCommandBaseRepository, ABC):
+class AbstractCategoryRepository(AbstractBaseRepository, ABC):
 
     @abstractmethod
     def get_by_name(self, category_name: str) -> Category:

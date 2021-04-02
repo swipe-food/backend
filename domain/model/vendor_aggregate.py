@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Tuple
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.base import Entity
 from domain.model.category_aggregate import Category
 from domain.model.common_value_objects import URL
@@ -12,6 +12,7 @@ from domain.model.language_aggregate import Language
 
 
 def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_active: bool, recipe_pattern: str,
+                  categories_link: str, date_last_crawled: datetime,
                   languages: List[Language], categories: List[Category]) -> Vendor:
     if not isinstance(name, str):
         raise InvalidValueException(Vendor, 'name must be a string')
@@ -19,13 +20,14 @@ def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_act
     if not isinstance(description, str):
         raise InvalidValueException(Vendor, 'description must be a string')
 
+    if not isinstance(url, str):
+        raise InvalidValueException(Vendor, 'url must be a string')
+
     if not isinstance(languages, list):
-        raise InvalidValueException(
-            Vendor, 'languages must be a list of Language instances')
+        raise InvalidValueException(Vendor, 'languages must be a list of Language instances')
 
     if not isinstance(categories, list):
-        raise InvalidValueException(
-            Vendor, 'categories must be a list of Language instances')
+        raise InvalidValueException(Vendor, 'categories must be a list of Language instances')
 
     vendor_url_object = URL(url=url)
 
@@ -36,8 +38,11 @@ def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_act
         url=vendor_url_object,
         is_active=is_active,
         recipe_pattern=recipe_pattern,
+        categories_link=categories_link,
+        date_last_crawled=date_last_crawled,
         languages=languages,
         categories=categories,
+
     )
 
 

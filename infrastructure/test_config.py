@@ -1,6 +1,6 @@
 import pytest
 
-from common.exceptions import MissingConfigException, InvalidValueException
+from domain.exceptions import MissingConfigException, InvalidValueException
 from infrastructure.config import ConfigComponent, ConfigParser, create_new_config
 
 

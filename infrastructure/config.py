@@ -6,7 +6,7 @@ from typing import get_type_hints, Any
 
 from dotenv import dotenv_values
 
-from common.exceptions import MissingConfigException, InvalidValueException
+from domain.exceptions import MissingConfigException, InvalidValueException
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent
 

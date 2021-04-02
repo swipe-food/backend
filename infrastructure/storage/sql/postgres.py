@@ -1,20 +1,22 @@
 from __future__ import annotations
 
+from typing import Callable
+
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
-from common.exceptions import MissingArgumentException, InvalidValueException
+from domain.exceptions import MissingArgumentException, InvalidValueException
 from infrastructure.config import DatabaseConfig
 from infrastructure.log import Logger
 from infrastructure.storage.sql.model import Base
 
 
-def create_postgres_database(config: DatabaseConfig) -> PostgresDatabase:
+def create_postgres_database(config: DatabaseConfig, create_logger: Callable) -> PostgresDatabase:
     if not isinstance(config, DatabaseConfig):
         raise InvalidValueException(DatabaseConfig, 'config must be a DatabaseConfig')
-    return PostgresDatabase(config)
+    return PostgresDatabase(config=config, create_logger=create_logger)
 
 
 class PostgresDatabase:
@@ -22,9 +24,9 @@ class PostgresDatabase:
         Represents a wrapper for a Postgres Database
     """
 
-    def __init__(self, config: DatabaseConfig):
+    def __init__(self, config: DatabaseConfig, create_logger: Callable):
         self._config = config
-        self._logger = Logger.create(f'{__name__}.{self.__class__.__name__}')
+        self._logger = create_logger(f'{__name__}.{self.__class__.__name__}')
         self._logger.info(f'created new {self.__class__.__name__}')
         self._engine = None
         self._session = None

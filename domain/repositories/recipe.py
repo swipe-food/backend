@@ -3,10 +3,10 @@ from typing import List
 
 from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
-from domain.repositories.base import AbstractQueryBaseRepository
+from domain.repositories.base import AbstractBaseRepository
 
 
-class AbstractRecipeRepository(AbstractQueryBaseRepository, AbstractQueryBaseRepository, ABC):
+class AbstractRecipeRepository(AbstractBaseRepository, ABC):
 
     @abstractmethod
     def get_by_name(self, recipe_name: str) -> Recipe:

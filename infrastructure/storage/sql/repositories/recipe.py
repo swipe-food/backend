@@ -1,30 +1,29 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Callable
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
 from domain.repositories.recipe import AbstractRecipeRepository
-from infrastructure.log import Logger
 from infrastructure.storage.sql.model import DBRecipe, DBUser
 from infrastructure.storage.sql.postgres import PostgresDatabase
 from infrastructure.storage.sql.repositories.decorators import catch_no_result_found_exception, catch_add_data_exception, catch_update_data_exception, catch_delete_data_exception
 from infrastructure.storage.sql.repositories.user import UserRepository
 
 
-def create_recipe_repository(database: PostgresDatabase) -> RecipeRepository:
+def create_recipe_repository(database: PostgresDatabase, create_logger: Callable) -> RecipeRepository:
     if not isinstance(database, PostgresDatabase):
         raise InvalidValueException(RecipeRepository, 'database must be a PostgresDatabase')
-    return RecipeRepository(database=database)
+    return RecipeRepository(database=database, create_logger=create_logger)
 
 
 class RecipeRepository(AbstractRecipeRepository):
 
-    def __init__(self, database: PostgresDatabase):
+    def __init__(self, database: PostgresDatabase, create_logger: Callable):
         self._db = database
-        self._logger = Logger.create(f'{__name__}.{self.__class__.__name__}')
+        self._logger = create_logger(f'{__name__}.{self.__class__.__name__}')
         self._logger.info(f'created new {self.__class__.__name__}')
 
     @catch_no_result_found_exception
@@ -55,12 +54,8 @@ class RecipeRepository(AbstractRecipeRepository):
     @catch_no_result_found_exception
     def get_all(self, limit: int = None) -> List[Recipe]:
         db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).limit(limit).all()
-        recipes: List[Recipe] = []
-        for db_recipe in db_recipes:
-            recipe = db_recipe.to_entity()
-            recipes.append(recipe)
-        self._logger.debug("get all recipes", limit=limit, count=len(recipes))
-        return recipes
+        self._logger.debug("get all recipes", limit=limit, count=len(db_recipes))
+        return [db_recipe.to_entity() for db_recipe in db_recipes]
 
     @catch_no_result_found_exception
     def get_unseen_recipes_for_user(self, user: User, limit: int = 20) -> List[Recipe]:
@@ -70,7 +65,7 @@ class RecipeRepository(AbstractRecipeRepository):
         for db_recipe in db_recipes:
             recipe = db_recipe.to_entity()
             recipes.append(recipe)
-        self._logger.debug("get unseen recipes for user", limit=limit, user_id=user.id.__str__(), count=len(recipes))
+        self._logger.debug("get unseen recipes for user", limit=limit, user_id=user.id.__str__(), count_recipes=len(recipes))
         return recipes
 
     @catch_add_data_exception

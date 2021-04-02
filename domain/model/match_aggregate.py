@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.base import Entity
 from domain.model.recipe_aggregate import Recipe
 
