@@ -62,10 +62,3 @@ class TestConfigParser:
     def test_config_missing(self):
         with pytest.raises(MissingConfigException):
             TestConfigA(get_fake_config(missing_value=True))
-
-
-class TestAppConfig:
-
-    def test_create_successful(self):
-        """tests if the creation of the current app config works"""
-        create_new_config()
