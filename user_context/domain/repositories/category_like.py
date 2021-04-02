@@ -1,7 +1,7 @@
 from abc import ABC
 
-from common.domain.repositories import AbstractBaseRepository
+from common.domain.repositories import AbstractQueryBaseRepository, AbstractCommandBaseRepository
 
 
-class AbstractCategoryLikeRepository(AbstractBaseRepository, ABC):
+class AbstractCategoryLikeRepository(AbstractQueryBaseRepository, AbstractCommandBaseRepository, ABC):
     pass

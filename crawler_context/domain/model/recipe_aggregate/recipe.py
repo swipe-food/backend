@@ -37,7 +37,6 @@ class Recipe(Entity):
         for ingredient in ingredients:
             self.add_ingredient(ingredient)
 
-
     @property
     def name(self) -> str:
         self._check_not_discarded()

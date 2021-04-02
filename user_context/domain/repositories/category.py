@@ -1,14 +1,14 @@
 from abc import abstractmethod, ABC
 from typing import List
 
-from common.domain.repositories import AbstractBaseRepository
+from common.domain.repositories import AbstractQueryBaseRepository
 from user_context.domain.model.category_aggregate import Category
 from user_context.domain.model.recipe_aggregate import Recipe
 from user_context.domain.model.user_aggregate import User
 from user_context.domain.model.vendor_aggregate import Vendor
 
 
-class AbstractCategoryRepository(AbstractBaseRepository, ABC):
+class AbstractCategoryRepository(AbstractQueryBaseRepository, ABC):
 
     @abstractmethod
     def get_by_name(self, category_name: str) -> Category:
