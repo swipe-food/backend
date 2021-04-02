@@ -9,7 +9,6 @@ from sqlalchemy.orm.session import Session
 
 from domain.exceptions import MissingArgumentException, InvalidValueException
 from infrastructure.config import DatabaseConfig
-from infrastructure.log import Logger
 from infrastructure.storage.sql.model import Base
 
 

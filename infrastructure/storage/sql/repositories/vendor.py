@@ -7,7 +7,7 @@ from domain.exceptions import InvalidValueException
 from domain.model.recipe_aggregate import Recipe
 from domain.model.vendor_aggregate import Vendor
 from domain.repositories.vendor import AbstractVendorRepository
-from infrastructure.storage.sql.model import DBVendor, DBRecipe
+from infrastructure.storage.sql.model import DBVendor, DBRecipe, DBVendorLanguages
 from infrastructure.storage.sql.postgres import PostgresDatabase
 from infrastructure.storage.sql.repositories.decorators import catch_add_data_exception, catch_no_result_found_exception, catch_update_data_exception, catch_delete_data_exception
 
@@ -30,6 +30,12 @@ class VendorRepository(AbstractVendorRepository):
         self._db.add(DBVendor.from_entity(entity))
         self._logger.debug("added vendor to database", vendor_id=entity.id.__str__())
 
+    @catch_add_data_exception
+    def add_languages(self, vendor: Vendor):
+        db_vendor_languages = [DBVendorLanguages.from_entity(vendor, lang) for lang in vendor.languages]
+        self._db.add(*db_vendor_languages)
+        self._logger.debug("added languages of vendor to database", vendor_id=vendor.id.__str__())
+
     @catch_no_result_found_exception
     def get_by_id(self, entity_id: UUID) -> Vendor:
         db_vendor: DBVendor = self._db.session.query(DBVendor).filter(DBVendor.id == entity_id).one()
@@ -44,7 +50,7 @@ class VendorRepository(AbstractVendorRepository):
 
     @catch_no_result_found_exception
     def get_recipes(self, vendor: Vendor) -> List[Recipe]:
-        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.fk_vendor == vendor.id).one()
+        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.fk_vendor == vendor.id).all()
         self._logger.debug("get all recipes for vendor", count=len(db_recipes))
         return [db_recipe.to_entity() for db_recipe in db_recipes]
 
