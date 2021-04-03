@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Tuple
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.base import Entity
 from domain.model.category_like_aggregate import CategoryLike
 from domain.model.language_aggregate import Language

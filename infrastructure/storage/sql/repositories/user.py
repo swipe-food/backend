@@ -1,26 +1,25 @@
-from typing import List
+from typing import List, Callable
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.user_aggregate import User
 from domain.repositories.user import AbstractUserRepository
-from infrastructure.log import Logger
 from infrastructure.storage.sql.model import DBUser, DBUserLanguages, DBUserSeenRecipes
 from infrastructure.storage.sql.postgres import PostgresDatabase
 from infrastructure.storage.sql.repositories.decorators import catch_no_result_found_exception, catch_add_data_exception, catch_update_data_exception, catch_delete_data_exception
 
 
-def create_user_repository(database: PostgresDatabase):
+def create_user_repository(database: PostgresDatabase, create_logger: Callable):
     if not isinstance(database, PostgresDatabase):
         raise InvalidValueException(UserRepository, 'database must be a PostgresDatabase')
-    return UserRepository(database=database)
+    return UserRepository(database=database, create_logger=create_logger)
 
 
 class UserRepository(AbstractUserRepository):
 
-    def __init__(self, database: PostgresDatabase):
+    def __init__(self, database: PostgresDatabase, create_logger: Callable):
         self._db = database
-        self._logger = Logger.create(f'{__name__}.{self.__class__.__name__}')
+        self._logger = create_logger(f'{__name__}.{self.__class__.__name__}')
         self._logger.info(f'created new {self.__class__.__name__}')
 
     @catch_add_data_exception

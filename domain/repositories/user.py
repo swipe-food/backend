@@ -1,10 +1,10 @@
 from abc import abstractmethod, ABC
 
 from domain.model.user_aggregate import User
-from domain.repositories.base import AbstractQueryBaseRepository, AbstractCommandBaseRepository
+from domain.repositories.base import AbstractBaseRepository
 
 
-class AbstractUserRepository(AbstractQueryBaseRepository, AbstractCommandBaseRepository, ABC):
+class AbstractUserRepository(AbstractBaseRepository, ABC):
 
     @abstractmethod
     def get_by_email(self, email: str) -> User:

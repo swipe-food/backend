@@ -3,5 +3,5 @@ from abc import ABC
 from domain.repositories.base import AbstractBaseRepository
 
 
-class AbstractCategoryLikeRepository(AbstractBaseRepository, ABC):
+class AbstractLanguageRepository(AbstractBaseRepository, ABC):
     pass

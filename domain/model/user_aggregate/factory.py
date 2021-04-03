@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.category_like_aggregate import CategoryLike
 from domain.model.language_aggregate import Language
 from domain.model.match_aggregate import Match

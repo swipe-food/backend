@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.base import Entity
 
 

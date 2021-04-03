@@ -2,7 +2,7 @@ from decorator import decorator
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 
-from common.exceptions import RepositoryException, StorageException, StorageNoResultFoundException, StorageAddException, StorageDeleteException, StorageUpdateException
+from domain.exceptions import RepositoryException, StorageException, StorageNoResultFoundException, StorageAddException, StorageDeleteException, StorageUpdateException
 
 
 @decorator

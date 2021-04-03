@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from typing import List
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.category_aggregate import Category
 from domain.model.common_value_objects import URL
 from domain.model.ingredient_aggregate import Ingredient

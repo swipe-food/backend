@@ -108,7 +108,7 @@ class DBUser(Base):
             languages=[language.to_entity() for language in self.languages],
             liked_categories=[],
             matches=[],
-            seen_recipes=[seen_recipe.to_user_context_entity() for seen_recipe in self.seen_recipes],
+            seen_recipes=[seen_recipe.to_entity() for seen_recipe in self.seen_recipes],
         )
 
 
@@ -140,7 +140,7 @@ class DBCategoryLike(Base):
         return create_category_like(
             category_like_id=self.id,
             user=self.user.to_entity(),
-            category=self.category.to_user_context_entity(),
+            category=self.category.to_entity(),
             views=self.views,
             matches=self.matches,
         )
@@ -168,12 +168,12 @@ class DBCategory(Base):
             fk_vendor=category.vendor.id,
         )
 
-    def to__entity(self) -> Category:
+    def to_entity(self) -> Category:
         return create_category(
             category_id=self.id,
             name=self.name,
             url=self.url,
-            vendor=self.vendor.to_crawler_context_entity(),
+            vendor=self.vendor.to_entity(),
         )
 
 
@@ -210,7 +210,7 @@ class DBMatch(Base):
             is_seen_by_user=self.is_seen_by_user,
             is_active=self.is_active,
             user=self.user.to_entity(),
-            recipe=self.recipe.to_user_context_entity(),
+            recipe=self.recipe.to_entity(),
         )
 
 
@@ -301,8 +301,8 @@ class DBRecipe(Base):
             rating_count=self.rating_count,
             image_url=self.image,
             ingredients=[db_ingredient.to_entity() for db_ingredient in self.ingredients],
-            category=self.category.to_user_context_entity(),
-            vendor=self.vendor.to_user_context_entity(),
+            category=self.category.to_entity(),
+            vendor=self.vendor.to_entity(),
             language=self.language.to_entity(),
         )
 
@@ -336,7 +336,7 @@ class DBVendor(Base):
     categories = relationship("DBCategory", back_populates="vendor")
 
     @classmethod
-    def from_user_context_entity(cls, vendor: Vendor):
+    def from_entity(cls, vendor: Vendor):
         """creates a DBVendor instance from the user context entity class Vendor.
             Important: The relationship of the DBVendor class are not parsed. They have to be added manually.
         """
@@ -346,20 +346,9 @@ class DBVendor(Base):
             description=vendor.description,
             url=vendor.url.__str__(),
             is_active=vendor.is_active,
-            recipe_pattern=vendor.recipe_pattern,
-        )
-
-    @classmethod
-    def from_crawler_context_entity(cls, vendor: Vendor):
-        """creates a DBVendor instance from the crawler context entity class Vendor.
-            Important: The relationship of the DBVendor class are not parsed. They have to be added manually.
-        """
-        return cls(
-            id=vendor.id,
-            name=vendor.name,
-            url=vendor.url.__str__(),
             date_last_crawled=vendor.date_last_crawled,
-            categories_link=vendor.categories_link
+            categories_link=vendor.categories_link,
+            recipe_pattern=vendor.recipe_pattern,
         )
 
     def to_entity(self) -> Vendor:
@@ -370,6 +359,8 @@ class DBVendor(Base):
             url=self.url,
             is_active=self.is_active,
             recipe_pattern=self.recipe_pattern,
+            categories_link=self.categories_link,
+            date_last_crawled=self.date_last_crawled,
             languages=[language.to_entity() for language in self.languages],
             categories=[],
         )

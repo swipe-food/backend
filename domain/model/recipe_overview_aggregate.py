@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Tuple
 from uuid import UUID
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.base import Entity, Immutable
 from domain.model.common_value_objects import URL
 

@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from common.exceptions import InvalidValueException
+from domain.exceptions import InvalidValueException
 from domain.model.base import Immutable
 
 

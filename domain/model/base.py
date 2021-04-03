@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any, Callable
 from uuid import UUID
 
-from common.exceptions import DiscardEntityException
+from domain.exceptions import DiscardEntityException
 
 
 class Entity(ABC):
