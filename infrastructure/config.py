@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from pathlib import Path
-from typing import get_type_hints, Any
+from typing import get_type_hints, Any, Type
 
 from dotenv import dotenv_values
 
@@ -38,9 +38,31 @@ class ConfigParser:
         try:
             if issubclass(field_type, bool):
                 return value == 'True'
+            elif issubclass(field_type, ConfigField):
+                parsed_value = field_type.parse_to_type(value)
+                if parsed_value not in field_type.VALID_VALUES:
+                    raise InvalidValueException(cls, f"Config field '{field}' has an invalid value '{parsed_value}' for type {field_type.__name__}. Valid values are: {field_type.VALID_VALUES.__str__()}")
+                return parsed_value
             return field_type(value)
+        except InvalidValueException as exception:
+            raise exception
         except ValueError:
             raise InvalidValueException(cls, f"Config field '{field}' has an invalid value '{value}' for type {field_type}")
+
+
+class ConfigField(ABC):
+    VALID_VALUES = []
+    TYPE: Type
+
+    @classmethod
+    def parse_to_type(cls, value):
+        field_type = get_type_hints(cls)["TYPE"]
+        return field_type(value)
+
+
+class LogLevelField(ConfigField):
+    VALID_VALUES = ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
+    TYPE: str
 
 
 class ConfigComponent(ABC):
@@ -49,7 +71,6 @@ class ConfigComponent(ABC):
     @classmethod
     def load_and_parse(cls, env_file_path: str) -> ConfigComponent:
         config = dotenv_values(env_file_path)
-
         return ConfigParser.parse(config, cls())
 
     def __str__(self):
@@ -65,6 +86,9 @@ class ConfigComponent(ABC):
 class CrawlerConfig(ConfigComponent):
     PREFIX = 'CRAWLER_'
     fetch_batch_size: int
+    log_file_name: str
+    log_level_console: LogLevelField
+    log_level_file: LogLevelField
 
 
 class DatabaseConfig(ConfigComponent):
@@ -92,10 +116,17 @@ class DatabaseConfig(ConfigComponent):
         )
 
 
+class ApiConfig(ConfigComponent):
+    PREFIX = "API_"
+    log_file_name: str
+    log_level_console: LogLevelField
+    log_level_file: LogLevelField
+
+
 class AppConfig(ConfigComponent):
     PREFIX = 'SF_'
     environment: str
-    log_file_name: str
+    api: ApiConfig
     crawler: CrawlerConfig
     database: DatabaseConfig
 
