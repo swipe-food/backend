@@ -1,3 +1,4 @@
+from infrastructure.config import CrawlerConfig, ApiConfig
 import logging.config
 
 import structlog
@@ -10,7 +11,7 @@ class Logger:
         return structlog.getLogger(name=name, **kwargs)
 
     @classmethod
-    def load_config(cls, log_file_name: str):
+    def load_config(cls, config: CrawlerConfig or ApiConfig):
         logging.config.dictConfig({
             "version": 1,
             "disable_existing_loggers": True,
@@ -26,15 +27,15 @@ class Logger:
             },
             "handlers": {
                 "consoleHandler": {
-                    "level": "INFO",
+                    "level": config.log_level_console,
                     "class": "logging.StreamHandler",
                     "formatter": "simpleFormatter",
                 },
                 "fileHandler": {
-                    "level": "DEBUG",
+                    "level": config.log_level_file,
                     "class": "logging.handlers.TimedRotatingFileHandler",
                     "formatter": "jsonFormatter",
-                    "filename": log_file_name,
+                    "filename": config.log_file_name,
                     "when": "midnight",
                     "interval": 10,
                     "backupCount": 7

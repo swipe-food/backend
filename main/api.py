@@ -11,7 +11,7 @@ from infrastructure.storage.sql.repositories.vendor import create_vendor_reposit
 
 if __name__ == "__main__":
     config = create_new_config()
-    Logger.load_config(config.log_file_name)
+    Logger.load_config(config.api)
     logger = Logger.create(__name__)
 
     db = create_postgres_database(config.database, Logger.create)
