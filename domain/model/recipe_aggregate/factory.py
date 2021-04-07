@@ -1,18 +1,20 @@
 from datetime import timedelta, datetime
 from typing import List
-from uuid import UUID
+from uuid import UUID, uuid4
+
+from more_itertools import one
 
 from domain.exceptions import InvalidValueException
 from domain.model.category_aggregate import Category
 from domain.model.common_value_objects import URL
-from domain.model.ingredient_aggregate import Ingredient
-from domain.model.language_aggregate import Language
+from domain.model.ingredient_aggregate import Ingredient, create_ingredient
+from domain.model.language_aggregate import Language, create_language
 from domain.model.recipe_aggregate.recipe import Recipe
 from domain.model.recipe_aggregate.value_objects import RecipeURL, AggregateRating, Author
 from domain.model.vendor_aggregate import Vendor
 
 
-def create_recipe(recipe_id: UUID, name: str, description: str, author: str, vendor_id: str,
+def create_recipe(recipe_id: UUID, name: str, description: str, author: str,
                   prep_time: timedelta, cook_time: timedelta, total_time: timedelta, date_published: datetime,
                   url: str, category: Category, vendor: Vendor, language: Language, rating_count: int,
                   rating_value: float, image_url: str, ingredients: List[Ingredient]) -> Recipe:
@@ -21,9 +23,6 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
 
     if not isinstance(description, str):
         raise InvalidValueException(Recipe, 'description must be a string')
-
-    if not isinstance(vendor_id, str):
-        raise InvalidValueException(Recipe, 'vendor_id must be a string')
 
     if not isinstance(prep_time, timedelta):
         raise InvalidValueException(Recipe, 'prep_time must be a timedelta')
@@ -62,7 +61,6 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
         name=name,
         description=description,
         author=author_object,
-        vendor_id=vendor_id,
         prep_time=prep_time,
         cook_time=cook_time,
         total_time=total_time,
@@ -74,4 +72,28 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str, ven
         aggregate_rating=aggregate_rating_object,
         image=image_url_object,
         ingredients=ingredients,
+    )
+
+
+def create_recipe_from_structured_data(structured_data: dict, url: str, vendor: Vendor, language: Language) -> Recipe:
+    def get_attribute(attribute: str):
+        return structured_data.get(attribute, None)
+
+    return create_recipe(
+        recipe_id=uuid4(),  # TODO: don't know if this is the best place to init it, but it has to be done somewhere
+        name=get_attribute('name'),
+        description=get_attribute('description'),
+        author=structured_data.get('author', dict()).get('name'),
+        prep_time=timedelta(minutes=10),  # TODO: not contained in structured data :(
+        cook_time=timedelta(minutes=10),  # TODO: not contained in structured data :(
+        total_time=timedelta(minutes=10),  # TODO: not contained in structured data :(
+        date_published=datetime.strptime(get_attribute('datePublished'), '%Y-%m-%d'),
+        url=url,
+        category=list(filter(lambda category: category.name == get_attribute('recipeCategory'), vendor.categories))[0],  # TODO: not the best option...
+        vendor=vendor,
+        language=language,  # TODO: how do we get this?
+        rating_count=structured_data.get('aggregateRating', dict()).get('ratingCount') or 0,
+        rating_value=structured_data.get('aggregateRating', dict()).get('ratingValue') or 0.0,
+        image_url=get_attribute('image'),
+        ingredients=[create_ingredient(ingredient_id=uuid4(), text=ingredient) for ingredient in get_attribute('recipeIngredient')],
     )

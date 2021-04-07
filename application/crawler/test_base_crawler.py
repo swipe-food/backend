@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from pytest import fixture
 
-from application.crawler.crawlers.base_crawler import AbstractBaseCrawler
+from application.crawler.base_crawler import AbstractBaseCrawler
 from application.crawler.scrapers import ParsedRecipe, ParsedCategory
 
 

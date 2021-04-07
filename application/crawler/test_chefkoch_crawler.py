@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from more_itertools import one
 
-from application.crawler.crawlers.chefkoch_crawler import ChefkochCrawler
+from application.crawler.chefkoch_crawler import ChefkochCrawler
 from application.crawler.scrapers import ChefkochScraper
 from application.crawler.test_utils import parsed_recipe_sample, load_sample_website
 
@@ -40,7 +40,7 @@ class TestChefkochCrawler:
             else:
                 raise Exception('called _crawl_and_parse too often!')
 
-        mock_categories.return_value = ChefkochScraper.parse_categories(soup=load_sample_website('categories.html'))
+        mock_categories.return_value = ChefkochScraper.scrape_categories(soup=load_sample_website('categories.html'))
         mock_crawl_and_parse.side_effect = mock_and_test_crawl_parse
 
         recipes = ChefkochCrawler.crawl_new_recipes()

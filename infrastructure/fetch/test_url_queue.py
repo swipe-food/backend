@@ -1,6 +1,6 @@
 import pytest
 
-from application.crawler.fetch.url_queue import URLQueue
+from infrastructure.fetch import URLQueue
 
 
 class TestUrlQueue:

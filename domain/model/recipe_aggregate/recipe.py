@@ -14,7 +14,7 @@ from domain.model.vendor_aggregate import Vendor
 
 class Recipe(Entity):
 
-    def __init__(self, recipe_id: UUID, name: str, description: str, author: Author, vendor_id: str, prep_time: timedelta,
+    def __init__(self, recipe_id: UUID, name: str, description: str, author: Author, prep_time: timedelta,
                  cook_time: timedelta, total_time: timedelta, date_published: datetime, url: RecipeURL, image: URL, ingredients: List[Ingredient],
                  aggregate_rating: AggregateRating, category: Category, vendor: Vendor, language: Language):
         super().__init__(recipe_id)
@@ -22,7 +22,6 @@ class Recipe(Entity):
         self._name = name
         self._description = description
         self._author = author
-        self._vendor_id = vendor_id
         self._prep_time = prep_time
         self._cook_time = cook_time
         self._total_time = total_time
@@ -54,11 +53,6 @@ class Recipe(Entity):
     def author(self):
         self._check_not_discarded()
         return self._author
-
-    @property
-    def vendor_id(self) -> str:
-        self._check_not_discarded()
-        return self._vendor_id
 
     @property
     def prep_time(self) -> timedelta:

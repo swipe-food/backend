@@ -39,14 +39,18 @@ class VendorRepository(AbstractVendorRepository):
     @catch_no_result_found_exception
     def get_by_id(self, entity_id: UUID) -> Vendor:
         db_vendor: DBVendor = self._db.session.query(DBVendor).filter(DBVendor.id == entity_id).one()
+        vendor = db_vendor.to_entity()
+        self.load_relationship_for_vendor(db_vendor, vendor)
         self._logger.debug("get vendor by id", vendor_id=db_vendor.id.__str__())
-        return db_vendor.to_entity()
+        return vendor
 
     @catch_no_result_found_exception
     def get_by_name(self, vendor_name: str) -> Vendor:
         db_vendor: DBVendor = self._db.session.query(DBVendor).filter(DBVendor.name == vendor_name).one()
+        vendor = db_vendor.to_entity()
+        self.load_relationship_for_vendor(db_vendor, vendor)
         self._logger.debug("get vendor by name", vendor_id=db_vendor.id.__str__(), vendor_name=vendor_name)
-        return db_vendor.to_entity()
+        return vendor
 
     @catch_no_result_found_exception
     def get_recipes(self, vendor: Vendor) -> List[Recipe]:
@@ -77,3 +81,10 @@ class VendorRepository(AbstractVendorRepository):
     def delete(self, entity: Vendor):
         self._db.delete(table=DBVendor, filters=(DBVendor.id == entity.id,))
         self._logger.debug("deleted vendor", vendor_id=entity.id.__str__())
+
+    @staticmethod
+    def load_relationship_for_vendor(db_vendor: DBVendor, vendor: Vendor):
+        for language in db_vendor.languages:
+            vendor.add_language(language.to_entity())
+        for category in db_vendor.categories:
+            vendor.add_category(category.to_entity())
