@@ -1,10 +1,12 @@
 import asyncio
+from typing import Generator
 from unittest.mock import patch
 
 import aiohttp
 import pytest
 from aiohttp import ClientTimeout, InvalidURL
 from bs4 import BeautifulSoup
+from more_itertools import one
 
 from infrastructure.fetch import AsyncFetcher, FetchResult
 
@@ -16,7 +18,7 @@ class TestAsyncFetcher:
     def fetcher():
         return AsyncFetcher()
 
-    @patch('application.crawler.fetch.async_fetcher.AsyncFetcher.fetch')
+    @patch('infrastructure.fetch.async_fetcher.AsyncFetcher.fetch')
     def test_fetch_parallel(self, mock_fetch, fetcher):
         async def fetch(_, url: str):
             return FetchResult(url=url, status=200, html=BeautifulSoup())
@@ -24,7 +26,10 @@ class TestAsyncFetcher:
         mock_fetch.side_effect = fetch
 
         test_urls = ['dummy_url'] * 10
-        results = fetcher.fetch_parallel(test_urls)
+        result_generator = fetcher.fetch_parallel(test_urls, batch_size=10)
+
+        assert isinstance(result_generator, Generator)
+        results = one(list(result_generator))
 
         assert len(results) == len(test_urls)
         for result in results:

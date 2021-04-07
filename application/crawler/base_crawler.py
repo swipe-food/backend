@@ -30,8 +30,8 @@ class AbstractBaseCrawler(ABC):
     def crawl_new_recipes(self) -> List[Recipe]:
         raise NotImplementedError
 
-    def _crawl_urls(self, recipe_urls: List[str]) -> Generator[FetchResult, None, None]:
-        for page_batch in AsyncFetcher.fetch_parallel(recipe_urls, batch_size=self.config.fetch_batch_size):
+    def _crawl_urls(self, urls: List[str]) -> Generator[FetchResult, None, None]:
+        for page_batch in AsyncFetcher.fetch_parallel(urls, batch_size=self.config.fetch_batch_size):
             for page in page_batch:
                 yield page
 

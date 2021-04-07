@@ -65,6 +65,8 @@ class TestConfigParser:
         assert test_config.component_c.float_value == 4.5
         assert test_config.component_c.component_d.string_value == 'Test'
         assert test_config.component_c.component_d.small_number == 4
+        assert str(test_config.component_c)
+        assert repr(test_config.component_c)
 
     def test_config_invalid(self):
         with pytest.raises(InvalidValueException):

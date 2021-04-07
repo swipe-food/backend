@@ -104,7 +104,7 @@ class DatabaseConfig(ConfigComponent):
     max_open_connections: int
     logging_enabled: bool
 
-    def get_dsn(self, sanitize: bool = False):
+    def get_dsn(self, sanitize: bool = False):  # doNotTest
         return '{dialect}{driver}://{user}:{password}@{host}{port}/{name}'.format(
             dialect=self.dialect,
             driver=f'+{self.driver}' if self.driver is not None else '',

@@ -49,7 +49,7 @@ class AggregateRating(Immutable):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return self._rating_count == other.rating_count and self._rating_value == other.rating_count
+        return self._rating_count == other.rating_count and self._rating_value == other.rating_value
 
     def __str__(self) -> str:
         return f'Rating Count: {self._rating_count}, Rating Value: {self._rating_value}'

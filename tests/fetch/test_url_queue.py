@@ -1,6 +1,6 @@
 import pytest
 
-from infrastructure.fetch import URLQueue
+from infrastructure.fetch.url_queue import URLQueue
 
 
 class TestUrlQueue:
