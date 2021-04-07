@@ -21,6 +21,7 @@ class AsyncFetcher:
 
     @classmethod
     def fetch_parallel(cls, urls: List[str], batch_size: int) -> Generator[List[FetchResult], None, None]:
+        """Fetches urls parallel in batches and returns a generator that yields every fetched URL batch as a list of FetchResult objects."""
         loop = asyncio.get_event_loop()
         queue = URLQueue(urls=urls)
         while not queue.is_empty():

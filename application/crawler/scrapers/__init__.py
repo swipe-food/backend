@@ -1,1 +1,2 @@
+from application.crawler.scrapers.base_scraper import AbstractBaseScraper
 from application.crawler.scrapers.chefkoch_scraper import ChefkochScraper

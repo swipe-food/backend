@@ -15,7 +15,7 @@ class URLQueue:
             for item in value:
                 self.add(item)
         else:
-            raise ValueError(f'unsopported type {type(value)} for {self}')
+            raise ValueError(f'unsupported type {type(value)} for {self}')
 
     def clear(self):
         self.urls.clear()

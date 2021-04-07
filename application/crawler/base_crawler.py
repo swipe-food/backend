@@ -35,8 +35,7 @@ class AbstractBaseCrawler(ABC):
             for page in page_batch:
                 yield page
 
-    def _crawl_and_process(self, urls_to_crawl: List[str], scrape_callback: Callable[[FetchResult], Any],
-                           store_results: bool = False, store_callback: Callable = None):
+    def _crawl_and_process(self, urls_to_crawl: List[str], scrape_callback: Callable[[FetchResult], Any], store_results: bool = False, store_callback: Callable = None):
         results = list()
         for crawled_page in self._crawl_urls(urls_to_crawl):
             scrape_result = scrape_callback(crawled_page)
