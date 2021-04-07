@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from itertools import chain
 from typing import List, Tuple
 
 from more_itertools import one
@@ -14,7 +15,6 @@ from domain.repositories.category import AbstractCategoryRepository
 from domain.repositories.recipe import AbstractRecipeRepository
 from domain.repositories.vendor import AbstractVendorRepository
 from infrastructure.config import CrawlerConfig
-from infrastructure.fetch import AsyncFetcher
 
 
 class ChefkochCrawler(AbstractBaseCrawler):
@@ -25,40 +25,41 @@ class ChefkochCrawler(AbstractBaseCrawler):
         self.scraper = ChefkochScraper(vendor=vendor)
 
     def crawl_categories(self, store_categories: bool = False) -> List[Category]:
-        categories_page = one(AsyncFetcher.fetch_parallel([self.vendor.categories_link]))
-
-        categories: List[Category] = self.scraper.scrape_categories(soup=categories_page.html)
-        if store_categories:
-            self._store_crawled_categories(categories=categories)
-
-        return categories
+        return one(self._crawl_and_process(
+            urls_to_crawl=[self.vendor.categories_link],
+            scrape_callback=lambda categories_page: self.scraper.scrape_categories(soup=categories_page.html),
+            store_results=store_categories,
+            store_callback=self._store_categories,
+        ))
 
     def crawl_new_recipes(self, store_recipes: bool = True) -> List[Recipe]:
-        recipe_overviews = self._get_recipe_overview_items()
-        new_recipe_urls = [recipe_url for recipe_url, _ in self._filter_new_recipes(recipe_overviews)]
-
-        recipes: List[Recipe] = self._crawl_and_parse(new_recipe_urls, scrape_callback=lambda page: self.scraper.scrape_recipe(soup=page.html, url=page.url))
-        if store_recipes:
-            self._store_crawled_recipes(recipes=recipes)
-
-        return recipes
+        all_recipe_overviews = self._get_recipe_overview_items()
+        recent_recipe_overviews = [recipe_url for recipe_url, _ in self._filter_new_recipes(all_recipe_overviews)]
+        return self._crawl_and_process(
+            urls_to_crawl=recent_recipe_overviews,
+            scrape_callback=lambda recipe_page: self.scraper.scrape_recipe(soup=recipe_page.html, url=recipe_page.url),
+            store_results=store_recipes,
+            store_callback=self._store_recipe,
+        )
 
     def _get_recipe_overview_items(self) -> List[Tuple[str, datetime]]:
         recipe_overview_urls = [self._get_date_sorted_url(category.url.value) for category in self.vendor.categories]
-        return self._crawl_and_parse(recipe_overview_urls, scrape_callback=lambda page: self.scraper.scrape_recipe_overview(soup=page.html))
+        return list(chain(*self._crawl_and_process(
+            urls_to_crawl=recipe_overview_urls,
+            scrape_callback=lambda overview_page: self.scraper.scrape_recipe_overview(soup=overview_page.html),
+        )))
 
-    def _store_crawled_categories(self, categories: List[Category]):
+    def _store_categories(self, categories: List[Category]):
         if self._category_repository is None:
             raise ValueError('you must specify the category repository to store the crawled categories')
         for category in categories:
             self._category_repository.add(category)
             self.vendor.add_category(category)
 
-    def _store_crawled_recipes(self, recipes: List[Recipe]):
+    def _store_recipe(self, recipe: Recipe):
         if self._recipe_repository is None:
             raise ValueError('you must specify the recipe repository to store the crawled recipes')
-        for recipe in recipes:
-            self._recipe_repository.add(recipe)
+        self._recipe_repository.add(recipe)
 
     @staticmethod
     def _get_date_sorted_url(recipe_url: str) -> str:

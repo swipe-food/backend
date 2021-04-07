@@ -38,7 +38,7 @@ class TestBaseCrawler:
 
         mock_fetch.side_effect = test_and_mock_fetch
 
-        fetched_urls = crawler_implementation._crawl_and_parse(
+        fetched_urls = crawler_implementation._crawl_urls(
             recipe_urls=urls.copy(),
             scrape_callback=lambda result: f'{result}_scraped'
         )
@@ -57,7 +57,7 @@ class TestBaseCrawler:
 
         mock_fetch.side_effect = test_and_mock_fetch
 
-        fetched_urls = crawler_implementation._crawl_and_parse(
+        fetched_urls = crawler_implementation._crawl_urls(
             recipe_urls=urls.copy(),
             scrape_callback=lambda result: [f'{url}_scraped' for url in result]
         )

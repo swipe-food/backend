@@ -1,10 +1,12 @@
 import asyncio
 from dataclasses import dataclass
-from typing import List
+from typing import List, Generator
 
 import aiohttp
 from aiohttp import ClientTimeout, ClientSession
 from bs4 import BeautifulSoup
+
+from infrastructure.fetch.url_queue import URLQueue
 
 
 @dataclass
@@ -18,9 +20,12 @@ class AsyncFetcher:
     user_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0'
 
     @classmethod
-    def fetch_parallel(cls, urls: List[str]) -> List[FetchResult]:
+    def fetch_parallel(cls, urls: List[str], batch_size: int) -> Generator[List[FetchResult], None, None]:
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(cls._fetch_parallel_job(urls))
+        queue = URLQueue(urls=urls)
+        while not queue.is_empty():
+            url_batch = [next(queue) for _ in range(batch_size) if not queue.is_empty()]
+            yield loop.run_until_complete(cls._fetch_parallel_job(url_batch))
 
     @staticmethod
     async def fetch(session: ClientSession, url: str) -> FetchResult:

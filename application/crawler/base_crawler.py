@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import List, Callable, Any, Tuple
+from typing import List, Tuple, Generator, Callable, Any
 
 from domain.model.category_aggregate import Category
 from domain.model.recipe_aggregate import Recipe
@@ -10,11 +9,10 @@ from domain.repositories.category import AbstractCategoryRepository
 from domain.repositories.recipe import AbstractRecipeRepository
 from domain.repositories.vendor import AbstractVendorRepository
 from infrastructure.config import CrawlerConfig
-from infrastructure.fetch import URLQueue, AsyncFetcher, FetchResult
+from infrastructure.fetch import AsyncFetcher, FetchResult
 
 
 class AbstractBaseCrawler(ABC):
-    fetch_batch_size: int
 
     def __init__(self, vendor: Vendor, config: CrawlerConfig, recipe_repository: AbstractRecipeRepository = None, category_repository: AbstractCategoryRepository = None,
                  vendor_repository: AbstractVendorRepository = None):
@@ -32,20 +30,20 @@ class AbstractBaseCrawler(ABC):
     def crawl_new_recipes(self) -> List[Recipe]:
         raise NotImplementedError
 
-    def _crawl_and_parse(self, recipe_urls: List[str], scrape_callback: Callable[[FetchResult], Any]):
-        parsed_recipes = list()
+    def _crawl_urls(self, recipe_urls: List[str]) -> Generator[FetchResult, None, None]:
+        for page_batch in AsyncFetcher.fetch_parallel(recipe_urls, batch_size=self.config.fetch_batch_size):
+            for page in page_batch:
+                yield page
 
-        while not (queue := URLQueue(recipe_urls)).is_empty():
-            url_batch = [next(queue) for _ in range(self.config.fetch_batch_size) if not queue.is_empty()]
-
-            for page in AsyncFetcher.fetch_parallel(url_batch):
-                parsed_data = scrape_callback(page)
-                if isinstance(parsed_data, list):
-                    parsed_recipes += parsed_data
-                else:
-                    parsed_recipes.append(parsed_data)
-
-        return parsed_recipes
+    def _crawl_and_process(self, urls_to_crawl: List[str], scrape_callback: Callable[[FetchResult], Any],
+                           store_results: bool = False, store_callback: Callable = None):
+        results = list()
+        for crawled_page in self._crawl_urls(urls_to_crawl):
+            scrape_result = scrape_callback(crawled_page)
+            if store_results and store_callback is not None:
+                store_callback(scrape_result)
+            results.append(scrape_result)
+        return results
 
     @staticmethod
     def _filter_new_recipes(recipe_overviews: List[Tuple[str, datetime]]) -> List[Tuple[str, datetime]]:
