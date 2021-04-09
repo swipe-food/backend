@@ -1,7 +1,8 @@
 import pytest
 
 from domain.exceptions import MissingConfigException, InvalidValueException
-from infrastructure.config import ConfigComponent, ConfigParser, ConfigField
+from infrastructure.config.parser import ConfigParser
+from infrastructure.config.types import ConfigComponent, ConfigField
 
 
 def get_fake_config(missing_value: bool = False, invalid_value: bool = False, invalid_config_field: bool = False) -> dict:
