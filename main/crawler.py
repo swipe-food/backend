@@ -65,5 +65,4 @@ def crawl_chefkoch_recipes(store_recipes: bool = False) -> List[Recipe]:
 
 
 if __name__ == '__main__':
-    # crawl_all_sources_loop()
-    crawl_chefkoch_recipes(store_recipes=True)
+    crawl_all_sources_loop()
