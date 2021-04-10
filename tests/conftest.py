@@ -37,7 +37,7 @@ def vendor(language: Language) -> Vendor:
         recipe_pattern='',
         date_last_crawled=datetime.now(),
         categories_link='https://www.chefkoch.de/rezepte/kategorien/',
-        languages=[language],
+        language=language,
         categories=[],
     )
 

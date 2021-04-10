@@ -20,6 +20,5 @@ if __name__ == '__main__':
     language_repo.add(german)
 
     chefkoch = create_vendor(uuid4(), name='Chefkoch', description='...', url='https://www.chefkoch.de', is_active=True, recipe_pattern='', date_last_crawled=datetime.now(),
-                             categories_link='https://www.chefkoch.de/rezepte/kategorien/', languages=[german], categories=[])
+                             categories_link='https://www.chefkoch.de/rezepte/kategorien/', language=german, categories=[])
     vendor_repo.add(chefkoch)
-    vendor_repo.add_languages(chefkoch)

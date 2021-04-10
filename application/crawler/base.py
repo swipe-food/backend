@@ -1,23 +1,23 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Tuple, Generator, Callable, Any
+from typing import List, Generator, Callable, Any
 
+from application.crawler.scrapers import RecipeOverviewItem
 from domain.model.category_aggregate import Category
 from domain.model.recipe_aggregate import Recipe
 from domain.model.vendor_aggregate import Vendor
 from domain.repositories.category import AbstractCategoryRepository
 from domain.repositories.recipe import AbstractRecipeRepository
 from domain.repositories.vendor import AbstractVendorRepository
-from infrastructure.config import CrawlerConfig
-from infrastructure.fetch import AsyncFetcher, FetchResult
+from infrastructure.fetch import FetchResult, AbstractFetcher
 
 
 class AbstractBaseCrawler(ABC):
 
-    def __init__(self, vendor: Vendor, config: CrawlerConfig, recipe_repository: AbstractRecipeRepository = None, category_repository: AbstractCategoryRepository = None,
-                 vendor_repository: AbstractVendorRepository = None):
+    def __init__(self, vendor: Vendor, fetcher: AbstractFetcher, recipe_repository: AbstractRecipeRepository = None,
+                 category_repository: AbstractCategoryRepository = None, vendor_repository: AbstractVendorRepository = None):
         self.vendor = vendor
-        self.config = config
+        self._fetcher = fetcher
         self._recipe_repository = recipe_repository
         self._category_repository = category_repository
         self._vendor_repository = vendor_repository
@@ -31,7 +31,7 @@ class AbstractBaseCrawler(ABC):
         raise NotImplementedError
 
     def _crawl_urls(self, urls: List[str]) -> Generator[FetchResult, None, None]:
-        for page_batch in AsyncFetcher.fetch_parallel(urls, batch_size=self.config.fetch_batch_size):
+        for page_batch in self._fetcher.fetch(urls):
             for page in page_batch:
                 yield page
 
@@ -45,12 +45,11 @@ class AbstractBaseCrawler(ABC):
         return results
 
     @staticmethod
-    def _filter_new_recipes(recipe_overviews: List[Tuple[str, datetime]]) -> List[Tuple[str, datetime]]:
-        def filter_recipes_from_previous_day(recipe_overview: Tuple[str, datetime]) -> bool:
-            _, date_published = recipe_overview
+    def _filter_new_recipes(recipe_overviews: List[RecipeOverviewItem]) -> List[RecipeOverviewItem]:
+        def filter_recipes_from_previous_day(recipe_overview: RecipeOverviewItem) -> bool:
             current_datetime = datetime.now()
             previous_day = datetime(year=current_datetime.year, month=current_datetime.month, day=current_datetime.day) - timedelta(days=1)
-            recipe_publish_day = datetime(year=date_published.year, month=date_published.month, day=date_published.day)
+            recipe_publish_day = datetime(year=recipe_overview.published.year, month=recipe_overview.published.month, day=recipe_overview.published.day)
             return recipe_publish_day == previous_day
 
         return list(filter(filter_recipes_from_previous_day, recipe_overviews))

@@ -7,6 +7,7 @@ from domain.model.recipe_aggregate import Recipe
 from domain.model.vendor_aggregate import Vendor
 from infrastructure.adapters.scheduler import BlockingSchedulerAdapter
 from infrastructure.config import create_new_config
+from infrastructure.fetch import AsyncFetcher
 from infrastructure.log import Logger
 from infrastructure.storage.sql.postgres import create_postgres_database
 from infrastructure.storage.sql.repositories.category import create_category_repository
@@ -18,6 +19,7 @@ CrawlerClass = TypeVar('CrawlerClass')
 
 def crawl_all_sources_loop():
     config = create_new_config()
+    fetcher = AsyncFetcher(batch_size=config.crawler.fetch_batch_size)
 
     db = create_postgres_database(config.database, Logger.create)
 
@@ -26,7 +28,7 @@ def crawl_all_sources_loop():
 
     def create_crawl_new_recipes_job(crawler_class: type(AbstractBaseCrawler), vendor: Vendor) -> Callable:
         def job():
-            crawler = crawler_class(vendor=vendor, config=config.crawler, recipe_repository=recipe_repository)
+            crawler = crawler_class(vendor=vendor, fetcher=fetcher, recipe_repository=recipe_repository)
             return crawler.crawl_new_recipes(store_recipes=True)
 
         return job
@@ -40,11 +42,12 @@ def crawl_all_sources_loop():
 
 def get_crawler(crawler_class: type(Generic[CrawlerClass]), vendor_name: str, with_category_repository: bool = False, with_recipe_repository: bool = False) -> CrawlerClass:
     config = create_new_config()
+    fetcher = AsyncFetcher(batch_size=config.crawler.fetch_batch_size)
     db = create_postgres_database(config.database, Logger.create)
     vendor_repository = create_vendor_repository(db, Logger.create)
     return crawler_class(
         vendor=vendor_repository.get_by_name(vendor_name=vendor_name),
-        config=config.crawler,
+        fetcher=fetcher,
         category_repository=create_category_repository(db, Logger.create) if with_category_repository else None,
         recipe_repository=create_recipe_repository(db, Logger.create) if with_recipe_repository else None,
         vendor_repository=create_vendor_repository(db, Logger.create),
@@ -62,4 +65,5 @@ def crawl_chefkoch_recipes(store_recipes: bool = False) -> List[Recipe]:
 
 
 if __name__ == '__main__':
-    crawl_all_sources_loop()
+    # crawl_all_sources_loop()
+    crawl_chefkoch_recipes(store_recipes=True)

@@ -7,7 +7,7 @@ from domain.exceptions import InvalidValueException
 from domain.model.recipe_aggregate import Recipe
 from domain.model.vendor_aggregate import Vendor
 from domain.repositories.vendor import AbstractVendorRepository
-from infrastructure.storage.sql.model import DBVendor, DBRecipe, DBVendorLanguages
+from infrastructure.storage.sql.model import DBVendor, DBRecipe
 from infrastructure.storage.sql.postgres import PostgresDatabase
 from infrastructure.storage.sql.repositories.decorators import catch_add_data_exception, catch_no_result_found_exception, catch_update_data_exception, catch_delete_data_exception
 
@@ -29,12 +29,6 @@ class VendorRepository(AbstractVendorRepository):
     def add(self, entity: Vendor):
         self._db.add(DBVendor.from_entity(entity))
         self._logger.debug("added vendor to database", vendor_id=entity.id.__str__())
-
-    @catch_add_data_exception
-    def add_languages(self, vendor: Vendor):
-        db_vendor_languages = [DBVendorLanguages.from_entity(vendor, lang) for lang in vendor.languages]
-        self._db.add(*db_vendor_languages)
-        self._logger.debug("added languages of vendor to database", vendor_id=vendor.id.__str__())
 
     @catch_no_result_found_exception
     def get_by_id(self, entity_id: UUID) -> Vendor:
@@ -84,7 +78,5 @@ class VendorRepository(AbstractVendorRepository):
 
     @staticmethod
     def load_relationship_for_vendor(db_vendor: DBVendor, vendor: Vendor):
-        for language in db_vendor.languages:
-            vendor.add_language(language.to_entity())
         for category in db_vendor.categories:
             vendor.add_category(category.to_entity())

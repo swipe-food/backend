@@ -1,3 +1,4 @@
+import re
 from datetime import timedelta, datetime
 from typing import List
 from uuid import UUID, uuid4
@@ -73,23 +74,30 @@ def create_recipe(recipe_id: UUID, name: str, description: str, author: str,
     )
 
 
-def create_recipe_from_structured_data(structured_data: dict, url: str, vendor: Vendor, language: Language) -> Recipe:
+def create_recipe_from_structured_data(structured_data: dict, url: str, vendor: Vendor, category: Category) -> Recipe:
     def get_attribute(attribute: str):
         return structured_data.get(attribute, None)
 
+    def parse_timedelta(string: str) -> timedelta:
+        if string is None:
+            return timedelta()
+        regex = re.compile(r'P(\d+?)DT(\d+)H(\d+)M')
+        days, hours, minutes = regex.match(string).groups()
+        return timedelta(days=int(days), hours=int(hours), minutes=int(minutes))
+
     return create_recipe(
-        recipe_id=uuid4(),  # TODO: don't know if this is the best place to init it, but it has to be done somewhere
+        recipe_id=uuid4(),
         name=get_attribute('name'),
         description=get_attribute('description'),
         author=structured_data.get('author', dict()).get('name'),
-        prep_time=timedelta(minutes=10),  # TODO: not contained in structured data :(
-        cook_time=timedelta(minutes=10),  # TODO: not contained in structured data :(
-        total_time=timedelta(minutes=10),  # TODO: not contained in structured data :(
+        prep_time=parse_timedelta(get_attribute('prepTime')),
+        cook_time=parse_timedelta(get_attribute('cookTime')),
+        total_time=parse_timedelta(get_attribute('totalTime')),
         date_published=datetime.strptime(get_attribute('datePublished'), '%Y-%m-%d'),
         url=url,
-        category=list(filter(lambda category: category.name == get_attribute('recipeCategory'), vendor.categories))[0],  # TODO: not the best option...
+        category=category,
         vendor=vendor,
-        language=language,  # TODO: how do we get this?
+        language=vendor.language,
         rating_count=structured_data.get('aggregateRating', dict()).get('ratingCount') or 0,
         rating_value=structured_data.get('aggregateRating', dict()).get('ratingValue') or 0.0,
         image_url=get_attribute('image'),

@@ -16,17 +16,17 @@ class TestAsyncFetcher:
     @staticmethod
     @pytest.fixture
     def fetcher():
-        return AsyncFetcher()
+        return AsyncFetcher(batch_size=10)
 
-    @patch('infrastructure.fetch.async_fetcher.AsyncFetcher.fetch')
-    def test_fetch_parallel(self, mock_fetch, fetcher):
+    @patch('infrastructure.fetch.async_fetcher.AsyncFetcher._fetch_url_async')
+    def test_fetch(self, mock_fetch, fetcher):
         async def fetch(_, url: str):
             return FetchResult(url=url, status=200, html=BeautifulSoup())
 
         mock_fetch.side_effect = fetch
 
         test_urls = ['dummy_url'] * 10
-        result_generator = fetcher.fetch_parallel(test_urls, batch_size=10)
+        result_generator = fetcher.fetch(test_urls)
 
         assert isinstance(result_generator, Generator)
         results = one(list(result_generator))
@@ -43,7 +43,7 @@ class TestAsyncFetcher:
         url = 'https://www.python.org/'
 
         async with aiohttp.ClientSession(loop=asyncio.get_event_loop(), timeout=ClientTimeout(10)) as session:
-            result = await fetcher.fetch(session, url)
+            result = await fetcher._fetch_url_async(session, url)
 
         assert isinstance(result, FetchResult)
         assert result.status == 200
@@ -56,4 +56,4 @@ class TestAsyncFetcher:
 
         with pytest.raises(InvalidURL):
             async with aiohttp.ClientSession(loop=asyncio.get_event_loop(), timeout=ClientTimeout(10)) as session:
-                await fetcher.fetch(session, url)
+                await fetcher._fetch_url_async(session, url)

@@ -13,7 +13,7 @@ from domain.model.language_aggregate import Language
 
 def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_active: bool, recipe_pattern: str,
                   categories_link: str, date_last_crawled: datetime,
-                  languages: List[Language], categories: List[Category]) -> Vendor:
+                  language: Language, categories: List[Category]) -> Vendor:
     if not isinstance(name, str):
         raise InvalidValueException(Vendor, 'name must be a string')
 
@@ -23,8 +23,8 @@ def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_act
     if not isinstance(url, str):
         raise InvalidValueException(Vendor, 'url must be a string')
 
-    if not isinstance(languages, list):
-        raise InvalidValueException(Vendor, 'languages must be a list of Language instances')
+    if not isinstance(language, Language):
+        raise InvalidValueException(Vendor, 'language must be a Language instance')
 
     if not isinstance(categories, list):
         raise InvalidValueException(Vendor, 'categories must be a list of Language instances')
@@ -40,7 +40,7 @@ def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_act
         recipe_pattern=recipe_pattern,
         categories_link=categories_link,
         date_last_crawled=date_last_crawled,
-        languages=languages,
+        language=language,
         categories=categories,
 
     )
@@ -49,7 +49,7 @@ def create_vendor(vendor_id: UUID, name: str, description: str, url: str, is_act
 class Vendor(Entity):
 
     def __init__(self, vendor_id: UUID, name: str, description: str, url: URL, is_active: bool, recipe_pattern: str,
-                 date_last_crawled: datetime, categories_link: str, languages: List[Language], categories: List[Category]):
+                 date_last_crawled: datetime, categories_link: str, language: Language, categories: List[Category]):
         super().__init__(vendor_id)
 
         self._name = name
@@ -60,12 +60,9 @@ class Vendor(Entity):
         self.recipe_pattern = recipe_pattern
         self.date_last_crawled = date_last_crawled
         self.categories_link = categories_link
+        self._language = language
 
-        self._languages: List[Language] = []
         self._categories: List[Category] = []
-
-        for language in languages:
-            self.add_language(language)
 
         for category in categories:
             self.add_category(category)
@@ -138,23 +135,9 @@ class Vendor(Entity):
         self._increment_version()
 
     @property
-    def languages(self) -> Tuple[Language]:
+    def language(self) -> Language:
         self._check_not_discarded()
-        return tuple(self._languages)
-
-    def add_language(self, language: Language):
-        self._check_not_discarded()
-        if not isinstance(language, Language):
-            raise InvalidValueException(self, 'language must be a Language instance')
-        self._languages.append(language)
-        self._increment_version()
-
-    def remove_language(self, language: Language):
-        self._check_not_discarded()
-        if not isinstance(language, Language):
-            raise InvalidValueException(self, 'language must be a Language instance')
-        self._languages.remove(language)
-        self._increment_version()
+        return self._language
 
     @property
     def categories(self) -> Tuple[Category]:
