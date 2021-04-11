@@ -1,7 +1,8 @@
 import pytest
 
 from domain.exceptions import MissingConfigException, InvalidValueException
-from infrastructure.config import ConfigComponent, ConfigParser, ConfigField
+from infrastructure.config.parser import ConfigParser
+from infrastructure.config.types import ConfigComponent, ConfigField
 
 
 def get_fake_config(missing_value: bool = False, invalid_value: bool = False, invalid_config_field: bool = False) -> dict:
@@ -65,16 +66,14 @@ class TestConfigParser:
         assert test_config.component_c.float_value == 4.5
         assert test_config.component_c.component_d.string_value == 'Test'
         assert test_config.component_c.component_d.small_number == 4
-        assert str(test_config.component_c)
-        assert repr(test_config.component_c)
 
     def test_config_invalid(self):
         with pytest.raises(InvalidValueException):
-            TestConfigA(get_fake_config(invalid_config_field=True))
+            TestConfigA(get_fake_config(invalid_value=True))
 
     def test_config_invalid_config_field(self):
         with pytest.raises(InvalidValueException):
-            TestConfigA(get_fake_config(invalid_value=True))
+            TestConfigA(get_fake_config(invalid_config_field=True))
 
     def test_config_missing(self):
         with pytest.raises(MissingConfigException):
