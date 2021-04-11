@@ -79,7 +79,7 @@ class RecipeRepository(AbstractRecipeRepository):
             DBRecipe.name: entity.name,
             DBRecipe.description: entity.description,
             DBRecipe.author: entity.author.name,
-            DBRecipe.vendor_id: entity.vendor_id,
+            DBRecipe.vendor_id: entity.vendor.id,
             DBRecipe.prep_time: entity.prep_time,
             DBRecipe.cook_time: entity.cook_time,
             DBRecipe.total_time: entity.total_time,

@@ -151,8 +151,8 @@ class DBCategory(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(50), nullable=False)
-    url = Column(String(200))
-    likes = Column(Integer)
+    url = Column(String(200), unique=True)
+    likes = Column(Integer, nullable=False, default=0)
     fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'))
     vendor = relationship("DBVendor", back_populates="categories")
 
@@ -240,10 +240,9 @@ class DBRecipe(Base):
     __tablename__ = 'recipe'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    name = Column(String(100), nullable=False)
+    name = Column(String, nullable=False)
     description = Column(Text, server_default='')
     author = Column(String(50))
-    vendor_id = Column(String(100))
     prep_time = Column(Interval())
     cook_time = Column(Interval())
     total_time = Column(Interval())
@@ -270,7 +269,6 @@ class DBRecipe(Base):
             name=recipe.name,
             description=recipe.description,
             author=recipe.author.__str__(),
-            vendor_id=recipe.vendor_id,
             prep_time=recipe.prep_time,
             cook_time=recipe.cook_time,
             total_time=recipe.total_time,
@@ -291,7 +289,6 @@ class DBRecipe(Base):
             name=self.name,
             description=self.description,
             author=self.author,
-            vendor_id=self.vendor_id,
             prep_time=self.prep_time,
             cook_time=self.cook_time,
             total_time=self.total_time,
@@ -307,20 +304,6 @@ class DBRecipe(Base):
         )
 
 
-class DBVendorLanguages(Base):
-    __tablename__ = 'vendor_languages'
-
-    fk_vendor = Column(UUID(as_uuid=True), ForeignKey('vendor.id'), primary_key=True, nullable=False)
-    fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'), primary_key=True, nullable=False)
-
-    @classmethod
-    def from_entity(cls, vendor: Vendor, language: Language) -> DBVendorLanguages:
-        return cls(
-            fk_vendor=vendor.id,
-            fk_language=language.id,
-        )
-
-
 class DBVendor(Base):
     __tablename__ = 'vendor'
 
@@ -332,7 +315,8 @@ class DBVendor(Base):
     recipe_pattern = Column(String(100))
     date_last_crawled = Column(DateTime())
     categories_link = Column(String(200))
-    languages = relationship("DBLanguage", secondary="vendor_languages")
+    fk_language = Column(UUID(as_uuid=True), ForeignKey('language.id'), primary_key=True, nullable=False)
+    language = relationship("DBLanguage")
     categories = relationship("DBCategory", back_populates="vendor")
 
     @classmethod
@@ -349,6 +333,7 @@ class DBVendor(Base):
             date_last_crawled=vendor.date_last_crawled,
             categories_link=vendor.categories_link,
             recipe_pattern=vendor.recipe_pattern,
+            fk_language=vendor.language.id,
         )
 
     def to_entity(self) -> Vendor:
@@ -361,6 +346,6 @@ class DBVendor(Base):
             recipe_pattern=self.recipe_pattern,
             categories_link=self.categories_link,
             date_last_crawled=self.date_last_crawled,
-            languages=[language.to_entity() for language in self.languages],
+            language=self.language.to_entity(),
             categories=[],
         )

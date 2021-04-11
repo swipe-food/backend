@@ -6,7 +6,7 @@ from typing import List
 class URLQueue:
 
     def __init__(self, urls: List[str] = None):
-        self.urls = urls if urls else list()
+        self.urls = urls.copy() if urls else list()
 
     def add(self, value: str or List[str]):
         if isinstance(value, str):
@@ -15,7 +15,7 @@ class URLQueue:
             for item in value:
                 self.add(item)
         else:
-            raise ValueError(f'unsopported type {type(value)} for {self}')
+            raise ValueError(f'unsupported type {type(value)} for {self}')
 
     def clear(self):
         self.urls.clear()

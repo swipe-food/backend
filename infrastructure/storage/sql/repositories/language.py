@@ -28,7 +28,7 @@ class LanguageRepository(AbstractLanguageRepository):
     def add(self, entity: Language):
         self._db.add(DBLanguage.from_entity(entity))
         self._logger.debug("added language to database", language_id=entity.id.__str__())
-        
+
     @catch_no_result_found_exception
     def get_by_id(self, entity_id: UUID) -> Language:
         db_language: DBLanguage = self._db.session.query(DBLanguage).filter(DBLanguage.id == entity_id).one()
