@@ -1,0 +1,40 @@
+name: Docker Image CI
+
+on:
+  push: # Change to Release only
+    branches:
+      - main
+      - docker
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set Environment Variables
+      run: |
+        IMG=backend
+        echo "IMAGE=ghcr.io/${{ github.repository_owner }}/${IMG}" >> $GITHUB_ENV
+        echo "BUILD_VER=1.0.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+        echo "BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+        echo "BUILD_COMMIT=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io/swipe-food
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        build-args: |
+          BUILD_COMMIT=${{ env.BUILD_COMMIT }}
+          BUILD_TIME=${{ env.BUILD_TIME }}
+        tags: |
+          ${{ env.IMAGE }}:latest
+          ${{ env.IMAGE }}:${{ env.BUILD_VER }}
