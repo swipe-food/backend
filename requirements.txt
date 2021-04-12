@@ -6,6 +6,8 @@
 #
 aiohttp==3.7.4.post0
     # via -r requirements.in
+apipkg==1.5
+    # via execnet
 apscheduler==3.7.0
     # via -r requirements.in
 async-timeout==3.0.1
@@ -22,14 +24,20 @@ bs4==0.0.1
     # via -r requirements.in
 chardet==4.0.0
     # via aiohttp
+coverage==5.5
+    # via pytest-cov
 decorator==4.4.2
     # via -r requirements.in
+execnet==1.8.0
+    # via pytest-cache
 greenlet==1.0.0
     # via sqlalchemy
 idna==3.1
     # via yarl
 iniconfig==1.1.1
     # via pytest
+lxml==4.6.3
+    # via -r requirements.in
 more-itertools==8.7.0
     # via -r requirements.in
 multidict==5.1.0
@@ -38,6 +46,8 @@ multidict==5.1.0
     #   yarl
 packaging==20.9
     # via pytest
+pep8==1.7.1
+    # via pytest-pep8
 pluggy==0.13.1
     # via pytest
 psycopg2-binary==2.8.6
@@ -46,8 +56,26 @@ py==1.10.0
     # via pytest
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.2
+pytest-asyncio==0.14.0
     # via -r requirements.in
+pytest-cache==1.0
+    # via
+    #   -r requirements.in
+    #   pytest-pep8
+pytest-cov==2.11.1
+    # via -r requirements.in
+pytest-mock==3.5.1
+    # via -r requirements.in
+pytest-pep8==1.0.6
+    # via -r requirements.in
+pytest==6.2.2
+    # via
+    #   -r requirements.in
+    #   pytest-asyncio
+    #   pytest-cache
+    #   pytest-cov
+    #   pytest-mock
+    #   pytest-pep8
 python-dotenv==0.15.0
     # via -r requirements.in
 pytz==2021.1
