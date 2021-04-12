@@ -1,11 +1,7 @@
 name: Docker Image CI
 
 on:
-  push: # Change to Release only
-    branches:
-      - main
-      - docker
-  pull_request:
+  push:
     branches:
       - main
 

@@ -1,8 +1,9 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/macos,linux,react,python
-# Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux,react,python
+# Created by https://www.toptal.com/developers/gitignore/api/macos,linux,python
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux,python
 
-.env
+local.env
+dkc.env
 
 .idea/*
 *.bak*
@@ -157,7 +158,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -190,19 +190,4 @@ dmypy.json
 # profiling data
 .prof
 
-### react ###
-.DS_*
-logs
-**/*.backup.*
-**/*.back.*
-
-node_modules
-bower_components
-
-*.sublime*
-
-psd
-thumb
-sketch
-
-# End of https://www.toptal.com/developers/gitignore/api/macos,linux,react,python
+# End of https://www.toptal.com/developers/gitignore/api/macos,linux,python

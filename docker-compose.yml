@@ -1,5 +1,19 @@
 version: '3.5'
 services:
+  api:
+    container_name: api_container
+    image: ghcr.io/swipe-food/backend:latest
+    env_file: dkc.env
+    command: ["python3", "-m", "main.api"]
+    depends_on:
+      - postgres
+  crawler:
+    container_name: crawler_container
+    image: ghcr.io/swipe-food/backend:latest
+    env_file: dkc.env
+    command: [ "python3", "-m", "main.crawler" ]
+    depends_on:
+      - postgres
   postgres:
     image: postgres
     container_name: postgres_container
@@ -12,7 +26,7 @@ services:
       SF_DATABASE_USER: "${SF_DATABASE_USER}"
       SF_DATABASE_PASSWORD: "${SF_DATABASE_PASSWORD}"
     ports:
-      - 5432:5432
+      - "${SF_DATABASE_PORT}:${SF_DATABASE_PORT}"
     volumes:
       - ./init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
       - sf_postgres:/var/lib/postgresql/data
@@ -28,7 +42,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: "${DOCKER_PGADMIN_DEFAULT_EMAIL}"
       PGADMIN_DEFAULT_PASSWORD: "${DOCKER_PGADMIN_DEFAULT_PASSWORD}"
     volumes:
-      - pgadmin:/var/lib/pgadmin
+      - sf_pgadmin:/var/lib/pgadmin
 volumes:
   sf_postgres:
-  pgadmin:
+  sf_pgadmin:
