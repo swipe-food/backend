@@ -17,6 +17,10 @@ class CrawlerConfig(ConfigComponent):
 
 class ApiConfig(ConfigComponent):
     PREFIX = "API_"
+    name: str
+    host: str
+    port: int
+    debug: bool
     log_file_name: str
     log_level_console: LogLevelField
     log_level_file: LogLevelField
