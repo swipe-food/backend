@@ -15,3 +15,7 @@ structlog==21.1.0
 SQLAlchemy==1.4.2
 decorator==4.4.2
 APScheduler==3.7.0
+werkzeug==0.16.0
+flask
+flask_cors
+flask_restplus
