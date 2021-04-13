@@ -18,7 +18,6 @@ class CrawlerConfig(ConfigComponent):
 class ApiConfig(ConfigComponent):
     PREFIX = "API_"
     name: str
-    root_path: str
     host: str
     port: int
     debug: bool

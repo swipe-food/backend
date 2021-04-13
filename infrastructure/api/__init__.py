@@ -25,7 +25,7 @@ class FoodSwipeAPI(Flask):
     }
 
     def __init__(self, config: ApiConfig, logger: Logger, repositories: Dict[str, type(AbstractBaseRepository)]):
-        super().__init__(config.name, root_path=config.root_path)
+        super().__init__(config.name)
         self.api = Api(self)
         self.api_config = config
         self.cors = CORS(self, resources={r"*": {"origins": config.host + "/*"}})
