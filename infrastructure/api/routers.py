@@ -4,7 +4,7 @@ from typing import List
 from flask_restplus import Namespace
 
 from infrastructure.api.resources import BaseResource
-from infrastructure.api.resources.vendors import VendorResource
+from infrastructure.api.resources.vendors import VendorResource, VendorsResource
 
 
 class AbstractRouter(Namespace, ABC):
@@ -24,4 +24,4 @@ class AbstractRouter(Namespace, ABC):
 class VendorRouter(AbstractRouter):
     name = 'vendors'
     description = 'TODO'
-    router_resources = [VendorResource]
+    router_resources = [VendorResource, VendorsResource]

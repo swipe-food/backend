@@ -1,6 +1,9 @@
 from infrastructure.api.resources.base import BaseResource
 
 
+# TODO: request & response models (with marshmallow for example)
+
+
 class VendorResource(BaseResource):
     path = '/<string:vendor_id>'
 

@@ -1,4 +1,4 @@
-from infrastructure.api import FoodSwipeAPI
+from infrastructure.api import SwipeFoodAPI
 from infrastructure.config import create_new_config
 from infrastructure.log import Logger
 from infrastructure.storage.sql.postgres import create_postgres_database
@@ -11,7 +11,7 @@ from infrastructure.storage.sql.repositories.user import create_user_repository
 from infrastructure.storage.sql.repositories.vendor import create_vendor_repository
 
 
-def create_api() -> FoodSwipeAPI:
+def create_api() -> SwipeFoodAPI:
     config = create_new_config()
     Logger.load_config(config.api)
     logger = Logger.create(__name__)
@@ -28,7 +28,7 @@ def create_api() -> FoodSwipeAPI:
         vendor_repo=create_vendor_repository(db, Logger.create),
     )
 
-    return FoodSwipeAPI(config=config.api, logger=logger, repositories=repositories)
+    return SwipeFoodAPI(config=config.api, logger=logger, repositories=repositories)
 
 
 if __name__ == "__main__":
