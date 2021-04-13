@@ -2,42 +2,43 @@
 
 ## Run
 
-1. Create a `.env` file with the following content: 
+### Local
 
+1. Run the Postgres (optional with pgAdmin)
 ```shell
-SF_ENVIRONMENT=prod
-SF_API_LOG_FILE_NAME=/var/log/swipe-food/api.log
-SF_API_LOG_LEVEL_CONSOLE=INFO
-SF_API_LOG_LEVEL_FILE=DEBUG
-SF_CRAWLER_FETCH_BATCH_SIZE=20
-SF_CRAWLER_LOG_FILE_NAME=/var/log/swipe-food/crawler.log
-SF_CRAWLER_LOG_LEVEL_CONSOLE=INFO
-SF_CRAWLER_LOG_LEVEL_FILE=DEBUG
-SF_DATABASE_DIALECT=postgresql
-SF_DATABASE_DRIVER=psycopg2
-SF_DATABASE_HOST=localhost
-SF_DATABASE_PORT=5432
-SF_DATABASE_NAME=swipe_food
-SF_DATABASE_USER=sf_access_user
-SF_DATABASE_PASSWORD=swipe food database password # change
-SF_DATABASE_MAX_IDLE_CONNECTIONS=25
-SF_DATABASE_MAX_OPEN_CONNECTIONS=25
-SF_DATABASE_LOGGING_ENABLED=False
-SF_DATABASE_LOGGING_LEVEL=warning
-DOCKER_POSTGRES_USER=sql
-DOCKER_POSTGRES_DB=sql
-DOCKER_POSTGRES_PASSWORD=sql database password # change
-DOCKER_PGADMIN_DEFAULT_EMAIL=admin@admin.com
-DOCKER_PGADMIN_DEFAULT_PASSWORD=pgadmin password # change
+docker-compose up postgres pgadmin
 ```
-Make sure to change the passwords.
 
-2. Run the `api` and the `crawler` with docker-compose
+2. Create a `local.env` file with all necessary environmental variables. Have a look at the `example.local.env` file.
+
+3. Run the API and/or the Crawler
 ```shell
-docker-compose up 
+python3 -m main.api
+python3 -m main.crawler
+```
+
+### Docker Compose
+
+1. Create a `dkc.env` file with all necessary environmental variables. Have a look at the `example.dkc.env` file. The only difference to the previous `example.local.env` file is that the host of the Postgres database is the `postgres` container itself.
+
+
+2. Run the complete application (API, Crawler, Postgres DB, pgAdmin) 
+```shell
+docker-compose --env-file=dkc.env up 
 ```
 
 ## Domain Model
 
 ![UML Domain Model](./Assets/domain_model.png)
+
+## Development
+
+For dependency management pip is used in combination with [pip-tools](https://github.com/jazzband/pip-tools).
+
+Install:
+```shell
+python3 -m pip install pip-tools
+```
+
+Add new dependencies to the ``requirements.in`` file and keep the `requirements.txt` file update with the `pip-compile` command. Sync your installed dependencies with the `pip-sync` command.
 

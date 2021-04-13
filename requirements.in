@@ -1,0 +1,17 @@
+pytest==6.2.2
+pytest-asyncio==0.14.0
+pytest-cache==1.0
+pytest-cov==2.11.1
+pytest-pep8==1.0.6
+pytest-mock==3.5.1
+aiohttp==3.7.4.post0
+bs4==0.0.1
+lxml==4.6.3
+beautifulsoup4==4.9.3
+python-dotenv==0.15.0
+more-itertools==8.7.0
+psycopg2-binary==2.8.6
+structlog==21.1.0
+SQLAlchemy==1.4.2
+decorator==4.4.2
+APScheduler==3.7.0

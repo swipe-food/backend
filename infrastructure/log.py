@@ -18,7 +18,7 @@ class Logger:
             "formatters": {
                 "simpleFormatter": {
                     "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.dev.ConsoleRenderer(colors=True),
+                    "processor": structlog.dev.ConsoleRenderer(colors=False),
                 },
                 "jsonFormatter": {
                     "()": structlog.stdlib.ProcessorFormatter,
@@ -60,5 +60,5 @@ class Logger:
             ],
             context_class=dict,
             logger_factory=structlog.stdlib.LoggerFactory(),
-            cache_logger_on_first_use=True,
+            cache_logger_on_first_use=True, 
         )
