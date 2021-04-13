@@ -10,19 +10,27 @@ from infrastructure.storage.sql.repositories.recipe import create_recipe_reposit
 from infrastructure.storage.sql.repositories.user import create_user_repository
 from infrastructure.storage.sql.repositories.vendor import create_vendor_repository
 
-if __name__ == "__main__":
+
+def create_api() -> FoodSwipeAPI:
     config = create_new_config()
     Logger.load_config(config.api)
     logger = Logger.create(__name__)
 
     db = create_postgres_database(config.database, Logger.create)
-    category_repo = create_category_repository(db, Logger.create)
-    category_like_repo = create_category_like_repository(db, Logger.create)
-    language_repo = create_language_repository(db, Logger.create)
-    match_repo = create_match_repository(db, Logger.create)
-    recipe_repo = create_recipe_repository(db, Logger.create)
-    user_repo = create_user_repository(db, Logger.create)
-    vendor_repo = create_vendor_repository(db, Logger.create)
 
-    api = FoodSwipeAPI(config.api)
+    repositories = dict(
+        category_repo=create_category_repository(db, Logger.create),
+        category_like_repo=create_category_like_repository(db, Logger.create),
+        language_repo=create_language_repository(db, Logger.create),
+        match_repo=create_match_repository(db, Logger.create),
+        recipe_repo=create_recipe_repository(db, Logger.create),
+        user_repo=create_user_repository(db, Logger.create),
+        vendor_repo=create_vendor_repository(db, Logger.create),
+    )
+
+    return FoodSwipeAPI(config=config.api, logger=logger, repositories=repositories)
+
+
+if __name__ == "__main__":
+    api = create_api()
     api.run()
