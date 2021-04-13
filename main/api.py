@@ -1,3 +1,4 @@
+from infrastructure.api import FoodSwipeAPI
 from infrastructure.config import create_new_config
 from infrastructure.log import Logger
 from infrastructure.storage.sql.postgres import create_postgres_database
@@ -22,3 +23,6 @@ if __name__ == "__main__":
     recipe_repo = create_recipe_repository(db, Logger.create)
     user_repo = create_user_repository(db, Logger.create)
     vendor_repo = create_vendor_repository(db, Logger.create)
+
+    api = FoodSwipeAPI(config.api)
+    api.run()
