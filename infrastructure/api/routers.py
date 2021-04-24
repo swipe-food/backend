@@ -4,6 +4,7 @@ from typing import List
 from flask_restplus import Namespace
 
 from infrastructure.api.resources import BaseResource
+from infrastructure.api.resources.status import StatusResource
 from infrastructure.api.resources.vendors import VendorResource, VendorsResource
 
 
@@ -25,3 +26,9 @@ class VendorRouter(AbstractRouter):
     name = 'vendors'
     description = 'TODO'
     router_resources = [VendorResource, VendorsResource]
+
+
+class StatusRouter(AbstractRouter):
+    name = 'status'
+    description = 'Status Information about the API'
+    router_resources = [StatusResource]
