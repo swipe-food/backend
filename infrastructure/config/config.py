@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from infrastructure.config.types import ConfigComponent, LogLevelField
+from dotenv import dotenv_values
+
+from infrastructure.config.types import ConfigComponent, LogLevelField, ConfigField
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent
 
@@ -11,8 +13,8 @@ class CrawlerConfig(ConfigComponent):
     PREFIX = 'CRAWLER_'
     fetch_batch_size: int
     log_file_name: str
-    log_level_console: LogLevelField
-    log_level_file: LogLevelField
+    log_level_console: str = LogLevelField()
+    log_level_file: str = LogLevelField()
 
 
 class ApiConfig(ConfigComponent):
@@ -22,8 +24,8 @@ class ApiConfig(ConfigComponent):
     port: int
     debug: bool
     log_file_name: str
-    log_level_console: LogLevelField
-    log_level_file: LogLevelField
+    log_level_console: str = LogLevelField()
+    log_level_file: str = LogLevelField()
 
 
 class DatabaseConfig(ConfigComponent):
@@ -54,10 +56,13 @@ class DatabaseConfig(ConfigComponent):
 class AppConfig(ConfigComponent):
     PREFIX = 'SF_'
     environment: str
+    build_commit: str = ConfigField(optional=True, default='unknown')
+    build_time: str = ConfigField(optional=True, default='unknown')
     api: ApiConfig
     crawler: CrawlerConfig
     database: DatabaseConfig
 
 
-def create_new_config(env_file_path: str = f'{PROJECT_ROOT_DIR}/.env') -> AppConfig:
-    return AppConfig.load_and_parse(env_file_path)
+def create_new_config(env_file_path: str = f'{PROJECT_ROOT_DIR}/local.env') -> AppConfig:
+    config = dotenv_values(env_file_path)
+    return AppConfig.load_and_parse(config)

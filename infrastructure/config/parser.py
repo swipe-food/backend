@@ -1,5 +1,5 @@
 import os
-from typing import get_type_hints, Any
+from typing import get_type_hints, Any, Optional
 
 from domain.exceptions import MissingConfigException, InvalidValueException
 from infrastructure.config.types import ConfigComponent, ConfigField
@@ -13,11 +13,11 @@ class ConfigParser:
     @classmethod
     def parse(cls, config: dict, component: ConfigComponent, current_prefix: str = "") -> ConfigComponent:
         """
-        Parses the configurations for every variable of the passed component.
-        If a variable of the passed component is a ConfigComponent itself, this function will be called recursively.
+        Parses the configurations for every field of the passed component.
+        If a field of the passed component is a ConfigComponent itself, this function will be called recursively.
 
             Parameters:
-                    config (dict): dictionary of config fields. can be default values or content of a .env file
+                    config (dict): dictionary of config fields. can be default values or content of a local.env file
                     component (ConfigComponent): ConfigComponent to parse
                     current_prefix (str): current concatenated prefix of the component. e.g. SF_API_DATABASE_
 
@@ -25,53 +25,71 @@ class ConfigParser:
                      component (ConfigComponent): parsed component
         """
         current_prefix += component.PREFIX
-        for variable in component.__annotations__:
-            variable_type = get_type_hints(component.__class__)[variable]
+        for field in component.__annotations__:
+            field_type = get_type_hints(component.__class__)[field]
 
-            if issubclass(variable_type, ConfigComponent):
-                value = cls.parse(config, variable_type(), current_prefix)
+            if issubclass(field_type, ConfigComponent):
+                value = cls.parse(config, field_type(), current_prefix)
             else:
-                env_field_name = current_prefix + variable.upper()
-                value = cls._parse_env_variable(config, env_field_name, variable_type)
-            component.__setattr__(variable, value)
+                env_field_name = current_prefix + field.upper()
+                try:
+                    field_object = component.__getattribute__(field)
+                except AttributeError:
+                    field_object = None
+                if isinstance(field_object, ConfigField):
+                    value = cls._parse_config_field(config, env_field_name, field_type, field_object)
+                else:
+                    value = cls._parse_required_env_field(config, env_field_name, field_type)
+            component.__setattr__(field, value)
         return component
 
     @classmethod
-    def _parse_env_variable(cls, config: dict, variable: str, field_type: Any) -> Any:
+    def _parse_config_field(cls, config: dict, field: str, field_type: Any, field_obj: ConfigField) -> Any:
         """
-        Parses a single environmental variable into it's target type.
-        The environmental variable will be read directly from os or via the passed config dictionary.
+        Parses a env field into a ConfigField object.
+        Parameters:
+                config (dict): dictionary of config fields. can be default values or content of a local.env file
+                field (str): config field to parse
+                field_type (Any): type of field. Can be any type.
+                field_obj (ConfigField): instance of the config field
+        Returns:
+             field_obj.value: value of ConfigField
+         """
+        value = cls._parse_env_field(config, field, field_type)
+        field_obj.value = value
+        field_obj.validate(field)
+        return field_obj.value
+
+    @classmethod
+    def _parse_required_env_field(cls, config: dict, field: str, field_type: Any):
+        value = cls._parse_env_field(config, field, field_type)
+        if value is None:
+            raise MissingConfigException(cls, f"Required Config field '{field}' cannot be None")
+        return value
+
+    @classmethod
+    def _parse_env_field(cls, config: dict, field: str, field_type: Any) -> Any:
+        """
+        Parses a single environmental field into it's target type.
+        The environmental field will be read directly from os or via the passed config dictionary.
         This function uses the following precedence order:
-            1. env variable
+            1. env field
             2. config dict
-        Additionaly this function handles any config variable of the type ConfigField.
 
             Parameters:
-                    config (dict): dictionary of config fields. can be default values or content of a .env file
-                    variable (str): config variable to parse
-                    field_type (Any): type of variable. Can be any type.
+                    config (dict): dictionary of config fields. can be default values or content of a local.env file
+                    field (str): config field to parse
+                    field_type (Any): type of field. Can be any type.
 
             Returns:
-                     parsed_value (Any): parsed value of variable
+                     parsed_value (Any): parsed value of field
         """
-        value = os.getenv(variable, config.get(variable))
-        if value is None:
-            raise MissingConfigException(cls, f"Required Config field '{variable}' cannot be None")
+        value = os.getenv(field, config.get(field))
         try:
             if issubclass(field_type, bool):
-                return value == 'True'
-            elif issubclass(field_type, ConfigField):
-                parsed_value = field_type.parse_to_type(value)
-                if parsed_value not in field_type.VALID_VALUES:
-                    raise InvalidValueException(cls, "Config variable '{var}' has an invalid value '{parsed_var}' for type '{var_type}'. Valid values are: {values}".format(
-                        var=variable,
-                        parsed_var=parsed_value,
-                        var_type=field_type.__name__,
-                        values=field_type.VALID_VALUES
-                    ))
-                return parsed_value
+                return value == 'True' if value is not None else None
+            if value is None:
+                return None
             return field_type(value)
-        except InvalidValueException as exception:
-            raise exception
         except ValueError:
-            raise InvalidValueException(cls, f"Config variable '{variable}' has an invalid value '{value}' for type '{field_type}'")
+            raise InvalidValueException(cls, f"Config field '{field}' has an invalid value '{value}' for type '{field_type}'")
