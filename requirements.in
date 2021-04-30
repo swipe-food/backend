@@ -19,3 +19,4 @@ werkzeug==0.16.0
 flask
 flask_cors
 flask_restplus
+marshmallow==3.11.1
