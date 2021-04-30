@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Tuple
 
 from domain.services.base import AbstractBaseService
 

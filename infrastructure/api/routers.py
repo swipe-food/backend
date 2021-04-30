@@ -5,7 +5,7 @@ from flask_restplus import Namespace
 
 from infrastructure.api.resources import BaseResource
 from infrastructure.api.resources.status import StatusResource
-from infrastructure.api.resources.vendors import VendorResource, VendorsResource
+from infrastructure.api.resources.vendors import VendorResource, VendorsResource, VendorRecipesResource, VendorNameResource
 
 
 class AbstractRouter(Namespace, ABC):
@@ -24,8 +24,8 @@ class AbstractRouter(Namespace, ABC):
 
 class VendorRouter(AbstractRouter):
     name = 'vendors'
-    description = 'TODO'
-    router_resources = [VendorResource, VendorsResource]
+    description = "Information about the Vendors. Only GET Resources, since the API shouldn't modify the Vendor Entities."
+    router_resources = [VendorResource, VendorNameResource, VendorsResource, VendorRecipesResource]
 
 
 class StatusRouter(AbstractRouter):

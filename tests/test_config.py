@@ -70,5 +70,4 @@ class TestConfigParser:
     def test_config_missing(self):
         with pytest.raises(MissingConfigException):
             c = get_fake_config(missing_value=True)
-            print(c)
             TestConfigA.load_and_parse(c)

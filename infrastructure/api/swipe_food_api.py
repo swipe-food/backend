@@ -7,7 +7,7 @@ from werkzeug.exceptions import HTTPException
 
 from domain.repositories.base import AbstractBaseRepository
 from domain.services.base import AbstractBaseService
-from infrastructure.api.exceptions import ApiException
+from infrastructure.api.exceptions_handlers import ApiException
 from infrastructure.api.routers import VendorRouter, StatusRouter, AbstractRouter
 from infrastructure.config import ApiConfig
 from infrastructure.log import Logger
@@ -27,6 +27,7 @@ class SwipeFoodAPI(Flask):
         super().__init__(config.name)
         self.api = Api(self)
         self.api_config = config
+        self.api_prefix = '/api'
         self.cors = CORS(self, resources={r"*": {"origins": self.api_config.host + "/*"}})
 
         self.logger = logger
@@ -55,7 +56,7 @@ class SwipeFoodAPI(Flask):
 
     def _register_routers(self):
         for prefix, router in self.routers.items():
-            self.api.add_namespace(router(), prefix)
+            self.api.add_namespace(router(), f'{self.api_prefix}{prefix}')
 
     def _register_error_handlers(self):
         for error, handler in self.error_handlers.items():

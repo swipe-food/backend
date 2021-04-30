@@ -268,7 +268,7 @@ class DBRecipe(Base):
             id=recipe.id,
             name=recipe.name,
             description=recipe.description,
-            author=recipe.author.__str__(),
+            author=recipe.author.name,
             prep_time=recipe.prep_time,
             cook_time=recipe.cook_time,
             total_time=recipe.total_time,
