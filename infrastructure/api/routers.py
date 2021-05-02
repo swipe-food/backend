@@ -4,8 +4,9 @@ from typing import List
 from flask_restplus import Namespace
 
 from infrastructure.api.resources import BaseResource
+from infrastructure.api.resources.category import CategoryRecipesResource, CategoriesResource, CategoryNameResource, CategoryResource, CategoryUsersResource
 from infrastructure.api.resources.status import StatusResource
-from infrastructure.api.resources.vendors import VendorResource, VendorsResource, VendorRecipesResource, VendorNameResource
+from infrastructure.api.resources.vendor import VendorResource, VendorsResource, VendorRecipesResource, VendorNameResource
 
 
 class AbstractRouter(Namespace, ABC):
@@ -22,13 +23,19 @@ class AbstractRouter(Namespace, ABC):
             self.add_resource(resource, resource.path)
 
 
+class StatusRouter(AbstractRouter):
+    name = 'status'
+    description = 'Status Information about the API'
+    router_resources = [StatusResource]
+
+
 class VendorRouter(AbstractRouter):
     name = 'vendors'
     description = "Information about the Vendors. Only GET Resources, since the API shouldn't modify the Vendor Entities."
     router_resources = [VendorResource, VendorNameResource, VendorsResource, VendorRecipesResource]
 
 
-class StatusRouter(AbstractRouter):
-    name = 'status'
-    description = 'Status Information about the API'
-    router_resources = [StatusResource]
+class CategoryRouter(AbstractRouter):
+    name = 'categories'
+    description = "Information about the Categories. Only GET Resources, since the API shouldn't modify the Category Entities."
+    router_resources = [CategoryResource, CategoryNameResource, CategoriesResource, CategoryRecipesResource, CategoryUsersResource]

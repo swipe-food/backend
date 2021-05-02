@@ -12,7 +12,7 @@ from domain.services.vendor import AbstractVendorService
 
 def create_vendor_service(vendor_repo: AbstractVendorRepository) -> VendorService:
     if not isinstance(vendor_repo, AbstractVendorRepository):
-        raise InvalidValueException(VendorService, 'config must be a AppConfig')
+        raise InvalidValueException(VendorService, 'vendor_repo must be a AbstractVendorRepository')
     return VendorService(repo=vendor_repo)
 
 

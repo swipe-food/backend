@@ -17,6 +17,7 @@ class AbstractVendorService(AbstractBaseService):
     def get_by_name(self, vendor_name: str) -> Vendor:
         raise NotImplementedError
 
+    @abstractmethod
     def get_all(self, limit: int) -> List[Vendor]:
         raise NotImplementedError
 

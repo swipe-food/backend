@@ -3,11 +3,7 @@ from flask import request
 from domain.services.vendor import AbstractVendorService
 from infrastructure.api.decorators import dump_schema
 from infrastructure.api.resources.base import BaseResource
-from infrastructure.api.schemas import VendorSchema, RecipeSchema
-
-vendor_schema = VendorSchema()
-vendor_list_schema = VendorSchema(many=True)
-recipe_list_schema = RecipeSchema(many=True)
+from infrastructure.api.schemas import vendor_schema, vendor_list_schema, recipe_list_schema
 
 
 class VendorNameResource(BaseResource):

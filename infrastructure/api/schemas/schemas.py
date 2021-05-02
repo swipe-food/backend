@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from marshmallow import fields, Schema
 
 from infrastructure.api.schemas.custom_fields import CustomStringField
@@ -55,3 +57,31 @@ class RecipeSchema(Schema):
     image = CustomStringField()
     ingredients = fields.List(fields.Nested('IngredientSchema'))
 
+
+class MatchSchema(Schema):
+    """User is not part of the schema, because a match is only requested over a user"""
+    id = fields.UUID()
+    timestamp = fields.Time()
+    is_seen_by_user = fields.Boolean()
+    is_active = fields.Boolean()
+    recipe = fields.Nested('RecipeSchema')
+
+
+class UserSchema(Schema):
+    id = fields.UUID()
+    name = fields.String()
+    first_name = fields.String()
+    email = fields.Email()
+    languages = fields.List(fields.Nested('LanguageSchema'))
+
+
+vendor_schema = VendorSchema()
+vendor_list_schema = VendorSchema(many=True)
+category_schema = CategorySchema()
+category_list_schema = CategorySchema(many=True)
+recipe_schema = RecipeSchema()
+recipe_list_schema = RecipeSchema(many=True)
+match_schema = MatchSchema()
+match_list_schema = MatchSchema(many=True)
+user_schema = UserSchema()
+user_list_schema = UserSchema(many=True)

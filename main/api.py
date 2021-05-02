@@ -1,3 +1,4 @@
+from application.api.services.category import create_category_service
 from application.api.services.status import create_status_service
 from application.api.services.vendor import create_vendor_service
 from infrastructure.api import SwipeFoodAPI
@@ -20,22 +21,21 @@ def create_api() -> SwipeFoodAPI:
 
     db = create_postgres_database(config.database, Logger.create)
 
-    repositories = dict(
-        category_repo=create_category_repository(db, Logger.create),
-        category_like_repo=create_category_like_repository(db, Logger.create),
-        language_repo=create_language_repository(db, Logger.create),
-        match_repo=create_match_repository(db, Logger.create),
-        recipe_repo=create_recipe_repository(db, Logger.create),
-        user_repo=create_user_repository(db, Logger.create),
-        vendor_repo=create_vendor_repository(db, Logger.create),
-    )
+    category_repo = create_category_repository(db, Logger.create)
+    category_like_repo = create_category_like_repository(db, Logger.create)
+    language_repo = create_language_repository(db, Logger.create)
+    match_repo = create_match_repository(db, Logger.create)
+    recipe_repo = create_recipe_repository(db, Logger.create)
+    user_repo = create_user_repository(db, Logger.create)
+    vendor_repo = create_vendor_repository(db, Logger.create)
 
     services = dict(
         status=create_status_service(config),
-        vendor=create_vendor_service(repositories["vendor_repo"])
+        vendor=create_vendor_service(vendor_repo),
+        category=create_category_service(category_repo),
     )
 
-    return SwipeFoodAPI(config=config.api, logger=logger, repositories=repositories, services=services)
+    return SwipeFoodAPI(config=config.api, logger=logger, services=services)
 
 
 if __name__ == "__main__":
