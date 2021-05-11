@@ -11,4 +11,6 @@ def dump_schema(f, schema: Schema = None, *args, **kwargs):
     elif not isinstance(schema, Schema):
         raise ProgrammingError("schema must be of type marshmallow.Schema")
     func_response = f(*args, **kwargs)
+    if isinstance(func_response, tuple):
+        return schema.dump(func_response[0]), func_response[1]
     return schema.dump(func_response)

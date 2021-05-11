@@ -4,9 +4,12 @@ from typing import List
 from flask_restplus import Namespace
 
 from infrastructure.api.resources import BaseResource
-from infrastructure.api.resources.category import CategoryRecipesResource, CategoriesResource, CategoryNameResource, CategoryResource, CategoryUsersResource
+from infrastructure.api.resources.category import CategoryRecipesResource, CategoriesResource, CategoryNameResource, \
+    CategoryResource, CategoryUsersResource
+from infrastructure.api.resources.match import MatchResource, MatchesResource
 from infrastructure.api.resources.status import StatusResource
-from infrastructure.api.resources.vendor import VendorResource, VendorsResource, VendorRecipesResource, VendorNameResource
+from infrastructure.api.resources.vendor import VendorResource, VendorsResource, VendorRecipesResource, \
+    VendorNameResource
 
 
 class AbstractRouter(Namespace, ABC):
@@ -39,3 +42,9 @@ class CategoryRouter(AbstractRouter):
     name = 'categories'
     description = "Information about the Categories. Only GET Resources, since the API shouldn't modify the Category Entities."
     router_resources = [CategoryResource, CategoryNameResource, CategoriesResource, CategoryRecipesResource, CategoryUsersResource]
+
+
+class MatchRouter(AbstractRouter):
+    name = 'matches'
+    description = "Information about Matches between Users and Recipe."
+    router_resources = [MatchResource, MatchesResource]

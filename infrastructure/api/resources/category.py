@@ -3,14 +3,14 @@ from flask import request
 from domain.services.category import AbstractCategoryService
 from infrastructure.api.decorators import dump_schema
 from infrastructure.api.resources.base import BaseResource
-from infrastructure.api.schemas import category_schema, category_list_schema, recipe_list_schema, user_list_schema
+from infrastructure.api.schemas import CategorySchema, RecipeSchema, UserSchema
 
 
 class CategoryNameResource(BaseResource):
     path = '/name/<string:category_name>'
 
     @staticmethod
-    @dump_schema(schema=category_schema)
+    @dump_schema(schema=CategorySchema())
     def get(category_name):
         svc: AbstractCategoryService = request.services['category']
 
@@ -21,7 +21,7 @@ class CategoryResource(BaseResource):
     path = '/<string:category_id>'
 
     @staticmethod
-    @dump_schema(schema=category_schema)
+    @dump_schema(schema=CategorySchema())
     def get(category_id):
         svc: AbstractCategoryService = request.services['category']
 
@@ -32,7 +32,7 @@ class CategoryRecipesResource(BaseResource):
     path = '/<string:category_id>/recipes'
 
     @staticmethod
-    @dump_schema(schema=recipe_list_schema)
+    @dump_schema(schema=RecipeSchema(many=True))
     def get(category_id):
         svc: AbstractCategoryService = request.services['category']
 
@@ -43,7 +43,7 @@ class CategoryUsersResource(BaseResource):
     path = '/<string:category_id>/users'
 
     @staticmethod
-    @dump_schema(schema=user_list_schema)
+    @dump_schema(schema=UserSchema(many=True))
     def get(category_id):
         svc: AbstractCategoryService = request.services['category']
 
@@ -54,7 +54,7 @@ class CategoriesResource(BaseResource):
     path = '/'
 
     @staticmethod
-    @dump_schema(schema=category_list_schema)
+    @dump_schema(schema=CategorySchema(many=True))
     def get():
         svc: AbstractCategoryService = request.services['category']
         limit = request.args.get("limit")

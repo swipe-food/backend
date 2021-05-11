@@ -1,4 +1,5 @@
 from application.api.services.category import create_category_service
+from application.api.services.match import create_match_service
 from application.api.services.status import create_status_service
 from application.api.services.vendor import create_vendor_service
 from infrastructure.api import SwipeFoodAPI
@@ -31,8 +32,9 @@ def create_api() -> SwipeFoodAPI:
 
     services = dict(
         status=create_status_service(config),
-        vendor=create_vendor_service(vendor_repo),
-        category=create_category_service(category_repo),
+        vendor=create_vendor_service(vendor_repo=vendor_repo),
+        category=create_category_service(category_repo=category_repo),
+        match=create_match_service(match_repo=match_repo, user_repo=user_repo, recipe_repo=recipe_repo),
     )
 
     return SwipeFoodAPI(config=config.api, logger=logger, services=services)

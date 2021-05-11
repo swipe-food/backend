@@ -5,7 +5,6 @@ from typing import List
 from domain.model.category_aggregate import Category
 from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
-from domain.model.vendor_aggregate import Vendor
 from domain.services.base import AbstractBaseService
 
 

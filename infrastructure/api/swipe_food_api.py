@@ -3,11 +3,12 @@ from typing import Dict, Callable
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restplus import Api
+from marshmallow import ValidationError
 from werkzeug.exceptions import HTTPException
 
 from domain.services.base import AbstractBaseService
-from infrastructure.api.exceptions_handlers import ApiException
-from infrastructure.api.routers import VendorRouter, StatusRouter, AbstractRouter, CategoryRouter
+from infrastructure.api.exceptions_handlers import ApiException, ValidationException
+from infrastructure.api.routers import VendorRouter, StatusRouter, AbstractRouter, CategoryRouter, MatchRouter
 from infrastructure.config import ApiConfig
 from infrastructure.log import Logger
 
@@ -17,11 +18,13 @@ class SwipeFoodAPI(Flask):
         '/status': StatusRouter,
         '/vendors': VendorRouter,
         '/categories': CategoryRouter,
+        '/matches': MatchRouter,
     }
 
     error_handlers: Dict[Exception, Callable] = {
         ApiException: ApiException.handle,
         HTTPException: ApiException.handle,
+        ValidationError: ValidationException.handle
     }
 
     def __init__(self, config: ApiConfig, logger: Logger, services: Dict[str, type(AbstractBaseService)]):
