@@ -1,6 +1,7 @@
 from application.api.services.category import create_category_service
 from application.api.services.match import create_match_service
 from application.api.services.status import create_status_service
+from application.api.services.user import create_user_service
 from application.api.services.vendor import create_vendor_service
 from infrastructure.api import SwipeFoodAPI
 from infrastructure.config import create_new_config
@@ -35,6 +36,8 @@ def create_api() -> SwipeFoodAPI:
         vendor=create_vendor_service(vendor_repo=vendor_repo),
         category=create_category_service(category_repo=category_repo),
         match=create_match_service(match_repo=match_repo, user_repo=user_repo, recipe_repo=recipe_repo),
+        user=create_user_service(user_repo=user_repo, recipe_repo=recipe_repo, language_repo=language_repo,
+                                 category_like_repo=category_like_repo, category_repo=category_repo),
     )
 
     return SwipeFoodAPI(config=config.api, logger=logger, services=services)

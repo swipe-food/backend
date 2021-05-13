@@ -1,17 +1,13 @@
 import uuid
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import List
 
 from domain.model.recipe_aggregate import Recipe
 from domain.model.vendor_aggregate import Vendor
-from domain.services.base import AbstractBaseService
+from domain.services.base import AbstractQueryService
 
 
-class AbstractVendorService(AbstractBaseService):
-
-    @abstractmethod
-    def get_by_id(self, vendor_id: uuid.UUID) -> Vendor:
-        raise NotImplementedError
+class AbstractVendorService(AbstractQueryService, ABC):
 
     @abstractmethod
     def get_by_name(self, vendor_name: str) -> Vendor:

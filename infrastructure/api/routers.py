@@ -8,6 +8,9 @@ from infrastructure.api.resources.category import CategoryRecipesResource, Categ
     CategoryResource, CategoryUsersResource
 from infrastructure.api.resources.match import MatchResource, MatchesResource
 from infrastructure.api.resources.status import StatusResource
+from infrastructure.api.resources.user import UserResource, UserEMailResource, UsersResource, UserConfirmResource, \
+    UserAddLanguageResource, UserMatchesResource, UserRemoveLanguageResource, UserSeenRecipeResource, \
+    UserCategoryLikeResource, UserRemoveCategoryLikeResource
 from infrastructure.api.resources.vendor import VendorResource, VendorsResource, VendorRecipesResource, \
     VendorNameResource
 
@@ -41,10 +44,19 @@ class VendorRouter(AbstractRouter):
 class CategoryRouter(AbstractRouter):
     name = 'categories'
     description = "Information about the Categories. Only GET Resources, since the API shouldn't modify the Category Entities."
-    router_resources = [CategoryResource, CategoryNameResource, CategoriesResource, CategoryRecipesResource, CategoryUsersResource]
+    router_resources = [CategoryResource, CategoryNameResource, CategoriesResource, CategoryRecipesResource,
+                        CategoryUsersResource]
 
 
 class MatchRouter(AbstractRouter):
     name = 'matches'
     description = "Information about Matches between Users and Recipe."
     router_resources = [MatchResource, MatchesResource]
+
+
+class UserRouter(AbstractRouter):
+    name = 'users'
+    description = "Information about Users."
+    router_resources = [UserResource, UserEMailResource, UsersResource, UserConfirmResource, UserAddLanguageResource,
+                        UserMatchesResource, UserRemoveLanguageResource, UserSeenRecipeResource,
+                        UserCategoryLikeResource, UserRemoveCategoryLikeResource]

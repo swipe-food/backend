@@ -48,4 +48,4 @@ class VendorsResource(BaseResource):
         svc: AbstractVendorService = request.services['vendor']
         limit = request.args.get("limit")
 
-        return svc.get_all(limit), 200
+        return svc.get_all(limit)

@@ -6,9 +6,10 @@ from flask_restplus import Api
 from marshmallow import ValidationError
 from werkzeug.exceptions import HTTPException
 
-from domain.services.base import AbstractBaseService
+from domain.services.base import AbstractQueryService
 from infrastructure.api.exceptions_handlers import ApiException, ValidationException
-from infrastructure.api.routers import VendorRouter, StatusRouter, AbstractRouter, CategoryRouter, MatchRouter
+from infrastructure.api.routers import VendorRouter, StatusRouter, AbstractRouter, CategoryRouter, MatchRouter, \
+    UserRouter
 from infrastructure.config import ApiConfig
 from infrastructure.log import Logger
 
@@ -19,15 +20,16 @@ class SwipeFoodAPI(Flask):
         '/vendors': VendorRouter,
         '/categories': CategoryRouter,
         '/matches': MatchRouter,
+        '/users': UserRouter,
     }
 
-    error_handlers: Dict[Exception, Callable] = {
+    error_handlers: Dict[Exception, Callable] = {  # TODO add SwipeFoodException Handler
         ApiException: ApiException.handle,
         HTTPException: ApiException.handle,
         ValidationError: ValidationException.handle
     }
 
-    def __init__(self, config: ApiConfig, logger: Logger, services: Dict[str, type(AbstractBaseService)]):
+    def __init__(self, config: ApiConfig, logger: Logger, services: Dict[str, type(AbstractQueryService)]):
         super().__init__(config.name)
         self.api = Api(self)
         self.api_config = config

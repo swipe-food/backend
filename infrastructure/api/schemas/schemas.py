@@ -26,6 +26,13 @@ class CategorySchema(Schema):
     vendor = fields.Nested('VendorSchema')
 
 
+class CategoryLikeSchema(Schema):
+    id = fields.UUID()
+    category = fields.Nested('CategorySchema')
+    views = fields.Integer()
+    matches = fields.Integer()
+
+
 class AuthorSchema(Schema):
     name = fields.String()
 
@@ -63,6 +70,8 @@ class UserSchema(Schema):
     name = fields.String()
     first_name = fields.String()
     email = fields.Email()
+    is_confirmed = fields.Boolean()
+    date_last_login = fields.DateTime()
     languages = fields.List(fields.Nested('LanguageSchema'))
 
 

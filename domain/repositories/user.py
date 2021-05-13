@@ -1,5 +1,7 @@
 from abc import abstractmethod, ABC
 
+from domain.model.language_aggregate import Language
+from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
 from domain.repositories.base import AbstractBaseRepository
 
@@ -11,9 +13,13 @@ class AbstractUserRepository(AbstractBaseRepository, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def add_languages(self, user: User):
+    def add_language(self, user: User, language: Language):
         raise NotImplementedError
 
     @abstractmethod
-    def add_seen_recipes(self, user: User):
+    def remove_language(self, user: User, language: Language):
+        raise NotImplementedError
+
+    @abstractmethod
+    def add_seen_recipe(self, user: User, recipe: Recipe):
         raise NotImplementedError

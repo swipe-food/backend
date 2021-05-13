@@ -1,25 +1,10 @@
 import uuid
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import List
 
 from domain.model.match_aggregate import Match
-from domain.services.base import AbstractBaseService
+from domain.services.base import AbstractQueryService
 
 
-class AbstractMatchService(AbstractBaseService):
-
-    @abstractmethod
-    def add(self, match_data: dict) -> Match:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_by_id(self, match_id: uuid.UUID) -> Match:
-        raise NotImplementedError
-
-    @abstractmethod
-    def update(self, match_id: uuid.UUID, match_data: dict) -> Match:
-        raise NotImplementedError
-
-    @abstractmethod
-    def delete(self, match_id: uuid.UUID):
-        raise NotImplementedError
+class AbstractMatchService(AbstractQueryService, ABC):
+    pass

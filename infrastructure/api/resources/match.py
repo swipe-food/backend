@@ -43,7 +43,6 @@ class MatchesResource(BaseResource):
     def post():
         svc: AbstractMatchService = request.services['match']
         match_json = request.get_json()
-
         match_data = match_request_schema.load(match_json)
 
         return svc.add(match_data), 201

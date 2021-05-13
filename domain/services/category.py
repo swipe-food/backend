@@ -1,18 +1,14 @@
 import uuid
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import List
 
 from domain.model.category_aggregate import Category
 from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
-from domain.services.base import AbstractBaseService
+from domain.services.base import AbstractQueryService
 
 
-class AbstractCategoryService(AbstractBaseService):
-
-    @abstractmethod
-    def get_by_id(self, category_id: uuid.UUID) -> Category:
-        raise NotImplementedError
+class AbstractCategoryService(AbstractQueryService, ABC):
 
     @abstractmethod
     def get_by_name(self, category_name: str) -> Category:

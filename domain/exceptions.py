@@ -39,23 +39,28 @@ class RepositoryException(SwipeFoodException):
 
 class StorageException(SwipeFoodException):
     """Raised when a error in the storage modules occurs"""
+    pass
 
 
 class StorageAddException(StorageException):
     """Raised when a add request failed"""
+    pass
 
 
 class StorageNoResultFoundException(StorageException):
     """Raised when no result was found"""
+    pass
 
 
 class StorageUpdateException(StorageException):
     """Raised when a update request failed"""
+    pass
 
 
 class StorageDeleteException(StorageException):
     """Raised when a delete request failed"""
+    pass
 
 
 class ProgrammingError(SwipeFoodException):
-    "Raised when a "
+    pass

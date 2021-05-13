@@ -28,32 +28,33 @@ class MatchService(AbstractMatchService):
         self._user_repo = user_repo
         self._recipe_repo = recipe_repo
 
-    def get_by_id(self, match_id: uuid.UUID) -> Match:
-        return self._match_repo.get_by_id(match_id)
+    def get_by_id(self, entity_id: uuid.UUID) -> Match:
+        return self._match_repo.get_by_id(entity_id)
 
-    def add(self, match_data: dict) -> Match:
-        user = self._user_repo.get_by_id(match_data['user_id'])
-        recipe = self._recipe_repo.get_by_id(match_data['recipe_id'])
+    def add(self, entity_data: dict) -> Match:
+        user = self._user_repo.get_by_id(entity_data['user_id'])
+        recipe = self._recipe_repo.get_by_id(entity_data['recipe_id'])
 
         match = create_match(match_id=uuid.uuid4(),
                              user=user, recipe=recipe,
-                             timestamp=match_data['timestamp'],
-                             is_seen_by_user=match_data['is_seen_by_user'],
-                             is_active=match_data['is_active']
+                             timestamp=entity_data['timestamp'],
+                             is_seen_by_user=entity_data['is_seen_by_user'],
+                             is_active=entity_data['is_active']
                              )
         self._match_repo.add(match)
         return match
 
-    def update(self, match_id: uuid.UUID, match_data: dict) -> Match:
-        match = self._match_repo.get_by_id(match_id)
-        if 'is_active' in match_data:
-            match.is_active = match_data['is_active']
-        if 'is_seen_by_user' in match_data:
-            match.is_seen_by_user = match_data['is_seen_by_user']
+    def update(self, entity_id: uuid.UUID, entity_data: dict) -> Match:
+        match = self.get_by_id(entity_id)
+        if 'is_active' in entity_data:
+            match.is_active = entity_data['is_active']
+        if 'is_seen_by_user' in entity_data:
+            match.is_seen_by_user = entity_data['is_seen_by_user']
 
         self._match_repo.update(match)
         return match
 
     def delete(self, match_id: uuid.UUID):
-        match = self._match_repo.get_by_id(match_id)
+        match = self.get_by_id(match_id)
+        match.delete()
         return self._match_repo.delete(match)

@@ -1,9 +1,7 @@
 from abc import abstractmethod
 
-from domain.services.base import AbstractBaseService
 
-
-class AbstractStatusService(AbstractBaseService):
+class AbstractStatusService:
 
     @abstractmethod
     def get_build_commit(self):
