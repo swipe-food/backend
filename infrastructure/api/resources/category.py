@@ -35,8 +35,9 @@ class CategoryRecipesResource(BaseResource):
     @dump_schema(schema=RecipeSchema(many=True))
     def get(category_id):
         svc: AbstractCategoryService = request.services['category']
+        limit = request.args.get("limit")
 
-        return svc.get_recipes(category_id)
+        return svc.get_recipes(category_id, limit)
 
 
 class CategoryUsersResource(BaseResource):

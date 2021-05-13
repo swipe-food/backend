@@ -6,6 +6,7 @@ from typing import List
 from domain.exceptions import InvalidValueException
 from domain.model.category_like_aggregate import create_category_like, CategoryLike
 from domain.model.match_aggregate import Match
+from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User, create_user
 from domain.repositories.category import AbstractCategoryRepository
 from domain.repositories.category_like import AbstractCategoryLikeRepository
@@ -60,6 +61,10 @@ class UserService(AbstractUserService):
     def get_liked_categories(self, user_id: uuid.UUID, limit: int) -> List[CategoryLike]:
         user = self.get_by_id(user_id)
         return list(user.liked_categories)
+
+    def get_unseen_recipes(self, user_id: uuid.UUID, limit: int) -> List[Recipe]:
+        user = self._user_repo.get_by_id(user_id)
+        return self._recipe_repo.get_unseen_recipes_for_user(user, limit)
 
     def confirm(self, user_id: uuid.UUID):
         user = self.get_by_id(user_id)

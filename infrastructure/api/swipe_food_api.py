@@ -9,7 +9,7 @@ from werkzeug.exceptions import HTTPException
 from domain.services.base import AbstractQueryService
 from infrastructure.api.exceptions_handlers import ApiException, ValidationException
 from infrastructure.api.routers import VendorRouter, StatusRouter, AbstractRouter, CategoryRouter, MatchRouter, \
-    UserRouter, LanguageRouter
+    UserRouter, LanguageRouter, RecipeRouter
 from infrastructure.config import ApiConfig
 from infrastructure.log import Logger
 
@@ -22,6 +22,7 @@ class SwipeFoodAPI(Flask):
         '/matches': MatchRouter,
         '/users': UserRouter,
         '/languages': LanguageRouter,
+        '/recipes': RecipeRouter,
     }
 
     error_handlers: Dict[Exception, Callable] = {  # TODO add SwipeFoodException Handler

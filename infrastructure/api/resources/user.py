@@ -3,7 +3,7 @@ from flask import request
 from domain.services.user import AbstractUserService
 from infrastructure.api.decorators import dump_schema
 from infrastructure.api.resources.base import BaseResource
-from infrastructure.api.schemas import UserSchema, MatchResponseSchema, CategoryLikeSchema
+from infrastructure.api.schemas import UserSchema, MatchResponseSchema, CategoryLikeSchema, RecipeSchema
 
 
 class UserResource(BaseResource):
@@ -111,8 +111,8 @@ class UserMatchesResource(BaseResource):
         return svc.get_matches(user_id, limit)
 
 
-class UserSeenRecipeResource(BaseResource):
-    path = '/<string:user_id>/seen_recipes'
+class UserRecipeResource(BaseResource):
+    path = '/<string:user_id>/recipes'
 
     @staticmethod
     def post(user_id):
@@ -120,7 +120,15 @@ class UserSeenRecipeResource(BaseResource):
         recipe_json = request.get_json()
 
         svc.add_seen_recipe(user_id, recipe_json["id"])
-        return None, 201
+        return {'message': 'Recipe as seen marked'}, 201
+
+    @staticmethod
+    @dump_schema(schema=RecipeSchema(many=True))
+    def get(user_id):
+        svc: AbstractUserService = request.services['user']
+        limit = request.args.get("limit")
+
+        return svc.get_unseen_recipes(user_id, limit)
 
 
 class UserCategoryLikeResource(BaseResource):

@@ -31,10 +31,10 @@ class CategoryService(AbstractCategoryService):
     def get_all(self, limit: int) -> List[Category]:
         return self._repo.get_all(limit)
 
-    def get_recipes(self, category_id: uuid.UUID) -> List[Recipe]:
+    def get_recipes(self, category_id: uuid.UUID, limit: int or None) -> List[Recipe]:
         category = self._repo.get_by_id(category_id)
 
-        return self._repo.get_recipes(category)
+        return self._repo.get_recipes(category, limit)
 
     def get_liked_users(self, category_id: uuid.UUID) -> List[User]:
         category = self._repo.get_by_id(category_id)

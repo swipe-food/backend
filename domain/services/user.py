@@ -4,6 +4,7 @@ from typing import List
 
 from domain.model.category_like_aggregate import CategoryLike
 from domain.model.match_aggregate import Match
+from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
 from domain.services.base import AbstractQueryService, AbstractCommandService
 
@@ -20,6 +21,10 @@ class AbstractUserService(AbstractQueryService, AbstractCommandService, ABC):
 
     @abstractmethod
     def get_liked_categories(self, user_id: uuid.UUID, limit: int) -> List[CategoryLike]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_unseen_recipes(self, user_id: uuid.UUID, limit: int) -> List[Recipe]:
         raise NotImplementedError
 
     @abstractmethod

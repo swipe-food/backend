@@ -18,5 +18,5 @@ class AbstractCategoryRepository(AbstractBaseRepository, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_recipes(self, category: Category) -> List[Recipe]:
+    def get_recipes(self, category: Category, limit: int or None) -> List[Recipe]:
         raise NotImplementedError

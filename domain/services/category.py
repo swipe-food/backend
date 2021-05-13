@@ -23,5 +23,5 @@ class AbstractCategoryService(AbstractQueryService, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_recipes(self, category_id: uuid.UUID) -> List[Recipe]:
+    def get_recipes(self, category_id: uuid.UUID, limit: int or None) -> List[Recipe]:
         raise NotImplementedError
