@@ -4,6 +4,8 @@ import uuid
 
 from domain.exceptions import InvalidValueException
 from domain.model.match_aggregate import Match, create_match
+from domain.model.recipe_aggregate import Recipe
+from domain.model.user_aggregate import User
 from domain.repositories.match import AbstractMatchRepository
 from domain.repositories.recipe import AbstractRecipeRepository
 from domain.repositories.user import AbstractUserRepository
@@ -23,7 +25,8 @@ def create_match_service(match_repo: AbstractMatchRepository, user_repo: Abstrac
 
 class MatchService(AbstractMatchService):
 
-    def __init__(self, match_repo: AbstractMatchRepository, user_repo: AbstractUserRepository, recipe_repo: AbstractRecipeRepository):
+    def __init__(self, match_repo: AbstractMatchRepository, user_repo: AbstractUserRepository,
+                 recipe_repo: AbstractRecipeRepository):
         self._match_repo = match_repo
         self._user_repo = user_repo
         self._recipe_repo = recipe_repo
@@ -32,8 +35,8 @@ class MatchService(AbstractMatchService):
         return self._match_repo.get_by_id(entity_id)
 
     def add(self, entity_data: dict) -> Match:
-        user = self._user_repo.get_by_id(entity_data['user_id'])
-        recipe = self._recipe_repo.get_by_id(entity_data['recipe_id'])
+        user: User = self._user_repo.get_by_id(entity_data['user_id'])
+        recipe: Recipe = self._recipe_repo.get_by_id(entity_data['recipe_id'])
 
         match = create_match(match_id=uuid.uuid4(),
                              user=user, recipe=recipe,
@@ -41,6 +44,8 @@ class MatchService(AbstractMatchService):
                              is_seen_by_user=entity_data['is_seen_by_user'],
                              is_active=entity_data['is_active']
                              )
+
+        # TODO handle category like matches
         self._match_repo.add(match)
         return match
 

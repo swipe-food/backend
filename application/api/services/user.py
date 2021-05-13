@@ -70,6 +70,7 @@ class UserService(AbstractUserService):
         user = self.get_by_id(user_id)
         recipe = self._recipe_repo.get_by_id(recipe_id)
         user.add_seen_recipe(recipe)
+        # TODO handle category like views
         self._user_repo.add_seen_recipe(user, recipe)
 
     def add(self, entity_data: dict) -> User:

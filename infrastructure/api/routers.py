@@ -6,6 +6,7 @@ from flask_restplus import Namespace
 from infrastructure.api.resources import BaseResource
 from infrastructure.api.resources.category import CategoryRecipesResource, CategoriesResource, CategoryNameResource, \
     CategoryResource, CategoryUsersResource
+from infrastructure.api.resources.language import LanguageResource, LanguagesResource
 from infrastructure.api.resources.match import MatchResource, MatchesResource
 from infrastructure.api.resources.status import StatusResource
 from infrastructure.api.resources.user import UserResource, UserEMailResource, UsersResource, UserConfirmResource, \
@@ -31,7 +32,7 @@ class AbstractRouter(Namespace, ABC):
 
 class StatusRouter(AbstractRouter):
     name = 'status'
-    description = 'Status Information about the API'
+    description = 'Status Information about the API.'
     router_resources = [StatusResource]
 
 
@@ -60,3 +61,9 @@ class UserRouter(AbstractRouter):
     router_resources = [UserResource, UserEMailResource, UsersResource, UserConfirmResource, UserAddLanguageResource,
                         UserMatchesResource, UserRemoveLanguageResource, UserSeenRecipeResource,
                         UserCategoryLikeResource, UserRemoveCategoryLikeResource]
+
+
+class LanguageRouter(AbstractRouter):
+    name = 'languages'
+    description = "Information about the Languages a Recipe can be in and a User can add. Only GET Resources, since the API shouldn't modify the Languages Entities."
+    router_resources = [LanguageResource, LanguagesResource]

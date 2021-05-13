@@ -1,4 +1,5 @@
 from application.api.services.category import create_category_service
+from application.api.services.language import create_language_service
 from application.api.services.match import create_match_service
 from application.api.services.status import create_status_service
 from application.api.services.user import create_user_service
@@ -38,6 +39,7 @@ def create_api() -> SwipeFoodAPI:
         match=create_match_service(match_repo=match_repo, user_repo=user_repo, recipe_repo=recipe_repo),
         user=create_user_service(user_repo=user_repo, recipe_repo=recipe_repo, language_repo=language_repo,
                                  category_like_repo=category_like_repo, category_repo=category_repo),
+        language=create_language_service(language_repo=language_repo),
     )
 
     return SwipeFoodAPI(config=config.api, logger=logger, services=services)
