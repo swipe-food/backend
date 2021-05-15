@@ -2,11 +2,14 @@ from typing import List, Callable
 from uuid import UUID
 
 from domain.exceptions import InvalidValueException
+from domain.model.language_aggregate import Language
+from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
 from domain.repositories.user import AbstractUserRepository
-from infrastructure.storage.sql.model import DBUser, DBUserLanguages, DBUserSeenRecipes
+from infrastructure.storage.sql.model import DBUser, DBUserLanguages, DBUserSeenRecipes, DBMatch
 from infrastructure.storage.sql.postgres import PostgresDatabase
-from infrastructure.storage.sql.repositories.decorators import catch_no_result_found_exception, catch_add_data_exception, catch_update_data_exception, catch_delete_data_exception
+from infrastructure.storage.sql.repositories.decorators import catch_no_result_found_exception, \
+    catch_add_data_exception, catch_update_data_exception, catch_delete_data_exception
 
 
 def create_user_repository(database: PostgresDatabase, create_logger: Callable):
@@ -28,16 +31,18 @@ class UserRepository(AbstractUserRepository):
         self._logger.debug("added user to database", user_id=entity.id.__str__())
 
     @catch_add_data_exception
-    def add_languages(self, user: User):
-        db_user_languages = [DBUserLanguages.from_entity(user, lang) for lang in user.languages]
-        self._db.add(*db_user_languages)
-        self._logger.debug("added languages of user to database", user_id=user.id.__str__())
+    def add_language(self, user: User, language: Language):
+        db_user_language = DBUserLanguages.from_entity(user, language)
+        self._db.add(db_user_language)
+        self._logger.debug("added language of user to database", user_id=user.id.__str__(),
+                           language_id=language.id.__str__())
 
     @catch_add_data_exception
-    def add_seen_recipes(self, user: User):
-        db_user_seen_recipes = [DBUserSeenRecipes.from_entity(user, recipe) for recipe in user.seen_recipes]
-        self._db.add(*db_user_seen_recipes)
-        self._logger.debug("added seen recipes of user to database", user_id=user.id.__str__())
+    def add_seen_recipe(self, user: User, recipe: Recipe):
+        db_user_seen_recipe = DBUserSeenRecipes.from_entity(user, recipe)
+        self._db.add(db_user_seen_recipe)
+        self._logger.debug("added seen recipe of user to database", user_id=user.id.__str__(),
+                           recipe_id=recipe.id.__str__())
 
     @catch_no_result_found_exception
     def get_by_email(self, email: str) -> User:
@@ -73,12 +78,20 @@ class UserRepository(AbstractUserRepository):
             DBUser.first_name: entity.first_name,
             DBUser.is_confirmed: entity.is_confirmed,
             DBUser.date_last_login: entity.date_last_login,
-            DBUser.email: entity.email,
+            DBUser.email: entity.email.__str__(),
         })
         self._logger.debug("updated user", user_id=entity.id.__str__())
 
     @catch_delete_data_exception
+    def remove_language(self, user: User, language: Language):
+        self._db.delete(table=DBUserLanguages,
+                        filters=(DBUserLanguages.fk_user == user.id, DBUserLanguages.fk_language == language.id,))
+
+    @catch_delete_data_exception
     def delete(self, entity: User):
+        self._db.delete(table=DBUserLanguages, filters=(DBUserLanguages.fk_user == entity.id,))
+        self._db.delete(table=DBUserSeenRecipes, filters=(DBUserSeenRecipes.fk_user == entity.id,))
+        self._db.delete(table=DBMatch, filters=(DBMatch.fk_user == entity.id,))
         self._db.delete(table=DBUser, filters=(DBUser.id == entity.id,))
         self._logger.debug("deleted user", user_id=entity.id.__str__())
 

@@ -45,8 +45,8 @@ jobs:
       with:
         push: true
         build-args: |
-          BUILD_COMMIT=${{ env.BUILD_COMMIT }}
-          BUILD_TIME=${{ env.BUILD_TIME }}
+          SF_BUILD_COMMIT=${{ env.BUILD_COMMIT }}
+          SF_BUILD_TIME=${{ env.BUILD_TIME }}
         tags: |
           ${{ env.IMAGE }}:latest
           ${{ env.IMAGE }}:${{ env.BUILD_VER }}

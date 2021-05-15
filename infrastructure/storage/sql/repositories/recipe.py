@@ -9,7 +9,8 @@ from domain.model.user_aggregate import User
 from domain.repositories.recipe import AbstractRecipeRepository
 from infrastructure.storage.sql.model import DBRecipe, DBUser
 from infrastructure.storage.sql.postgres import PostgresDatabase
-from infrastructure.storage.sql.repositories.decorators import catch_no_result_found_exception, catch_add_data_exception, catch_update_data_exception, catch_delete_data_exception
+from infrastructure.storage.sql.repositories.decorators import catch_no_result_found_exception, \
+    catch_add_data_exception, catch_update_data_exception, catch_delete_data_exception
 from infrastructure.storage.sql.repositories.user import UserRepository
 
 
@@ -41,7 +42,8 @@ class RecipeRepository(AbstractRecipeRepository):
             user = db_user.to_entity()
             UserRepository.load_relationship_for_user(db_user, user)
             users.append(user)
-        self._logger.debug("get all matched users for recipe", recipe_id=recipe.id.__str__(), count_matched_users=len(users))
+        self._logger.debug("get all matched users for recipe", recipe_id=recipe.id.__str__(),
+                           count_matched_users=len(users))
         return users
 
     @catch_no_result_found_exception
@@ -60,12 +62,14 @@ class RecipeRepository(AbstractRecipeRepository):
     @catch_no_result_found_exception
     def get_unseen_recipes_for_user(self, user: User, limit: int = 20) -> List[Recipe]:
         recipes_ids: List[UUID] = [recipe.id for recipe in user.seen_recipes]
-        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.id.notin_(recipes_ids)).limit(limit).all()
+        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.id.notin_(recipes_ids)).limit(
+            limit).all()
         recipes: List[Recipe] = []
         for db_recipe in db_recipes:
             recipe = db_recipe.to_entity()
             recipes.append(recipe)
-        self._logger.debug("get unseen recipes for user", limit=limit, user_id=user.id.__str__(), count_recipes=len(recipes))
+        self._logger.debug("get unseen recipes for user", limit=limit, user_id=user.id.__str__(),
+                           count_recipes=len(recipes))
         return recipes
 
     @catch_add_data_exception

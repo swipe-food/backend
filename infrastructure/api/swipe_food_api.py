@@ -3,32 +3,43 @@ from typing import Dict, Callable
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restplus import Api
+from marshmallow import ValidationError
 from werkzeug.exceptions import HTTPException
 
-from domain.repositories.base import AbstractBaseRepository
-from infrastructure.api.exceptions import ApiException
-from infrastructure.api.routers import VendorRouter
+from domain.services.base import AbstractQueryService
+from infrastructure.api.exceptions_handlers import ApiException, ValidationException
+from infrastructure.api.routers import VendorRouter, StatusRouter, AbstractRouter, CategoryRouter, MatchRouter, \
+    UserRouter, LanguageRouter, RecipeRouter
 from infrastructure.config import ApiConfig
 from infrastructure.log import Logger
 
 
 class SwipeFoodAPI(Flask):
-    routers: Dict[str, type(AbstractBaseRepository)] = {
+    routers: Dict[str, type(AbstractRouter)] = {
+        '/status': StatusRouter,
         '/vendors': VendorRouter,
-    }
-    error_handlers: Dict[Exception, Callable] = {
-        ApiException: ApiException.handle,
-        HTTPException: ApiException.handle,
+        '/categories': CategoryRouter,
+        '/matches': MatchRouter,
+        '/users': UserRouter,
+        '/languages': LanguageRouter,
+        '/recipes': RecipeRouter,
     }
 
-    def __init__(self, config: ApiConfig, logger: Logger, repositories: Dict[str, type(AbstractBaseRepository)]):
+    error_handlers: Dict[Exception, Callable] = {  # TODO add SwipeFoodException Handler
+        ApiException: ApiException.handle,
+        HTTPException: ApiException.handle,
+        ValidationError: ValidationException.handle
+    }
+
+    def __init__(self, config: ApiConfig, logger: Logger, services: Dict[str, type(AbstractQueryService)]):
         super().__init__(config.name)
         self.api = Api(self)
         self.api_config = config
-        self.cors = CORS(self, resources={r"*": {"origins": config.host + "/*"}})
+        self.api_prefix = '/api'
+        self.cors = CORS(self, resources={r"*": {"origins": self.api_config.host + "/*"}})
 
         self.logger = logger
-        self.repositories = repositories
+        self.services = services
 
         self._register_request_setups()
         self._register_routers()
@@ -46,12 +57,12 @@ class SwipeFoodAPI(Flask):
     def _register_request_setups(self):
         self.before_request(self._insert_data_to_request(dict(
             logger=self.logger,
-            repositories=self.repositories
+            services=self.services,
         )))
 
     def _register_routers(self):
         for prefix, router in self.routers.items():
-            self.api.add_namespace(router(), prefix)
+            self.api.add_namespace(router(), f'{self.api_prefix}{prefix}')
 
     def _register_error_handlers(self):
         for error, handler in self.error_handlers.items():

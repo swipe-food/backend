@@ -17,5 +17,5 @@ class AbstractRecipeRepository(AbstractBaseRepository, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_unseen_recipes_for_user(self, user: User, limit: int = 20) -> List[Recipe]:
+    def get_unseen_recipes_for_user(self, user: User, limit: int = None) -> List[Recipe]:
         raise NotImplementedError

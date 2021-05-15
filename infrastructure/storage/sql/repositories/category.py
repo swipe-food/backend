@@ -10,7 +10,8 @@ from domain.model.user_aggregate import User
 from domain.repositories.category import AbstractCategoryRepository
 from infrastructure.storage.sql.model import DBCategory, DBUser, DBCategoryLike, DBRecipe
 from infrastructure.storage.sql.postgres import PostgresDatabase
-from infrastructure.storage.sql.repositories.decorators import catch_delete_data_exception, catch_update_data_exception, catch_no_result_found_exception, catch_add_data_exception
+from infrastructure.storage.sql.repositories.decorators import catch_delete_data_exception, catch_update_data_exception, \
+    catch_no_result_found_exception, catch_add_data_exception
 from infrastructure.storage.sql.repositories.user import UserRepository
 
 
@@ -46,19 +47,23 @@ class CategoryRepository(AbstractCategoryRepository):
 
     @catch_no_result_found_exception
     def get_liked_users(self, category: Category) -> List[User]:
-        db_users: List[DBUser] = self._db.session.query(DBUser).join(DBCategoryLike).join(DBCategory).filter(DBCategory.id == category.id).all()
+        db_users: List[DBUser] = self._db.session.query(DBUser).join(DBCategoryLike).join(DBCategory).filter(
+            DBCategory.id == category.id).all()
         users: List[User] = []
         for db_user in db_users:
             user = db_user.to_entity()
             UserRepository.load_relationship_for_user(db_user, user)
             users.append(user)
-        self._logger.debug("get all liked users for category", category_id=category.id.__str__(), count_liked_users=len(users))
+        self._logger.debug("get all liked users for category", category_id=category.id.__str__(),
+                           count_liked_users=len(users))
         return users
 
     @catch_no_result_found_exception
-    def get_recipes(self, category: Category) -> List[Recipe]:
-        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.fk_category == category.id).all()
-        self._logger.debug("get all recipes for category", category_id=category.id.__str__(), count_recipes=len(db_recipes))
+    def get_recipes(self, category: Category, limit: int or None) -> List[Recipe]:
+        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.fk_category == category.id).limit(
+            limit).all()
+        self._logger.debug("get all recipes for category", category_id=category.id.__str__(),
+                           count_recipes=len(db_recipes))
         return [db_recipe.to_entity() for db_recipe in db_recipes]
 
     @catch_no_result_found_exception
