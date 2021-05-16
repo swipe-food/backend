@@ -23,4 +23,7 @@ ARG SF_BUILD_TIME=unknown
 LABEL swipe-food.version=$SF_BUILD_COMMIT \
       swipe-food.build-time=$SF_BUILD_TIME
 
+ENV SF_BUILD_COMMIT $SF_BUILD_COMMIT
+ENV SF_BUILD_TIME $SF_BUILD_TIME
+
 ENV PATH="/opt/venv/bin:$PATH"

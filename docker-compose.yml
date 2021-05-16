@@ -5,6 +5,8 @@ services:
     image: ghcr.io/swipe-food/backend:latest
     env_file: dkc.env
     command: ["python3", "-m", "main.api"]
+    ports:
+      - "${SF_API_PORT}:${SF_API_PORT}"
     depends_on:
       - postgres
   crawler:
