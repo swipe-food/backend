@@ -23,3 +23,8 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - uses: actions/checkout@master
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml

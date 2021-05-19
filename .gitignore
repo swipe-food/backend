@@ -96,10 +96,10 @@ htmlcov/
 .tox/
 .nox/
 .coverage
-# .coverage.*
+.coverage.*
 .cache
 nosetests.xml
-# coverage.xml
+coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
