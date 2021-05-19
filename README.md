@@ -1,5 +1,9 @@
 # SwipeFood
 
+[![Swipe Food Backend Test](https://github.com/swipe-food/backend/actions/workflows/test_ci_pipeline.yml/badge.svg)](https://github.com/swipe-food/backend/actions/workflows/test_ci_pipeline.yml)
+[![Swipe Food Docker Image CI](https://github.com/swipe-food/backend/actions/workflows/docker_build_and_deploy.yml/badge.svg)](https://github.com/swipe-food/backend/actions/workflows/docker_build_and_deploy.yml)
+[![codecov](https://codecov.io/gh/swipe-food/backend/branch/main/graph/badge.svg?token=R7OUWH58L2)](https://codecov.io/gh/swipe-food/backend)
+
 ## Run
 
 ### Local
