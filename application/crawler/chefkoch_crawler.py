@@ -35,8 +35,11 @@ class ChefkochCrawler(AbstractBaseCrawler):
         ))
 
     def crawl_new_recipes(self, store_recipes: bool = True) -> List[Recipe]:
+        self._crawl_categories_if_needed()
+
         all_recipe_overview_items = self._get_recipe_overview_items()
         recent_recipe_overview_items = set(self._filter_new_recipes(all_recipe_overview_items))
+
         return self._crawl_and_process(
             urls_to_crawl=[overview_item.url for overview_item in recent_recipe_overview_items],
             scrape_callback=lambda recipe_page: self.scraper.scrape_recipe(

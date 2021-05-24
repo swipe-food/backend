@@ -23,7 +23,7 @@ class AbstractBaseCrawler(ABC):
         self._vendor_repository = vendor_repository
 
     @abstractmethod
-    def crawl_categories(self) -> List[Category]:
+    def crawl_categories(self, store_categories: bool = False) -> List[Category]:
         raise NotImplementedError
 
     @abstractmethod
@@ -43,6 +43,10 @@ class AbstractBaseCrawler(ABC):
                 store_callback(scrape_result)
             results.append(scrape_result)
         return results
+
+    def _crawl_categories_if_needed(self):
+        if len(self._category_repository.get_all_categories_for_vendor(self.vendor)) > 0:
+            self.crawl_categories(store_categories=True)
 
     @staticmethod
     def _filter_new_recipes(recipe_overviews: List[RecipeOverviewItem]) -> List[RecipeOverviewItem]:

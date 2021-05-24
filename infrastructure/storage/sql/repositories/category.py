@@ -7,6 +7,7 @@ from domain.exceptions import InvalidValueException
 from domain.model.category_aggregate import Category
 from domain.model.recipe_aggregate import Recipe
 from domain.model.user_aggregate import User
+from domain.model.vendor_aggregate import Vendor
 from domain.repositories.category import AbstractCategoryRepository
 from infrastructure.storage.sql.model import DBCategory, DBUser, DBCategoryLike, DBRecipe
 from infrastructure.storage.sql.postgres import PostgresDatabase
@@ -45,7 +46,6 @@ class CategoryRepository(AbstractCategoryRepository):
         self._logger.debug("get category by name", category_id=db_category.id.__str__(), category_name=category_name)
         return db_category.to_entity()
 
-    @catch_no_result_found_exception
     def get_liked_users(self, category: Category) -> List[User]:
         db_users: List[DBUser] = self._db.session.query(DBUser).join(DBCategoryLike).join(DBCategory).filter(
             DBCategory.id == category.id).all()
@@ -58,7 +58,6 @@ class CategoryRepository(AbstractCategoryRepository):
                            count_liked_users=len(users))
         return users
 
-    @catch_no_result_found_exception
     def get_recipes(self, category: Category, limit: int or None) -> List[Recipe]:
         db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.fk_category == category.id).limit(
             limit).all()
@@ -66,10 +65,14 @@ class CategoryRepository(AbstractCategoryRepository):
                            count_recipes=len(db_recipes))
         return [db_recipe.to_entity() for db_recipe in db_recipes]
 
-    @catch_no_result_found_exception
     def get_all(self, limit: int = None) -> List[Category]:
         db_categories: List[DBCategory] = self._db.session.query(DBCategory).limit(limit).all()
         self._logger.debug("get all categories", limit=limit, count=len(db_categories))
+        return [db_category.to_entity() for db_category in db_categories]
+
+    def get_all_categories_for_vendor(self, vendor: Vendor, limit: int = None) -> List[Category]:
+        db_categories: List[DBCategory] = self._db.session.query(DBCategory).filter(DBCategory.fk_vendor == vendor.id).limit(limit).all()
+        self._logger.debug("get all categories for vendor", vendor=vendor, limit=limit, count=len(db_categories))
         return [db_category.to_entity() for db_category in db_categories]
 
     @catch_update_data_exception
