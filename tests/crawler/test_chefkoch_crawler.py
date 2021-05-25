@@ -58,24 +58,28 @@ class TestChefkochCrawler:
         assert crawler.crawl_categories(store_categories=True) == 'verify mock_and_test_crawl_and_process called'
 
     @patch('application.crawler.base.AbstractBaseCrawler._crawl_and_process')
+    @patch('application.crawler.base.AbstractBaseCrawler._crawl_categories_if_needed')
     @patch('application.crawler.chefkoch_crawler.ChefkochCrawler._get_recipe_overview_items')
     @patch('application.crawler.chefkoch_crawler.ChefkochCrawler._filter_new_recipes')
-    def test_crawl_new_recipes(self, mock_filter_new_recipes, mock_get_recipe_overview_items, mock_crawl_and_process, crawler: ChefkochCrawler, vendor: Vendor,
+    def test_crawl_new_recipes(self, mock_filter_new_recipes, mock_get_recipe_overview_items, mock_crawl_categories_if_needed, mock_crawl_and_process, crawler: ChefkochCrawler,
                                overview_item_mocks):
         mock_filter_new_recipes.return_value = overview_item_mocks
         mock_get_recipe_overview_items.return_value = overview_item_mocks
+        mock_crawl_categories_if_needed.return_value = None
         mock_crawl_and_process.side_effect = self.get_mock_and_test_crawl_and_process_function(
             test_urls=[overview_item_mocks[0].url], test_store_results=False, test_store_callback=crawler._store_recipe
         )
         assert crawler.crawl_new_recipes(store_recipes=False) == ['verify mock_and_test_crawl_and_process called']
 
     @patch('application.crawler.base.AbstractBaseCrawler._crawl_and_process')
+    @patch('application.crawler.base.AbstractBaseCrawler._crawl_categories_if_needed')
     @patch('application.crawler.chefkoch_crawler.ChefkochCrawler._get_recipe_overview_items')
     @patch('application.crawler.chefkoch_crawler.ChefkochCrawler._filter_new_recipes')
-    def test_crawl_and_store_new_recipes(self, mock_filter_new_recipes, mock_get_recipe_overview_items, mock_crawl_and_process, crawler: ChefkochCrawler, vendor: Vendor,
-                                         overview_item_mocks):
+    def test_crawl_and_store_new_recipes(self, mock_filter_new_recipes, mock_get_recipe_overview_items, mock_crawl_categories_if_needed, mock_crawl_and_process,
+                                         crawler: ChefkochCrawler, overview_item_mocks):
         mock_filter_new_recipes.return_value = overview_item_mocks
         mock_get_recipe_overview_items.return_value = overview_item_mocks
+        mock_crawl_categories_if_needed.return_value = None
         mock_crawl_and_process.side_effect = self.get_mock_and_test_crawl_and_process_function(
             test_urls=[overview_item_mocks[0].url], test_store_results=True, test_store_callback=crawler._store_recipe
         )
@@ -105,6 +109,9 @@ class TestChefkochCrawler:
                 pass
 
             def get_all(self, limit: int = None) -> List[Entity]:
+                pass
+
+            def get_all_categories_for_vendor(self, vendor: Vendor, limit: int = None) -> List[Category]:
                 pass
 
             def add(self, entity: Entity):
