@@ -13,5 +13,5 @@ class AbstractVendorRepository(AbstractBaseRepository, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_recipes(self, vendor: Vendor) -> List[Recipe]:
+    def get_recipes(self, vendor: Vendor, limit: int = None) -> List[Recipe]:
         raise NotImplementedError

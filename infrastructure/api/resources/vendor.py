@@ -35,8 +35,9 @@ class VendorRecipesResource(BaseResource):
     @dump_schema(schema=RecipeSchema(many=True))
     def get(vendor_id):
         svc: AbstractVendorService = request.services['vendor']
+        limit = request.args.get("limit")
 
-        return svc.get_recipes(vendor_id)
+        return svc.get_recipes(vendor_id, limit)
 
 
 class VendorsResource(BaseResource):

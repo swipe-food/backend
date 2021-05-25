@@ -9,7 +9,8 @@ from domain.model.vendor_aggregate import Vendor
 from domain.repositories.vendor import AbstractVendorRepository
 from infrastructure.storage.sql.model import DBVendor, DBRecipe
 from infrastructure.storage.sql.postgres import PostgresDatabase
-from infrastructure.storage.sql.repositories.decorators import catch_add_data_exception, catch_no_result_found_exception, catch_update_data_exception, catch_delete_data_exception
+from infrastructure.storage.sql.repositories.decorators import catch_add_data_exception, \
+    catch_no_result_found_exception, catch_update_data_exception, catch_delete_data_exception
 
 
 def create_vendor_repository(database: PostgresDatabase, create_logger: Callable) -> VendorRepository:
@@ -47,8 +48,9 @@ class VendorRepository(AbstractVendorRepository):
         return vendor
 
     @catch_no_result_found_exception
-    def get_recipes(self, vendor: Vendor) -> List[Recipe]:
-        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.fk_vendor == vendor.id).all()
+    def get_recipes(self, vendor: Vendor, limit: int = None) -> List[Recipe]:
+        db_recipes: List[DBRecipe] = self._db.session.query(DBRecipe).filter(DBRecipe.fk_vendor == vendor.id).limit(
+            limit).all()
         self._logger.debug("get all recipes for vendor", count=len(db_recipes))
         return [db_recipe.to_entity() for db_recipe in db_recipes]
 

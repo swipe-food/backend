@@ -18,5 +18,5 @@ class AbstractVendorService(AbstractQueryService, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_recipes(self, vendor_id: uuid.UUID) -> List[Recipe]:
+    def get_recipes(self, vendor_id: uuid.UUID, limit: int) -> List[Recipe]:
         raise NotImplementedError
