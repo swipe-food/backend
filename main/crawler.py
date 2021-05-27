@@ -28,6 +28,7 @@ def initial_crawler_setup():
 
     db = create_postgres_database(config.database, Logger.create)
     language_repo = create_language_repository(db, Logger.create)
+
     vendor_repo = create_vendor_repository(db, Logger.create)
 
     german = create_language(uuid4(), name='german', code='DE')

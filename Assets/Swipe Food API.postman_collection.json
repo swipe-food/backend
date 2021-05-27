@@ -1,0 +1,1067 @@
+{
+	"info": {
+		"_postman_id": "8d1f92c8-26ce-4793-95fe-520a7db1949c",
+		"name": "Swipe Food API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "category by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/categories/{{CATEGORY_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories",
+								"{{CATEGORY_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "category by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/categories/name/{{CATEGORY_NAME}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories",
+								"name",
+								"{{CATEGORY_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Successful Response\"] == responseCode.code === 200\r",
+									"var jsonData = pm.response.json()\r",
+									"\r",
+									"pm.collectionVariables.set(\"CATEGORY_ID\", jsonData[0].id);\r",
+									"pm.collectionVariables.set(\"CATEGORY_NAME\", jsonData[0].name);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/categories?limit=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "recipes for category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Successful Response\"] == responseCode.code === 200",
+									"var jsonData = pm.response.json()",
+									"",
+									"",
+									"pm.collectionVariables.set(\"RECIPE_ID\", jsonData[0].id);",
+									"pm.collectionVariables.set(\"RECIPE_NAME\", jsonData[0].name);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/categories/{{CATEGORY_ID}}/recipes?limit=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories",
+								"{{CATEGORY_ID}}",
+								"recipes"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users for category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/categories/{{CATEGORY_ID}}/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories",
+								"{{CATEGORY_ID}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vendor",
+			"item": [
+				{
+					"name": "vendor by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/vendors/{{VENDOR_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"vendors",
+								"{{VENDOR_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vendor by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/vendors/name/{{VENDOR_NAME}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"vendors",
+								"name",
+								"{{VENDOR_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all vendors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Successful Response\"] == responseCode.code === 200\r",
+									"var jsonData = pm.response.json()\r",
+									"\r",
+									"\r",
+									"pm.collectionVariables.set(\"VENDOR_ID\", jsonData[0].id);\r",
+									"pm.collectionVariables.set(\"VENDOR_NAME\", jsonData[0].name);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/vendors?limit=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"vendors"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all recipes for vendor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/vendors/{{VENDOR_ID}}/recipes?limit=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"vendors",
+								"{{VENDOR_ID}}",
+								"recipes"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Match",
+			"item": [
+				{
+					"name": "match",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timestamp\": \"2021-04-30 21:38:44.277555\",\r\n    \"is_seen_by_user\": false,\r\n    \"is_active\": true,\r\n    \"user_id\": \"{{USER_ID}}\",\r\n    \"recipe_id\": \"{{RECIPE_ID}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/matches/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"matches",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "match by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/matches/{{MATCH_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"matches",
+								"{{MATCH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "match by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/matches/{{MATCH_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"matches",
+								"{{MATCH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "match by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_active\": true,\n    \"dsdssd\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/matches/{{MATCH_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"matches",
+								"{{MATCH_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const dateNow= new Date();",
+									"pm.collectionVariables.set('CURRENT_TIMESTAMP', dateNow.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Mustermann\",\r\n    \"first_name\": \"Max\",\r\n    \"email\": \"max.mustermann@gmx.de\",\r\n    \"date_last_login\": \"{{CURRENT_TIMESTAMP}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user by email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/email/{{USER_EMAIL}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"email",
+								"{{USER_EMAIL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Successful Response\"] == responseCode.code === 200\r",
+									"var jsonData = pm.response.json()\r",
+									"\r",
+									"\r",
+									"pm.collectionVariables.set(\"USER_ID\", jsonData[0].id);\r",
+									"pm.collectionVariables.set(\"USER_EMAIL\", jsonData[0].email);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users?limit=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mustermann\",\n    \"first_name\": \"Marc\",\n    \"date_last_login\": \"{{CURRENT_TIMESTAMP}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "liked categories for user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Successful Response\"] == responseCode.code === 200",
+									"var jsonData = pm.response.json()",
+									"",
+									"",
+									"pm.collectionVariables.set(\"CATEGORY_LIKE_ID\", jsonData[0].id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/liked_categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"liked_categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add category like to user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{CATEGORY_ID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/liked_categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"liked_categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "matches for user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Successful Response\"] == responseCode.code === 200",
+									"var jsonData = pm.response.json()",
+									"",
+									"",
+									"pm.collectionVariables.set(\"MATCH_ID\", jsonData[0].id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/matches",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"matches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/confirm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add language to user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{LANGUAGE_ID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/languages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add seen recipe to user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{RECIPE_ID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/recipes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unseen recipes for user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/recipes?limit=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"recipes"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove language from user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/languages/{{LANGUAGE_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"languages",
+								"{{LANGUAGE_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove category like from user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/{{USER_ID}}/liked_categories/{{CATEGORY_LIKE_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"{{USER_ID}}",
+								"liked_categories",
+								"{{CATEGORY_LIKE_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Languages",
+			"item": [
+				{
+					"name": "all languages",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Successful Response\"] == responseCode.code === 200",
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.collectionVariables.set(\"LANGUAGE_ID\", jsonData[0].id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/languages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "language by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/languages/{{LANGUAGE_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"languages",
+								"{{LANGUAGE_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recipe",
+			"item": [
+				{
+					"name": "recipe by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/recipes/{{RECIPE_ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recipes",
+								"{{RECIPE_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "recipe by name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/recipes/name/{{RECIPE_NAME}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"recipes",
+								"name",
+								"{{RECIPE_NAME}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "VENDOR_ID",
+			"value": "Not a valid vendor id"
+		},
+		{
+			"key": "VENDOR_NAME",
+			"value": "initial vendor name"
+		},
+		{
+			"key": "CATEGORY_ID",
+			"value": "Not a valid category id"
+		},
+		{
+			"key": "CATEGORY_NAME",
+			"value": "initial category name"
+		},
+		{
+			"key": "MATCH_ID",
+			"value": "Not a valid match id"
+		},
+		{
+			"key": "USER_ID",
+			"value": "Not a valid user id"
+		},
+		{
+			"key": "USER_EMAIL",
+			"value": "initial user email"
+		},
+		{
+			"key": "RECIPE_ID",
+			"value": "Not a valid recipe id"
+		},
+		{
+			"key": "RECIPE_NAME",
+			"value": "initial recipe name"
+		},
+		{
+			"key": "CURRENT_TIMESTAMP",
+			"value": "not a valid timestamp"
+		},
+		{
+			"key": "LANGUAGE_ID",
+			"value": "Not a valid language id"
+		},
+		{
+			"key": "CATEGORY_LIKE_ID",
+			"value": "Not a valid language id"
+		}
+	]
+}

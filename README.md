@@ -46,3 +46,21 @@ python3 -m pip install pip-tools
 
 Add new dependencies to the ``requirements.in`` file and keep the `requirements.txt` file update with the `pip-compile` command. Sync your installed dependencies with the `pip-sync` command.
 
+## Postman Collection
+
+The `Swipe Food API.postman_collection.json` file in the Assets directory is a Postman Collection for the API. The Requests of the Collection heavily use Collection Variables (Swipe Food API -> Edit -> Variables). These variables are mostly set by the responses of "get all" Requests (See the Tests Tab of the Request). Below is a list of all Collection Variables and the associated API Request where they are set:
+
+|  Collection Variable | API-Request where this Variable is set |
+|---|---|
+| VENDOR_ID  | Vendor / get all vendors |
+| VENDOR_NAME  | Vendor / get all vendors |
+| CATEGORY_ID  | Category / get all categories |
+| CATEGORY_NAME  | Category / get all categories |
+| MATCH_ID  | User / get matches for user  |
+| USER_ID  | User / get all users |
+| USER_EMAIL  | User / get all users |
+| RECIPE_ID  | Category / get recipes for category |
+| RECIPE_NAME  | Category / get recipes for category |
+| CURRENT_TIMESTAMP  | User / post user (Pre-Request Script)  |
+| LANGUAGE_ID  | Languages / get all languages |
+| CATEGORY_LIKE_ID  | User / get liked categories for user |
