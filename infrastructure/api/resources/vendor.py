@@ -1,5 +1,6 @@
 from flask import request
 
+from domain.exceptions import InvalidValueException
 from domain.services.vendor import AbstractVendorService
 from infrastructure.api.decorators import dump_schema
 from infrastructure.api.resources.base import BaseResource

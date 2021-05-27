@@ -1,7 +1,7 @@
 from flask import request, jsonify
 
 
-class ApiException(Exception):
+class ApiExceptionHandler(Exception):
     def __init__(self, message, code):
         self.message = message
         self.code = code
@@ -21,10 +21,16 @@ class WerkzeugException(Exception):
         return jsonify(message=self.description), self.code
 
 
-class ValidationException(Exception):
+class ValidationExceptionHandler(Exception):
     def __init__(self, messages):
         self.messages = messages
 
     def handle(self):
         request.logger.error(self.messages, exception=self.__class__.__name__)
         return jsonify(messages=self.messages), 422
+
+
+class DefaultExceptionHandler(Exception):
+    def handle(self):
+        request.logger.error(str(self), exception=self.__class__.__name__)
+        return jsonify(message=str(self)), 500
