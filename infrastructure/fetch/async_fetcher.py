@@ -1,4 +1,5 @@
 import asyncio
+from asyncio import AbstractEventLoop
 from typing import List, Generator
 
 import aiohttp
@@ -17,7 +18,8 @@ class AsyncFetcher(AbstractFetcher):
 
     def fetch(self, urls: List[str]) -> Generator[List[FetchResult], None, None]:
         """Fetches urls parallel in batches and returns a generator that yields every fetched URL batch as a list of FetchResult objects."""
-        loop = asyncio.get_event_loop()
+
+        loop = self._get_event_loop()
         queue = URLQueue(urls=urls)
         while not queue.is_empty():
             url_batch = [next(queue) for _ in range(self.fetch_batch_size) if not queue.is_empty()]
@@ -35,3 +37,13 @@ class AsyncFetcher(AbstractFetcher):
             return await asyncio.gather(
                 *[self._fetch_url_async(session, url) for url in urls], return_exceptions=True
             )
+
+    @staticmethod
+    def _get_event_loop() -> AbstractEventLoop:
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError as exception:
+            if "There is no current event loop in thread" in str(exception):
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                return asyncio.get_event_loop()

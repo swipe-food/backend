@@ -10,6 +10,7 @@ from domain.model.category_aggregate import Category
 from domain.model.recipe_aggregate import Recipe
 from domain.model.vendor_aggregate import Vendor
 from infrastructure.fetch import FetchResult, AbstractFetcher
+from infrastructure.log import Logger
 from tests.conftest import load_sample_website
 
 
@@ -36,7 +37,7 @@ class TestBaseCrawler:
             def crawl_new_recipes(cls) -> List[Recipe]:
                 pass
 
-        return CrawlerImplementation(vendor=vendor, fetcher=cls.FetcherMock())
+        return CrawlerImplementation(vendor=vendor, fetcher=cls.FetcherMock(), create_logger=Logger.create)
 
     def test_crawl_urls(self, crawler_implementation):
         page_generator = crawler_implementation._crawl_urls(urls=self.test_urls)

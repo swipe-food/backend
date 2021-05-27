@@ -17,6 +17,7 @@ from domain.model.vendor_aggregate import Vendor
 from domain.repositories.category import AbstractCategoryRepository
 from domain.repositories.recipe import AbstractRecipeRepository
 from infrastructure.fetch import FetchResult, AsyncFetcher
+from infrastructure.log import Logger
 
 
 class TestChefkochCrawler:
@@ -25,7 +26,7 @@ class TestChefkochCrawler:
     @fixture
     def crawler(vendor: Vendor) -> ChefkochCrawler:
         fetcher = AsyncFetcher(batch_size=20)
-        return ChefkochCrawler(vendor=vendor, fetcher=fetcher)
+        return ChefkochCrawler(vendor=vendor, fetcher=fetcher, create_logger=Logger.create)
 
     @staticmethod
     @fixture

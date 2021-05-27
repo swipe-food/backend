@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable, List
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -22,5 +22,7 @@ class BlockingSchedulerAdapter:
 
     def add_daily_jobs(self, jobs: List[Callable]):
         for index, job in enumerate(jobs):
-            self._scheduler.add_job(job, 'cron', hour=index % 24, start_date=datetime.now())
-            self._logger.info('Added daily job to BlockingScheduler', job=job, scheduler=self)
+            start = datetime.now() + timedelta(seconds=10)
+            self._scheduler.add_job(job, 'cron', hour=index % 24, start_date=start)
+            # self._scheduler.add_job(job, 'date', run_date=start) for local testing
+            self._logger.info('Added daily job to BlockingScheduler', job=job, start=str(start), scheduler=self)

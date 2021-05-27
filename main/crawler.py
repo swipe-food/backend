@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Callable, List, Generic, TypeVar
 from uuid import uuid4
 
@@ -32,8 +33,11 @@ def initial_crawler_setup():
     german = create_language(uuid4(), name='german', code='DE')
     language_repo.add(german)
 
-    chefkoch = create_vendor(uuid4(), name='Chefkoch', description='...', url='https://www.chefkoch.de', is_active=True, recipe_pattern='', date_last_crawled=datetime.now(),
-                             categories_link='https://www.chefkoch.de/rezepte/kategorien/', language=german, categories=[])
+    chefkoch = create_vendor(
+        uuid4(), name='Chefkoch', description='...', url='https://www.chefkoch.de', is_active=True,
+        recipe_pattern='', date_last_crawled=datetime.now(),
+        categories_link='https://www.chefkoch.de/rezepte/kategorien/', language=german, categories=[]
+    )
     vendor_repo.add(chefkoch)
     logger.info('crawler setup completed')
 
@@ -48,13 +52,15 @@ def crawl_all_sources_loop():
     recipe_repository = create_recipe_repository(db, Logger.create)
     vendor_repository = create_vendor_repository(db, Logger.create)
 
-    print(len(create_vendor_service(vendor_repo=vendor_repository).get_all()))
-    if len(create_vendor_service(vendor_repo=vendor_repository).get_all()):
+    vendor_service = create_vendor_service(vendor_repo=vendor_repository)
+    if len(vendor_service.get_all()) == 0:
         initial_crawler_setup()
 
     def create_crawl_new_recipes_job(crawler_class: type(AbstractBaseCrawler), vendor: Vendor) -> Callable:
         def job():
-            crawler = crawler_class(vendor=vendor, fetcher=fetcher, recipe_repository=recipe_repository, category_repository=category_repository)
+            crawler = crawler_class(vendor=vendor, fetcher=fetcher, create_logger=Logger.create,
+                                    recipe_repository=recipe_repository,
+                                    category_repository=category_repository)
             return crawler.crawl_new_recipes(store_recipes=True)
 
         return job
@@ -66,14 +72,15 @@ def crawl_all_sources_loop():
     scheduler.start()
 
 
-def get_crawler(crawler_class: type(Generic[CrawlerClass]), vendor_name: str, with_category_repository: bool = False, with_recipe_repository: bool = False) -> CrawlerClass:
+def get_crawler(crawler_class: type(Generic[CrawlerClass]), vendor_name: str, with_category_repository: bool = False,
+                with_recipe_repository: bool = False) -> CrawlerClass:
     config = create_new_config()
     fetcher = AsyncFetcher(batch_size=config.crawler.fetch_batch_size)
     db = create_postgres_database(config.database, Logger.create)
     vendor_repository = create_vendor_repository(db, Logger.create)
     return crawler_class(
         vendor=vendor_repository.get_by_name(vendor_name=vendor_name),
-        fetcher=fetcher,
+        fetcher=fetcher, create_logger=Logger.create,
         category_repository=create_category_repository(db, Logger.create) if with_category_repository else None,
         recipe_repository=create_recipe_repository(db, Logger.create) if with_recipe_repository else None,
         vendor_repository=create_vendor_repository(db, Logger.create),
@@ -86,5 +93,4 @@ def crawl_chefkoch_recipes(store_recipes: bool = False) -> List[Recipe]:  # for 
 
 
 if __name__ == '__main__':
-    # crawl_all_sources_loop()
-    initial_crawler_setup()
+    crawl_all_sources_loop()

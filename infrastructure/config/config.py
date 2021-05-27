@@ -42,7 +42,6 @@ class DatabaseConfig(ConfigComponent):
     logging_enabled: bool
 
     def get_dsn(self, sanitize: bool = False):
-        print(self.password)
         return '{dialect}{driver}://{user}:{password}@{host}{port}/{name}'.format(
             dialect=self.dialect,
             driver=f'+{self.driver}' if self.driver is not None else '',
