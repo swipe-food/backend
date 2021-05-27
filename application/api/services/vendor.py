@@ -27,7 +27,7 @@ class VendorService(AbstractVendorService):
     def get_by_name(self, vendor_name: str) -> Vendor:
         return self._repo.get_by_name(vendor_name)
 
-    def get_all(self, limit: int) -> List[Vendor]:
+    def get_all(self, limit: int = None) -> List[Vendor]:
         return self._repo.get_all(limit)
 
     def get_recipes(self, vendor_id: uuid.UUID, limit: int) -> List[Recipe]:
