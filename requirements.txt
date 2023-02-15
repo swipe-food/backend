@@ -58,8 +58,10 @@ jsonschema==3.2.0
     # via flask-restplus
 lxml==4.6.5
     # via -r requirements.in
-markupsafe==1.1.1
-    # via jinja2
+markupsafe==2.1.2
+    # via
+    #   jinja2
+    #   werkzeug
 marshmallow==3.11.1
     # via -r requirements.in
 more-itertools==8.7.0
@@ -127,7 +129,7 @@ typing-extensions==3.7.4.3
     # via aiohttp
 tzlocal==2.1
     # via apscheduler
-werkzeug==0.16.0
+werkzeug==2.2.3
     # via
     #   -r requirements.in
     #   flask
